@@ -196,6 +196,62 @@ button:focus {
 	margin-bottom:15px;
 }
 
+#道具栏 {
+	position:fixed;
+	top:10px;
+	right:10px;
+	display:flex;
+	gap:10px;
+	z-index:3000;
+}
+
+.道具 {
+	width:60px;
+	height:60px;
+	background-color:rgba(255,255,255,0.8);
+	border-radius:10px;
+	padding:5px;
+	cursor:pointer;
+	display:flex;
+	flex-direction:column;
+	align-items:center;
+	justify-content:center;
+	border:2px solid #2c3e50;
+}
+
+.道具.disabled {
+	opacity:0.5;
+	cursor:not-allowed;
+}
+
+.道具图标 {
+	font-size:24px;
+	margin-bottom:3px;
+}
+
+.道具名称 {
+	font-size:8px;
+	color:#2c3e50;
+	margin-bottom:3px;
+	text-align:center;
+	width:100%;
+	white-space:nowrap;
+	overflow:hidden;
+	text-overflow:ellipsis;
+}
+
+.道具数量 {
+	font-size:12px;
+	font-weight:bold;
+	color:#2c3e50;
+}
+
+.道具冷却时间 {
+	font-size:10px;
+	color:#e74c3c;
+	margin-top:3px;
+}
+
 #instructions_head {
 	text-align:center;
 	font-size:1.5em;

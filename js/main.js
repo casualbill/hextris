@@ -182,6 +182,14 @@ function init(b) {
 	MainHex.texts = []; //clear texts
 	MainHex.delay = 15;
 	hideText();
+	
+	// 重置道具冷却时间
+	if (typeof itemSystem !== 'undefined') {
+		for (var itemName in itemSystem.items) {
+			itemSystem.items[itemName].lastUsed = 0;
+		}
+		updateItemUI();
+	}
 }
 
 function addNewBlock(blocklane, color, iter, distFromHex, settled) { //last two are optional parameters
