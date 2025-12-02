@@ -11,7 +11,8 @@ function render() {
 			op += 0.01;
 		}
 		ctx.globalAlpha = op;
-		drawPolygon(trueCanvas.width / 2 , trueCanvas.height / 2 , 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false,6);
+		var startAngle = 90 - 180/MainHex.sides;
+		drawPolygon(trueCanvas.width / 2 , trueCanvas.height / 2 , MainHex.sides, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, startAngle, grey, false, MainHex.sides);
 		drawTimer();
 		ctx.globalAlpha = 1;
 	}

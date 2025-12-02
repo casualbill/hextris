@@ -99,6 +99,27 @@ button:focus {
 
 }
 
+#polygonSelector {
+	position:fixed;
+	top:20px;
+	right:20px;
+	z-index:3003;
+	color:#ecf0f1;
+	font-family:Exo;
+	font-size:16px;
+}
+
+#polygonSelector select {
+	background-color:rgba(44,62,80,0.8);
+	color:#ecf0f1;
+	border:1px solid #ecf0f1;
+	border-radius:4px;
+	padding:5px 10px;
+	font-family:Exo;
+	font-size:16px;
+	cursor:pointer;
+}
+
 
 #pauseBtn {
 	display:none;

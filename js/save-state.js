@@ -27,7 +27,15 @@ function exportSaveState() {
 		state.blocks.map(descaleBlock);
 	}
 
-	localStorage.setItem('highscores', JSON.stringify(highscores));
+	// 保存每种边数的独立最高分
+	var allHighscores = JSON.parse(localStorage.getItem('allHighscores')) || {};
+	if (!allHighscores[MainHex.sides] || score > allHighscores[MainHex.sides]) {
+		allHighscores[MainHex.sides] = score;
+	}
+	localStorage.setItem('allHighscores', JSON.stringify(allHighscores));
+	
+	// 保存上次使用的多边形边数
+	localStorage.setItem('lastPolygonSides', MainHex.sides.toString());
 
 	return JSONfn.stringify(state);
 }

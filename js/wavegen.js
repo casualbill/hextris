@@ -117,9 +117,10 @@ function waveGen(hex) {
 				colorList = [c, colors[randInt(0, colors.length)], c];
 			}
 
-			var d = randInt(0, 6);
-			for (var i = 0; i < 3; i++) {
-				addNewBlock((d + i) % 6, colorList[i], 1.5 + (this.difficulty / 15) * 3);
+			var halfSides = Math.floor(MainHex.sides / 2);
+			var d = randInt(0, MainHex.sides);
+			for (var i = 0; i < halfSides; i++) {
+				addNewBlock((d + i) % MainHex.sides, colorList[i % numColors], 1.5 + (this.difficulty / 15) * 3);
 			}
 
 			this.ct += 8;
@@ -131,9 +132,10 @@ function waveGen(hex) {
 	this.crosswiseGeneration = function() {
 		if (this.dt - this.lastGen > this.nextGen) {
 			var ri = randInt(0, colors.length);
-			var i = randInt(0, colors.length);
+			var i = randInt(0, MainHex.sides);
+			var oppositeSide = (i + Math.floor(MainHex.sides/2)) % MainHex.sides;
 			addNewBlock(i, colors[ri], 0.6 + (this.difficulty / 15) * 3);
-			addNewBlock((i + 3) % MainHex.sides, colors[ri], 0.6 + (this.difficulty / 15) * 3);
+			addNewBlock(oppositeSide, colors[ri], 0.6 + (this.difficulty / 15) * 3);
 			this.ct += 1.5;
 			this.lastGen = this.dt;
 			this.shouldChangePattern();

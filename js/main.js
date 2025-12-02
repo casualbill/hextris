@@ -97,18 +97,12 @@ function init(b) {
 
 		setTimeout(function() {
             if (gameState == 1) {
-			    $('#openSideBar').fadeOut(150, "linear");
+				$('#openSideBar').fadeOut(150, "linear");
             }
 			infobuttonfading = false;
 		}, 7000);
 		clearSaveState();
 		checkVisualElements(1);
-	}
-	if (highscores.length === 0 ){
-		$("#currentHighScore").text(0);
-	}
-	else {
-		$("#currentHighScore").text(highscores[0])
 	}
 	infobuttonfading = true;
 	$("#pauseBtn").attr('src',"./images/btn_pause.svg");
@@ -132,11 +126,21 @@ function init(b) {
 
 	settings.blockHeight = settings.baseBlockHeight * settings.scale;
 	settings.hexWidth = settings.baseHexWidth * settings.scale;
-	MainHex = saveState.hex || new Hex(settings.hexWidth);
+	MainHex = saveState.hex || new Hex(settings.hexWidth, window.lastPolygonSides);
 	if (saveState.hex) {
 		MainHex.playThrough += 1;
 	}
 	MainHex.sideLength = settings.hexWidth;
+	
+	// 根据边数设置颜色数量
+	setupColorsBySides(MainHex.sides);
+	// 根据边数设置移动速度
+	setupSpeedBySides(MainHex.sides);
+	
+	// 获取当前边数的最高分
+	var allHighscores = JSON.parse(localStorage.getItem('allHighscores')) || {};
+	var currentHighScore = allHighscores[MainHex.sides] || 0;
+	$("#currentHighScore").text(currentHighScore);
 
 	var i;
 	var block;
