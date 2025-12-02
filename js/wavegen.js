@@ -1,4 +1,6 @@
-function blockDestroyed() {
+function blockDestroyed(playerHex) {
+	var waveone = twoPlayerMode ? (playerHex === Player1Hex ? waveone1 : waveone2) : window.waveone;
+	
 	if (waveone.nextGen > 1350) {
 		waveone.nextGen -= 30 * settings.creationSpeedModifier;
 	} else if (waveone.nextGen > 600) {
@@ -40,7 +42,7 @@ function waveGen(hex) {
 			this.ct++;
 			this.lastGen = this.dt;
 			var fv = randInt(0, MainHex.sides);
-			addNewBlock(fv, colors[randInt(0, colors.length)], 1.6 + (this.difficulty / 15) * 3);
+			addNewBlock(fv, colors[randInt(0, colors.length)], 1.6 + (this.difficulty / 15) * 3, undefined, undefined, this.hex);
 			var lim = 5;
 			if (this.ct > lim) {
 				var nextPattern = randInt(0, 3 + 21);
@@ -99,7 +101,7 @@ function waveGen(hex) {
 			}
 
 			for (var i = 0; i < MainHex.sides; i++) {
-				addNewBlock(i, colorList[i % numColors], 1.5 + (this.difficulty / 15) * 3);
+				addNewBlock(i, colorList[i % numColors], 1.5 + (this.difficulty / 15) * 3, undefined, undefined, this.hex);
 			}
 
 			this.ct += 15;
@@ -119,7 +121,7 @@ function waveGen(hex) {
 
 			var d = randInt(0, 6);
 			for (var i = 0; i < 3; i++) {
-				addNewBlock((d + i) % 6, colorList[i], 1.5 + (this.difficulty / 15) * 3);
+				addNewBlock((d + i) % 6, colorList[i], 1.5 + (this.difficulty / 15) * 3, undefined, undefined, this.hex);
 			}
 
 			this.ct += 8;
@@ -131,9 +133,10 @@ function waveGen(hex) {
 	this.crosswiseGeneration = function() {
 		if (this.dt - this.lastGen > this.nextGen) {
 			var ri = randInt(0, colors.length);
-			var i = randInt(0, colors.length);
-			addNewBlock(i, colors[ri], 0.6 + (this.difficulty / 15) * 3);
-			addNewBlock((i + 3) % MainHex.sides, colors[ri], 0.6 + (this.difficulty / 15) * 3);
+			for (var i = 0; i < 3; i++) {
+				addNewBlock(i, colors[ri], 0.6 + (this.difficulty / 15) * 3, undefined, undefined, this.hex);
+				addNewBlock((i + 3) % MainHex.sides, colors[ri], 0.6 + (this.difficulty / 15) * 3, undefined, undefined, this.hex);
+			}
 			this.ct += 1.5;
 			this.lastGen = this.dt;
 			this.shouldChangePattern();

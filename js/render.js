@@ -6,51 +6,121 @@ function render() {
 	
 	ctx.clearRect(0, 0, trueCanvas.width, trueCanvas.height);
 	clearGameBoard();
-	if (gameState === 1 || gameState === 2 || gameState === -1 || gameState === 0) {
+	
+	if (twoPlayerMode && (gameState === 1 || gameState === 2 || gameState === -1 || gameState === 0)) {
 		if (op < 1) {
 			op += 0.01;
 		}
 		ctx.globalAlpha = op;
-		drawPolygon(trueCanvas.width / 2 , trueCanvas.height / 2 , 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false,6);
-		drawTimer();
+		
+		// Draw Player 1 background
+		ctx.fillStyle = "rgba(52, 152, 219, 0.1)";
+		drawPolygon(Player1Hex.x, Player1Hex.y, 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false,6);
+		
+		// Draw Player 2 background
+		ctx.fillStyle = "rgba(231, 76, 60, 0.1)";
+		drawPolygon(Player2Hex.x, Player2Hex.y, 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false,6);
+		
 		ctx.globalAlpha = 1;
-	}
-
-	var i;
-	for (i = 0; i < MainHex.blocks.length; i++) {
-		for (var j = 0; j < MainHex.blocks[i].length; j++) {
-			var block = MainHex.blocks[i][j];
-			block.draw(true, j);
+		
+		// Render Player 1 blocks
+		var i;
+		for (i = 0; i < Player1Hex.blocks.length; i++) {
+			for (var j = 0; j < Player1Hex.blocks[i].length; j++) {
+				var block = Player1Hex.blocks[i][j];
+				block.draw(true, j);
+			}
 		}
-	}
-	for (i = 0; i < blocks.length; i++) {
-		blocks[i].draw();
-	}
-
-	MainHex.draw();
-	if (gameState ==1 || gameState ==-1 || gameState === 0) {
-		drawScoreboard();
-	}
-
-	for (i = 0; i < MainHex.texts.length; i++) {
-		var alive = MainHex.texts[i].draw();
-		if(!alive){
-			MainHex.texts.splice(i,1);
-			i--;
+		for (i = 0; i < blocks1.length; i++) {
+			blocks1[i].draw();
 		}
-	}
-
-	if ((MainHex.ct < 650 && (gameState !== 0) && !MainHex.playThrough)) {
-		if (MainHex.ct > (650 - 50)) {
-			ctx.globalAlpha = (50 - (MainHex.ct - (650 - 50)))/50;
+		
+		// Render Player 2 blocks
+		for (i = 0; i < Player2Hex.blocks.length; i++) {
+			for (var j = 0; j < Player2Hex.blocks[i].length; j++) {
+				var block = Player2Hex.blocks[i][j];
+				block.draw(true, j);
+			}
+		}
+		for (i = 0; i < blocks2.length; i++) {
+			blocks2[i].draw();
+		}
+		
+		// Draw both hexagons
+		Player1Hex.draw();
+		Player2Hex.draw();
+		
+		// Draw both scoreboards
+		if (gameState ==1 || gameState ==-1 || gameState === 0) {
+			drawScoreboard(true); // Player 1 scoreboard
+			drawScoreboard(false); // Player 2 scoreboard
+		}
+		
+		// Render Player 1 texts
+		for (i = 0; i < Player1Hex.texts.length; i++) {
+			var alive = Player1Hex.texts[i].draw();
+			if(!alive){
+				Player1Hex.texts.splice(i,1);
+				i--;
+			}
+		}
+		
+		// Render Player 2 texts
+		for (i = 0; i < Player2Hex.texts.length; i++) {
+			var alive = Player2Hex.texts[i].draw();
+			if(!alive){
+				Player2Hex.texts.splice(i,1);
+				i--;
+			}
+		}
+	} else {
+		// Original single player rendering
+		if (gameState === 1 || gameState === 2 || gameState === -1 || gameState === 0) {
+			if (op < 1) {
+				op += 0.01;
+			}
+			ctx.globalAlpha = op;
+			drawPolygon(trueCanvas.width / 2 , trueCanvas.height / 2 , 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false,6);
+			drawTimer();
+			ctx.globalAlpha = 1;
 		}
 
-		if (MainHex.ct < 50) {
-			ctx.globalAlpha = (MainHex.ct)/50;
+		var i;
+		for (i = 0; i < MainHex.blocks.length; i++) {
+			for (var j = 0; j < MainHex.blocks[i].length; j++) {
+				var block = MainHex.blocks[i][j];
+				block.draw(true, j);
+			}
+		}
+		for (i = 0; i < blocks.length; i++) {
+			blocks[i].draw();
 		}
 
-		renderBeginningText();
-		ctx.globalAlpha = 1;
+		MainHex.draw();
+		if (gameState ==1 || gameState ==-1 || gameState === 0) {
+			drawScoreboard();
+		}
+
+		for (i = 0; i < MainHex.texts.length; i++) {
+			var alive = MainHex.texts[i].draw();
+			if(!alive){
+				MainHex.texts.splice(i,1);
+				i--;
+			}
+		}
+
+		if ((MainHex.ct < 650 && (gameState !== 0) && !MainHex.playThrough)) {
+			if (MainHex.ct > (650 - 50)) {
+				ctx.globalAlpha = (50 - (MainHex.ct - (650 - 50)))/50;
+			}
+
+			if (MainHex.ct < 50) {
+				ctx.globalAlpha = (MainHex.ct)/50;
+			}
+
+			renderBeginningText();
+			ctx.globalAlpha = 1;
+		}
 	}
 
 	if (gameState == -1) {

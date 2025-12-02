@@ -17,14 +17,16 @@ function renderText(x, y, fontSize, color, text, font) {
 	ctx.restore();
 }
 
-function drawScoreboard() {
+function drawScoreboard(isPlayer1) {
 	if (scoreOpacity < 1) {
 		scoreOpacity += 0.01;
 		textOpacity += 0.01;
 	}
 	ctx.globalAlpha = textOpacity;
 	var scoreSize = 50;
-	var scoreString = String(score);
+	var currentScore = isPlayer1 !== undefined ? (isPlayer1 ? score : score2) : score;
+	var scoreString = String(currentScore);
+	
 	if (scoreString.length == 6) {
 		scoreSize = 43;
 	} else if (scoreString.length == 7) {
@@ -34,11 +36,12 @@ function drawScoreboard() {
 	} else if (scoreString.length == 9) {
 		scoreSize = 27;
 	}
-	//if (rush ==1){
-		var color = "rgb(236, 240, 241)";
-	//}
+	
+	var color = isPlayer1 !== undefined ? (isPlayer1 ? "#3498db" : "#e74c3c") : "rgb(236, 240, 241)";
     var fontSize = settings.platform == 'mobile' ? 35 : 30;
     var h = trueCanvas.height / 2 + gdy + 100 * settings.scale;
+    var scoreX = isPlayer1 !== undefined ? (isPlayer1 ? trueCanvas.width / 4 : trueCanvas.width * 3 / 4) : trueCanvas.width / 2;
+    
 	if (gameState === 0) {
 		renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2 + gdy, 60, "rgb(236, 240, 241)", String.fromCharCode("0xf04b"), 'px FontAwesome');
 		renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2.1 + gdy - 155 * settings.scale, 150, "#2c3e50", "Hextris");
@@ -49,10 +52,10 @@ function drawScoreboard() {
 		renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2 + gdy - 155 * settings.scale, 150, "#2c3e50", "Hextris");
 		renderText(trueCanvas.width / 2 + gdx + 5 * settings.scale, h, fontSize, "rgb(44,62,80)", 'Play!');
 		ctx.globalAlpha = scoreOpacity;
-		renderText(trueCanvas.width / 2 + gdx, trueCanvas.height / 2 + gdy, scoreSize, color, score);
+		renderText(scoreX + gdx, trueCanvas.height / 2 + gdy, scoreSize, color, currentScore);
 	} else {
 		ctx.globalAlpha = scoreOpacity;
-		renderText(trueCanvas.width / 2 + gdx, trueCanvas.height / 2 + gdy, scoreSize, color, score);
+		renderText(scoreX + gdx, trueCanvas.height / 2 + gdy, scoreSize, color, currentScore);
 	}
 
 	ctx.globalAlpha = 1;
@@ -141,18 +144,29 @@ function hideText() {
 	})
 }
 
-function gameOverDisplay() {
+function gameOverDisplay(winner, winnerScore, loserScore) {
 	settings.ending_block=false;
 	Cookies.set("visited",true);
 	var c = document.getElementById("canvas");
 	c.className = "blur";
-	updateHighScores();
-	if (highscores.length === 0 ){
-		$("#currentHighScore").text(0);
+	
+	if (twoPlayerMode && winner) {
+		// Update high scores for two player mode
+		$("#cScore").text(winner + " Wins! " + winnerScore + " - " + loserScore);
+		$("#1place").text("Player 1: " + score);
+		$("#2place").text("Player 2: " + score2);
+		$("#3place").hide();
+	} else {
+		// Original single player high scores
+		updateHighScores();
+		if (highscores.length === 0 ){
+			$("#currentHighScore").text(0);
+		} else {
+			$("#currentHighScore").text(highscores[0])
+		}
+		$("#3place").show();
 	}
-	else {
-		$("#currentHighScore").text(highscores[0])
-	}
+	
 	$("#gameoverscreen").fadeIn();
 	$("#buttonCont").fadeIn();
 	$("#container").fadeIn();
