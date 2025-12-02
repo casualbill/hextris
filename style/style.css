@@ -198,6 +198,115 @@ button:focus {
 
 #instructions_head {
 	text-align:center;
+}
+
+/* 多人对战界面样式 */
+.lobbyContainer, .roomContainer, .resultContainer {
+	position:absolute;
+	left:50%;
+	top:50%;
+	transform:translate(-50%, -50%);
+	background:rgba(236,240,241,0.95);
+	padding:30px;
+	border-radius:10px;
+	font-family:Exo;
+	text-align:center;
+	max-width:600px;
+	width:90%;
+}
+
+.lobbyContainer h1, .roomContainer h1, .resultContainer h1 {
+	margin-bottom:20px;
+	color:#232323;
+}
+
+.lobbyButtons {
+	display:flex;
+	flex-direction:column;
+	gap:15px;
+	margin-bottom:30px;
+}
+
+.lobbyButtons button, .roomContainer button, .resultContainer button {
+	padding:10px 20px;
+	font-size:18px;
+	background:#3498db;
+	color:white;
+	border:none;
+	border-radius:5px;
+	cursor:pointer;
+	transition:background 0.3s;
+}
+
+.lobbyButtons button:hover, .roomContainer button:hover, .resultContainer button:hover {
+	background:#2980b9;
+}
+
+.joinRoom {
+	display:flex;
+	gap:10px;
+	align-items:center;
+}
+
+.joinRoom input {
+	flex:1;
+	padding:10px;
+	font-size:16px;
+	border:1px solid #bdc3c7;
+	border-radius:5px;
+	text-align:center;
+}
+
+.roomList {
+	max-height:300px;
+	overflow-y:auto;
+	margin-bottom:20px;
+}
+
+.roomItem {
+	background:white;
+	padding:15px;
+	margin-bottom:10px;
+	border-radius:5px;
+	box-shadow:0 2px 5px rgba(0,0,0,0.1);
+	display:flex;
+	justify-content:space-between;
+	align-items:center;
+}
+
+.playerList {
+	max-height:200px;
+	overflow-y:auto;
+	margin-bottom:20px;
+}
+
+.playerItem {
+	background:white;
+	padding:10px;
+	margin-bottom:8px;
+	border-radius:5px;
+	box-shadow:0 2px 3px rgba(0,0,0,0.1);
+	text-align:left;
+}
+
+.resultContainer {
+	max-width:500px;
+}
+
+.resultItem {
+	background:white;
+	padding:15px;
+	margin-bottom:10px;
+	border-radius:5px;
+	box-shadow:0 2px 5px rgba(0,0,0,0.1);
+	display:flex;
+	justify-content:space-between;
+	align-items:center;
+}
+
+#multiplayerBtn {
+	z-index:99999998;
+}
 	font-size:1.5em;
 	padding-bottom:4px;
 }
