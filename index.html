@@ -54,6 +54,7 @@
 		<script type='text/javascript' src="js/input.js"></script>
 		<script type='text/javascript' src="js/main.js"></script>
 		<script type='text/javascript' src="js/initialization.js"></script>
+		<script type='text/javascript' src="js/recorder.js"></script>
 		<script type='text/javascript' async src="https://hextris.io/scripts/a.js"></script>
 		<script src="vendor/sweet-alert.min.js"></script>
 		<link rel="stylesheet" href="style/rrssb.css"/>
@@ -69,6 +70,10 @@
 		<div class="faded overlay"></div>
 		<img id="pauseBtn" src="./images/btn_pause.svg"/>
 		<img id='restartBtn' src="./images/btn_restart.svg"/>
+		<div id='recordBtn' class='record-button'>录制</div>
+		<div id='recordingIndicator' class='recording-indicator'>
+			<span class='recording-dot'></span> 录制中
+		</div>
 		<div id='HIGHSCORE'>HIGH SCORE</div>
 		<script> (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){ (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o), m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m) })(window,document,'script','//www.google-analytics.com/analytics.js','ga'); ga('create', 'UA-51272720-2', 'auto'); ga('send', 'pageview');
 		</script>
@@ -148,5 +153,8 @@
 					}})()
 			</script>
 		<script type="text/javascript" src='vendor/rrssb.min.js'></script>
+		<!-- RecordRTC library for video recording -->
+		<script type="text/javascript" src="https://cdn.webrtc-experiment.com/RecordRTC.js"></script>
+		<script type="text/javascript" src="js/recorder.js"></script>
 	</body>
 </html>
