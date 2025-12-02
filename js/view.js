@@ -142,6 +142,11 @@ function hideText() {
 }
 
 function gameOverDisplay() {
+	// 游戏结束时，如果正在录制，则停止录制
+	if (isRecording) {
+		stopRecording();
+	}
+	
 	settings.ending_block=false;
 	Cookies.set("visited",true);
 	var c = document.getElementById("canvas");
