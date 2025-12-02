@@ -1,4 +1,8 @@
 function scaleCanvas() {
+	// 调整3D渲染器大小
+	if (typeof onWindowResize3D === 'function') {
+		onWindowResize3D();
+	}
 	canvas.width = $(window).width();
 	canvas.height = $(window).height();
 
@@ -137,6 +141,9 @@ function init(b) {
 		MainHex.playThrough += 1;
 	}
 	MainHex.sideLength = settings.hexWidth;
+	
+	// 初始化3D渲染
+	switchTo3DRender();
 
 	var i;
 	var block;
