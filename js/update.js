@@ -7,6 +7,8 @@ function update(dt) {
 		if (MainHex.ct - waveone.prevTimeScored > 1000) {
 			waveone.prevTimeScored = MainHex.ct;
 		}
+		// 更新道具状态
+		updatePowerUps();
 	}
 	var lowestDeletedIndex = 99;
 	var i;

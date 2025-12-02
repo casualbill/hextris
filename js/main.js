@@ -182,9 +182,10 @@ function init(b) {
 	MainHex.texts = []; //clear texts
 	MainHex.delay = 15;
 	hideText();
+	resetPowerUps(); // 重置道具状态
 }
 
-function addNewBlock(blocklane, color, iter, distFromHex, settled) { //last two are optional parameters
+function addNewBlock(blocklane, color, iter, distFromHex, settled, powerUpType) { //last three are optional parameters
 	iter *= settings.speedModifier;
 	if (!history[MainHex.ct]) {
 		history[MainHex.ct] = {};
@@ -193,7 +194,8 @@ function addNewBlock(blocklane, color, iter, distFromHex, settled) { //last two 
 	history[MainHex.ct].block = {
 		blocklane: blocklane,
 		color: color,
-		iter: iter
+		iter: iter,
+		powerUpType: powerUpType
 	};
 
 	if (distFromHex) {
@@ -202,7 +204,7 @@ function addNewBlock(blocklane, color, iter, distFromHex, settled) { //last two 
 	if (settled) {
 		blockHist[MainHex.ct].settled = settled;
 	}
-	blocks.push(new Block(blocklane, color, iter, distFromHex, settled));
+	blocks.push(new Block(blocklane, color, iter, distFromHex, settled, powerUpType));
 }
 
 function exportHistory() {

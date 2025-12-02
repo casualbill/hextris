@@ -50,6 +50,19 @@ function Hex(sideLength) {
 		this.shakes.push({lane:block.fallingLane, magnitude:4.5 * (window.devicePixelRatio ? window.devicePixelRatio : 1) * (settings.scale)});
 		lane += this.position;
 		lane = (lane + this.sides) % this.sides;
+		
+		// 检查是否为道具方块
+		if (block.isPowerUp) {
+			// 如果是道具方块，添加到玩家道具栏（如果尚未持有）
+			if (!powerUpState[block.powerUpType].owned && powerUpState[block.powerUpType].cooldown <= 0) {
+				powerUpState[block.powerUpType].owned = true;
+				updatePowerUpButtons();
+			}
+			// 道具方块不添加到主六边形，直接移除
+			block.removed = 1;
+			return;
+		}
+		
 		block.distFromHex = MainHex.sideLength / 2 * Math.sqrt(3) + block.height * this.blocks[lane].length;
 		this.blocks[lane].push(block);
 		block.attachedLane = lane;
