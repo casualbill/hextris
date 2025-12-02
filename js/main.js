@@ -1,3 +1,138 @@
+// 录制相关变量
+var isRecording = false;
+var mediaRecorder = null;
+var recordedChunks = [];
+var videoFormat = '';
+var maxFileSize = 100 * 1024 * 1024; // 100MB
+
+// 初始化录制功能
+function initRecording() {
+	var recordBtn = document.getElementById('recordBtn');
+	recordBtn.addEventListener('click', toggleRecording);
+}
+
+// 切换录制状态
+function toggleRecording() {
+	if (!isRecording) {
+		// 开始录制
+		selectVideoFormat();
+	} else {
+		// 停止录制
+		stopRecording();
+	}
+}
+
+// 选择视频格式
+function selectVideoFormat() {
+	var format = prompt('请选择视频格式：\n1 - MP4\n2 - WebM', '1');
+	
+	switch (format) {
+		case '1':
+			videoFormat = 'video/mp4';
+			startRecording();
+			break;
+		case '2':
+			videoFormat = 'video/webm';
+			startRecording();
+			break;
+		default:
+			alert('请选择有效的视频格式');
+			break;
+	}
+}
+
+// 开始录制
+function startRecording() {
+	var canvas = document.getElementById('canvas');
+	var stream = canvas.captureStream(60); // 60 FPS
+	
+	mediaRecorder = new MediaRecorder(stream, {
+		mimeType: videoFormat,
+		videoBitsPerSecond: 2500000 // 高质量
+	});
+	
+	recordedChunks = [];
+	
+	mediaRecorder.ondataavailable = function(e) {
+		if (e.data.size > 0) {
+			recordedChunks.push(e.data);
+			
+			// 检查文件大小
+			var totalSize = recordedChunks.reduce(function(total, chunk) {
+				return total + chunk.size;
+			}, 0);
+			
+			if (totalSize >= maxFileSize) {
+				mediaRecorder.stop();
+				alert('录制文件过大，已自动停止');
+			}
+		}
+	};
+	
+	mediaRecorder.onstop = function() {
+		downloadRecording();
+	};
+	
+	mediaRecorder.start();
+	isRecording = true;
+	
+	// 更新UI
+	updateRecordingUI();
+}
+
+// 停止录制
+function stopRecording() {
+	if (mediaRecorder && isRecording) {
+		mediaRecorder.stop();
+		isRecording = false;
+		
+		// 更新UI
+		updateRecordingUI();
+	}
+}
+
+// 更新录制UI
+function updateRecordingUI() {
+	var recordBtn = document.getElementById('recordBtn');
+	var recordingIndicator = document.getElementById('recordingIndicator');
+	
+	if (isRecording) {
+		recordBtn.innerHTML = '停止录制';
+		recordBtn.style.backgroundColor = '#e74c3c';
+		recordingIndicator.style.display = 'block';
+	} else {
+		recordBtn.innerHTML = '录制';
+		recordBtn.style.backgroundColor = '#3498db';
+		recordingIndicator.style.display = 'none';
+	}
+}
+
+// 下载录制
+function downloadRecording() {
+	var blob = new Blob(recordedChunks, {
+		type: videoFormat
+	});
+	
+	var url = URL.createObjectURL(blob);
+	var a = document.createElement('a');
+	var fileName = 'hextris_' + new Date().getTime() + '.' + videoFormat.split('/')[1];
+	
+	// 显示文件信息
+	var fileSize = (blob.size / 1024 / 1024).toFixed(2);
+	var confirmDownload = confirm('录制完成！\n文件名称：' + fileName + '\n文件大小：' + fileSize + ' MB\n是否下载？');
+	
+	if (confirmDownload) {
+		a.style.display = 'none';
+		a.href = url;
+		a.download = fileName;
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+	}
+	
+	URL.revokeObjectURL(url);
+}
+
 function scaleCanvas() {
 	canvas.width = $(window).width();
 	canvas.height = $(window).height();
@@ -182,6 +317,9 @@ function init(b) {
 	MainHex.texts = []; //clear texts
 	MainHex.delay = 15;
 	hideText();
+	
+	// 初始化录制功能
+	initRecording();
 }
 
 function addNewBlock(blocklane, color, iter, distFromHex, settled) { //last two are optional parameters
