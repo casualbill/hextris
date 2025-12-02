@@ -6,6 +6,12 @@ function initialize(a) {
 	window.lastTime = Date.now();
 	window.iframHasLoaded = false;
 	window.colors = ["#e74c3c", "#f1c40f", "#3498db", "#2ecc71"];
+	
+	// 初始化道具系统
+	window.powerups = null;
+	$.getScript("js/powerups.js", function() {
+		powerups.init();
+	});
 	window.hexColorsToTintedColors = {
 		"#e74c3c": "rgb(241,163,155)",
 		"#f1c40f": "rgb(246,223,133)",

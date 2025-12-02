@@ -1,4 +1,4 @@
-function Block(fallingLane, color, iter, distFromHex, settled) {
+function Block(fallingLane, color, iter, distFromHex, settled, isPowerup, powerupType) {
 	// whether or not a block is rested on the center hex or another block
 	this.settled = (settled === undefined) ? 0 : 1;
 	this.height = settings.blockHeight;
@@ -12,6 +12,12 @@ function Block(fallingLane, color, iter, distFromHex, settled) {
 	this.angularVelocity = 0;
 	this.targetAngle = this.angle;
 	this.color = color;
+	
+	// 道具方块属性
+	this.isPowerup = isPowerup || false;
+	this.powerupType = powerupType || null;
+	this.glowOpacity = 0.5;
+	this.glowDirection = 1;
 	//blocks that are slated to be deleted after a valid score has happened
 	this.deleted = 0;
 	//blocks slated to be removed from falling and added to the hex
@@ -98,6 +104,14 @@ function Block(fallingLane, color, iter, distFromHex, settled) {
 		//this.widthWide = this.width + this.height + 3;
 		var p1;
 		var p2;
+		
+		// 更新道具方块的闪烁效果
+		if (this.isPowerup) {
+			this.glowOpacity += 0.02 * this.glowDirection * MainHex.dt;
+			if (this.glowOpacity > 0.8 || this.glowOpacity < 0.2) {
+				this.glowDirection *= -1;
+			}
+		}
 		var p3;
 		var p4;
 		if (this.initializing) {
@@ -171,6 +185,28 @@ function Block(fallingLane, color, iter, distFromHex, settled) {
 			}
 		}
 
+		// 道具方块的特殊渲染效果
+		if (this.isPowerup && powerups) {
+			// 添加闪烁光效
+			ctx.fillStyle = powerups.types[this.powerupType].glowColor;
+			ctx.globalAlpha = this.glowOpacity;
+			ctx.beginPath();
+			ctx.moveTo(baseX + p1.x * 1.1, baseY + p1.y * 1.1);
+			ctx.lineTo(baseX + p2.x * 1.1, baseY + p2.y * 1.1);
+			ctx.lineTo(baseX + p3.x * 1.1, baseY + p3.y * 1.1);
+			ctx.lineTo(baseX + p4.x * 1.1, baseY + p4.y * 1.1);
+			ctx.closePath();
+			ctx.fill();
+			
+			// 添加道具图标
+			ctx.fillStyle = '#FFFFFF';
+			ctx.globalAlpha = 1;
+			ctx.font = 'bold ' + (this.height * 0.6) + 'px Arial';
+			ctx.textAlign = 'center';
+			ctx.textBaseline = 'middle';
+			ctx.fillText(powerups.types[this.powerupType].icon, baseX, baseY);
+		}
+		
 		ctx.globalAlpha = 1;
 	};
 }

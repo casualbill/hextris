@@ -184,7 +184,7 @@ function init(b) {
 	hideText();
 }
 
-function addNewBlock(blocklane, color, iter, distFromHex, settled) { //last two are optional parameters
+function addNewBlock(blocklane, color, iter, distFromHex, settled, isPowerup, powerupType) { //last two are optional parameters
 	iter *= settings.speedModifier;
 	if (!history[MainHex.ct]) {
 		history[MainHex.ct] = {};
@@ -202,7 +202,7 @@ function addNewBlock(blocklane, color, iter, distFromHex, settled) { //last two 
 	if (settled) {
 		blockHist[MainHex.ct].settled = settled;
 	}
-	blocks.push(new Block(blocklane, color, iter, distFromHex, settled));
+	blocks.push(new Block(blocklane, color, iter, distFromHex, settled, isPowerup, powerupType));
 }
 
 function exportHistory() {
@@ -343,6 +343,12 @@ function checkGameOver() {
 			}
 			writeHighScores();
 			gameOverDisplay();
+			
+			// 重置道具系统
+			if (powerups) {
+				powerups.reset();
+			}
+			
 			return true;
 		}
 	}

@@ -40,7 +40,21 @@ function waveGen(hex) {
 			this.ct++;
 			this.lastGen = this.dt;
 			var fv = randInt(0, MainHex.sides);
-			addNewBlock(fv, colors[randInt(0, colors.length)], 1.6 + (this.difficulty / 15) * 3);
+			
+			// 10%概率生成道具方块
+			var powerupChance = 0.1;
+			if (Math.random() < powerupChance && powerups) {
+				// 随机选择一种道具类型
+				var powerupTypes = ['colorClear', 'slowTime', 'areaClear'];
+				var randomType = powerupTypes[Math.floor(Math.random() * powerupTypes.length)];
+				var powerupColor = powerups.types[randomType].color;
+				
+				// 创建道具方块
+				addNewBlock(fv, powerupColor, 1.6 + (this.difficulty / 15) * 3, undefined, false, true, randomType);
+			} else {
+				// 生成普通方块
+				addNewBlock(fv, colors[randInt(0, colors.length)], 1.6 + (this.difficulty / 15) * 3);
+			}
 			var lim = 5;
 			if (this.ct > lim) {
 				var nextPattern = randInt(0, 3 + 21);
