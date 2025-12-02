@@ -52,6 +52,7 @@
 		<script type='text/javascript' src='js/update.js'></script>
 		<script type='text/javascript' src='js/render.js'></script>
 		<script type='text/javascript' src="js/input.js"></script>
+		<script type='text/javascript' src="js/power-ups.js"></script>
 		<script type='text/javascript' src="js/main.js"></script>
 		<script type='text/javascript' src="js/initialization.js"></script>
 		<script type='text/javascript' async src="https://hextris.io/scripts/a.js"></script>
@@ -86,6 +87,11 @@
 			</div>
 			<div id='bottomContainer'>
 				<img id='restart' src='./images/btn_restart.svg' height='57px'>
+				<div id='powerUpButtons' style='display: flex; justify-content: center; align-items: center; gap: 10px; margin: 10px 0;'>
+					<div id='powerup-color_clear' class='powerup-btn unavailable' style='width: 60px; height: 60px; border-radius: 10px; background-color: #FFD700; cursor: pointer; position: relative; border: 2px solid #333;'></div>
+					<div id='powerup-slow_time' class='powerup-btn unavailable' style='width: 60px; height: 60px; border-radius: 10px; background-color: #00BFFF; cursor: pointer; position: relative; border: 2px solid #333;'></div>
+					<div id='powerup-area_clear' class='powerup-btn unavailable' style='width: 60px; height: 60px; border-radius: 10px; background-color: #FF4444; cursor: pointer; position: relative; border: 2px solid #333;'></div>
+				</div>
 				<div id='socialShare'>
 					<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 					<svg width="224.6377px" height="57px"  viewBox="0 0 255 65" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">

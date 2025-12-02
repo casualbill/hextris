@@ -26,7 +26,8 @@ function waveGen(hex) {
 	this.dt = 0;
 	this.update = function() {
 		this.currentFunction();
-		this.dt = (settings.platform == 'mobile' ? 14 : 16.6667) * MainHex.ct;
+		// 使用实际的dt值而不是乘以MainHex.ct来避免无限增长
+		this.dt += (settings.platform == 'mobile' ? 14 : 16.6667);
 		this.computeDifficulty();
 		if ((this.dt - this.lastGen) * settings.creationSpeedModifier > this.nextGen) {
 			if (this.nextGen > 600) {
@@ -40,7 +41,19 @@ function waveGen(hex) {
 			this.ct++;
 			this.lastGen = this.dt;
 			var fv = randInt(0, MainHex.sides);
-			addNewBlock(fv, colors[randInt(0, colors.length)], 1.6 + (this.difficulty / 15) * 3);
+			
+			// 10%概率生成道具方块
+			let powerUpType = null;
+			if (Math.random() < 0.1) {
+				powerUpType = getRandomPowerUpType();
+			}
+			
+			if (powerUpType) {
+				addNewBlock(fv, PowerUpConfig[powerUpType].color, 1.6 + (this.difficulty / 15) * 3, null, null, powerUpType);
+			} else {
+				addNewBlock(fv, colors[randInt(0, colors.length)], 1.6 + (this.difficulty / 15) * 3);
+			}
+			
 			var lim = 5;
 			if (this.ct > lim) {
 				var nextPattern = randInt(0, 3 + 21);
