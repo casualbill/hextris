@@ -198,6 +198,105 @@ button:focus {
 
 #instructions_head {
 	text-align:center;
+}
+
+#polygonSelectionScreen {
+	position:fixed;
+	width:100%;
+	height:100%;
+	z-index:9999;
+	background-color:rgba(236,240,241,1);
+	display:none;
+	font-family:Exo;
+}
+
+#polygonSelectionTitle {
+	position:absolute;
+	left:50%;
+	top:15%;
+	transform:translate(-50%, -50%);
+	font-size:48px;
+	color:#2c3e50;
+}
+
+#polygonSliderContainer {
+	position:absolute;
+	left:50%;
+	top:35%;
+	transform:translate(-50%, -50%);
+	width:80%;
+	max-width:500px;
+}
+
+#polygonSlider {
+	width:100%;
+	height:10px;
+	border-radius:5px;
+	background:#bdc3c7;
+	outline:none;
+	-webkit-appearance:none;
+}
+
+#polygonSlider::-webkit-slider-thumb {
+	-webkit-appearance:none;
+	appearance:none;
+	width:30px;
+	height:30px;
+	border-radius:50%;
+	background:#3498db;
+	cursor:pointer;
+}
+
+#polygonSlider::-moz-range-thumb {
+	width:30px;
+	height:30px;
+	border-radius:50%;
+	background:#3498db;
+	cursor:pointer;
+	border:none;
+}
+
+#polygonSliderValue {
+	position:absolute;
+	left:50%;
+	top:120%;
+	transform:translate(-50%, -50%);
+	font-size:36px;
+	color:#2c3e50;
+}
+
+#polygonSelectionInfo {
+	position:absolute;
+	left:50%;
+	top:60%;
+	transform:translate(-50%, -50%);
+	width:80%;
+	max-width:500px;
+}
+
+#polygonSelectionInfo div {
+	margin-bottom:15px;
+	font-size:24px;
+	color:#2c3e50;
+}
+
+#startGameBtn {
+	position:absolute;
+	left:50%;
+	top:85%;
+	transform:translate(-50%, -50%);
+	padding:15px 30px;
+	font-size:24px;
+	color:#ecf0f1;
+	background-color:#3498db;
+	border-radius:5px;
+	cursor:pointer;
+	transition:background-color 0.3s ease;
+}
+
+#startGameBtn:hover {
+	background-color:#2980b9;
+}
 	font-size:1.5em;
 	padding-bottom:4px;
 }

@@ -2,32 +2,39 @@ function exportSaveState() {
 	var state = {};
 
 	if(gameState == 1 || gameState == -1 || (gameState === 0 && localStorage.getItem('saveState') !== undefined)) {
-		state = {
-			hex: $.extend(true, {}, MainHex),
-			blocks: $.extend(true, [], blocks),
-			score: score,
-			wavegen: waveone,
-			gdx: gdx,
-			gdy: gdy,
-			comboTime:settings.comboTime
-		};
+		// 检查 MainHex 是否存在
+		if (typeof MainHex !== 'undefined') {
+			state = {
+				hex: $.extend(true, {}, MainHex),
+				blocks: $.extend(true, [], blocks),
+				score: score,
+				wavegen: waveone,
+				gdx: gdx,
+				gdy: gdy,
+				comboTime:settings.comboTime
+			};
 
-		state.hex.blocks.map(function(a){
-			for (var i = 0; i < a.length; i++) {
-				a[i] = $.extend(true, {}, a[i]);
+			state.hex.blocks.map(function(a){
+				for (var i = 0; i < a.length; i++) {
+					a[i] = $.extend(true, {}, a[i]);
+				}
+
+				a.map(descaleBlock);
+			});
+
+			for (var i = 0; i < state.blocks.length; i++) {
+				state.blocks[i] = $.extend(true, {}, state.blocks[i]);
 			}
 
-			a.map(descaleBlock);
-		});
-
-		for (var i = 0; i < state.blocks.length; i++) {
-			state.blocks[i] = $.extend(true, {}, state.blocks[i]);
+			state.blocks.map(descaleBlock);
 		}
-
-		state.blocks.map(descaleBlock);
 	}
 
-	localStorage.setItem('highscores', JSON.stringify(highscores));
+	// 根据多边形边数保存最高分记录
+	if (typeof MainHex !== 'undefined') {
+		var sides = MainHex.sides;
+		localStorage.setItem('highscores_' + sides, JSON.stringify(highscores));
+	}
 
 	return JSONfn.stringify(state);
 }
@@ -38,20 +45,22 @@ function descaleBlock(b) {
 
 function writeHighScores() {
 		highscores.sort(
-		function(a,b){
-			a = parseInt(a, 10);
-			b = parseInt(b, 10);
-			if (a < b) {
-				return 1;
-			} else if (a > b) {
-				return -1;
-			}else {
-				return 0;
-			}
+	function(a,b){
+		a = parseInt(a, 10);
+		b = parseInt(b, 10);
+		if (a < b) {
+			return 1;
+		} else if (a > b) {
+			return -1;
+		}else {
+			return 0;
 		}
+	}
 	);
 	highscores = highscores.slice(0,3);
-	localStorage.setItem("highscores", JSON.stringify(highscores));
+	// 根据多边形边数保存最高分记录
+	var sides = MainHex.sides;
+	localStorage.setItem("highscores_" + sides, JSON.stringify(highscores));
 }
 
 function clearSaveState() {

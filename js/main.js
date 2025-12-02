@@ -88,6 +88,8 @@ function hideUIElements() {
 }
 
 function init(b) {
+	// 重置游戏结束标志
+	settings.ending_block = false;
 	if(settings.ending_block && b == 1){return;}
 	if (b) {
 		$("#pauseBtn").attr('src',"./images/btn_pause.svg");
@@ -97,13 +99,27 @@ function init(b) {
 
 		setTimeout(function() {
             if (gameState == 1) {
-			    $('#openSideBar').fadeOut(150, "linear");
+				$('#openSideBar').fadeOut(150, "linear");
             }
 			infobuttonfading = false;
 		}, 7000);
 		clearSaveState();
 		checkVisualElements(1);
 	}
+	// 获取多边形边数
+	var sides = parseInt(localStorage.getItem('lastPolygonSides')) || 6;
+	// 根据边数更新颜色数量
+	if (sides >= 5 && sides <= 8) {
+		colors = ["#e74c3c", "#f1c40f", "#3498db", "#2ecc71", "#9b59b6"];
+	} else if (sides >= 9 && sides <= 14) {
+		colors = ["#e74c3c", "#f1c40f", "#3498db", "#2ecc71", "#9b59b6", "#e67e22"];
+	} else if (sides >= 15 && sides <= 20) {
+		colors = ["#e74c3c", "#f1c40f", "#3498db", "#2ecc71", "#9b59b6", "#e67e22", "#34495e"];
+	}
+	// 根据边数更新速度
+	settings.speedModifier = 0.9 + (sides - 5) * 0.04;
+	// 根据边数更新旋转速度
+	window.angularVelocityConst = 4 - (sides - 5) * 0.1;
 	if (highscores.length === 0 ){
 		$("#currentHighScore").text(0);
 	}
@@ -132,7 +148,7 @@ function init(b) {
 
 	settings.blockHeight = settings.baseBlockHeight * settings.scale;
 	settings.hexWidth = settings.baseHexWidth * settings.scale;
-	MainHex = saveState.hex || new Hex(settings.hexWidth);
+	MainHex = saveState.hex || new Hex(settings.hexWidth, sides);
 	if (saveState.hex) {
 		MainHex.playThrough += 1;
 	}
