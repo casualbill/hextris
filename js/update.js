@@ -7,6 +7,33 @@ function update(dt) {
 		if (MainHex.ct - waveone.prevTimeScored > 1000) {
 			waveone.prevTimeScored = MainHex.ct;
 		}
+		
+		// Update powerup cooldowns
+		for (var type in powerupCooldowns) {
+			if (powerupCooldowns[type] > 0) {
+				powerupCooldowns[type] -= dt;
+				if (powerupCooldowns[type] < 0) {
+					powerupCooldowns[type] = 0;
+				}
+				// Update cooldown display
+				var btn = document.getElementById('powerup' + type.charAt(0).toUpperCase() + type.slice(1));
+				var cooldownEl = btn.querySelector('.powerupCooldown');
+				cooldownEl.textContent = Math.ceil(powerupCooldowns[type]);
+			}
+		}
+		updatePowerupUI();
+		
+		// Update slow time effect
+		if (slowTimeActive) {
+			slowTimeRemaining -= dt;
+			if (slowTimeRemaining <= 0) {
+				slowTimeActive = false;
+				// Restore block speed
+				blocks.forEach(function(block) {
+					block.iter *= 2;
+				});
+			}
+		}
 	}
 	var lowestDeletedIndex = 99;
 	var i;

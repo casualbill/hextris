@@ -6,12 +6,43 @@ function initialize(a) {
 	window.lastTime = Date.now();
 	window.iframHasLoaded = false;
 	window.colors = ["#e74c3c", "#f1c40f", "#3498db", "#2ecc71"];
-	window.hexColorsToTintedColors = {
-		"#e74c3c": "rgb(241,163,155)",
-		"#f1c40f": "rgb(246,223,133)",
-		"#3498db": "rgb(151,201,235)",
-		"#2ecc71": "rgb(150,227,183)"
+	window.powerupColors = {
+		colorClear: "#ffd700", // Gold
+		slowTime: "#2980b9",   // Dark Blue
+		areaClear: "#c0392b"    // Dark Red
 	};
+	window.powerupTypes = ["colorClear", "slowTime", "areaClear"];
+	window.playerPowerups = {
+		colorClear: 0,
+		slowTime: 0,
+		areaClear: 0
+	};
+	window.powerupCooldowns = {
+		colorClear: 0,
+		slowTime: 0,
+		areaClear: 0
+	};
+	window.powerupCooldownTimes = {
+		colorClear: 30,
+		slowTime: 20,
+		areaClear: 40
+	};
+	window.slowTimeActive = false;
+	window.slowTimeRemaining = 0;
+	window.powerupSpawnChance = 1.0; // 100% chance for testing
+	
+	window.hexColorsToTintedColors = {
+		'#16a085': '#1abc9c',
+		'#2980b9': '#3498db',
+		'#f39c12': '#f1c40f',
+		'#c0392b': '#e74c3c',
+		'#8e44ad': '#9b59b6',
+		'#2c3e50': '#34495e',
+		'#f1c40f': '#f9e79f' // Gold powerup tint
+	};
+
+	// Game mode variable
+	window.gameMode = 'normal';
 
 	window.rgbToHex = {
 		"rgb(231,76,60)": "#e74c3c",

@@ -104,6 +104,10 @@ function init(b) {
 		clearSaveState();
 		checkVisualElements(1);
 	}
+	
+	// Reset powerups when starting new game
+	resetPowerups();
+	
 	if (highscores.length === 0 ){
 		$("#currentHighScore").text(0);
 	}
@@ -184,7 +188,7 @@ function init(b) {
 	hideText();
 }
 
-function addNewBlock(blocklane, color, iter, distFromHex, settled) { //last two are optional parameters
+function addNewBlock(blocklane, color, iter, distFromHex, settled, powerupType) { //last two are optional parameters
 	iter *= settings.speedModifier;
 	if (!history[MainHex.ct]) {
 		history[MainHex.ct] = {};
@@ -198,16 +202,114 @@ function addNewBlock(blocklane, color, iter, distFromHex, settled) { //last two 
 
 	if (distFromHex) {
 		history[MainHex.ct].distFromHex = distFromHex;
+		blocks.push(new Block(blocklane, color, iter, distFromHex, settled, powerupType));
+	} else {
+		blocks.push(new Block(blocklane, color, iter, undefined, settled, powerupType));
 	}
-	if (settled) {
-		blockHist[MainHex.ct].settled = settled;
-	}
-	blocks.push(new Block(blocklane, color, iter, distFromHex, settled));
 }
 
 function exportHistory() {
 	$('#devtoolsText').html(JSON.stringify(history));
 	toggleDevTools();
+}
+
+function updatePowerupUI() {
+	for (var type in playerPowerups) {
+		var btn = document.getElementById('powerup' + type.charAt(0).toUpperCase() + type.slice(1));
+		if (playerPowerups[type] > 0 && powerupCooldowns[type] <= 0) {
+			btn.classList.add('available');
+			btn.classList.remove('cooldown');
+		} else {
+			btn.classList.remove('available');
+			if (powerupCooldowns[type] > 0) {
+				btn.classList.add('cooldown');
+			}
+		}
+	}
+}
+
+function usePowerup(type) {
+	if (gameState !== 1) return; // Cannot use powerups when game is paused or over
+	if (playerPowerups[type] <= 0 || powerupCooldowns[type] > 0) return;
+	
+	// Consume the powerup
+	playerPowerups[type] = 0;
+	// Start cooldown
+	powerupCooldowns[type] = powerupCooldownTimes[type];
+	updatePowerupUI();
+	
+	// Execute powerup effect
+	switch(type) {
+		case 'colorClear':
+			// Get the outermost block color
+			var outermostColor = null;
+			for (var i = 0; i < MainHex.blocks.length; i++) {
+				var lane = MainHex.blocks[i];
+				if (lane.length > 0) {
+					outermostColor = lane[lane.length - 1].color;
+					break;
+				}
+			}
+			if (outermostColor) {
+				// Clear all blocks of this color
+				var blocksCleared = 0;
+				for (var i = 0; i < MainHex.blocks.length; i++) {
+					var lane = MainHex.blocks[i];
+					for (var j = lane.length - 1; j >= 0; j--) {
+						if (lane[j].color === outermostColor) {
+							lane[j].deleted = 1;
+							blocksCleared++;
+						}
+					}
+				}
+				// Add score
+				if (blocksCleared > 0) {
+					score += blocksCleared * blocksCleared * 10;
+					prevScore = score;
+					localStorage.setItem("saveState", exportSaveState());
+				}
+			}
+			break;
+		case 'slowTime':
+			slowTimeActive = true;
+			slowTimeRemaining = 5;
+			// Halve the block speed
+			blocks.forEach(function(block) {
+				block.iter /= 2;
+			});
+			break;
+		case 'areaClear':
+			// Clear all blocks on the hex
+			var totalBlocks = 0;
+			for (var i = 0; i < MainHex.blocks.length; i++) {
+				var lane = MainHex.blocks[i];
+				totalBlocks += lane.length;
+				for (var j = lane.length - 1; j >= 0; j--) {
+					lane[j].deleted = 1;
+				}
+			}
+			// Add score (10 points per block)
+			score += totalBlocks * 10;
+			prevScore = score;
+			localStorage.setItem("saveState", exportSaveState());
+			break;
+	}
+}
+
+function resetPowerups() {
+	playerPowerups = {
+		colorClear: 0,
+		slowTime: 0,
+		areaClear: 0
+	};
+	powerupCooldowns = {
+		colorClear: 0,
+		slowTime: 0,
+		areaClear: 0
+	};
+	slowTimeActive = false;
+	slowTimeRemaining = 0;
+	updatePowerupUI();
 }
 
 function setStartScreen() {

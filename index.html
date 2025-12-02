@@ -69,6 +69,29 @@
 		<div class="faded overlay"></div>
 		<img id="pauseBtn" src="./images/btn_pause.svg"/>
 		<img id='restartBtn' src="./images/btn_restart.svg"/>
+
+		<!-- Powerup buttons -->
+		<div id="powerupContainer">
+			<div id="powerupColorClear" class="powerupBtn" onclick="usePowerup('colorClear')">
+				<div class="powerupIcon" style="background-color: #ffd700;">
+					<i class="fa fa-paint-brush"></i>
+				</div>
+				<div class="powerupCooldown">0</div>
+			</div>
+			<div id="powerupSlowTime" class="powerupBtn" onclick="usePowerup('slowTime')">
+				<div class="powerupIcon" style="background-color: #3498db;">
+					<i class="fa fa-clock-o"></i>
+				</div>
+				<div class="powerupCooldown">0</div>
+			</div>
+			<div id="powerupAreaClear" class="powerupBtn" onclick="usePowerup('areaClear')">
+				<div class="powerupIcon" style="background-color: #e74c3c;">
+					<i class="fa fa-bomb"></i>
+				</div>
+				<div class="powerupCooldown">0</div>
+			</div>
+		</div>
+
 		<div id='HIGHSCORE'>HIGH SCORE</div>
 		<script> (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){ (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o), m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m) })(window,document,'script','//www.google-analytics.com/analytics.js','ga'); ga('create', 'UA-51272720-2', 'auto'); ga('send', 'pageview');
 		</script>
