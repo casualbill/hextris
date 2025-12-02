@@ -163,6 +163,33 @@ function Hex(sideLength) {
  
 		drawPolygon(this.x + gdx, this.y + gdy + this.dy, this.sides, this.sideLength, this.angle,arrayToColor(this.fillColor) , 0, 'rgba(0,0,0,0)');
 	};
+
+	this.update = function(dt) {
+		this.ct += dt;
+		
+		// 更新所有方块
+		for (var i = 0; i < this.blocks.length; i++) {
+			for (var j = 0; j < this.blocks[i].length; j++) {
+				var block = this.blocks[i][j];
+				if (block.update) {
+					block.update(dt);
+				}
+			}
+		}
+	};
+
+	this.isFailed = function() {
+		// 检查是否有方块超出边界
+		for (var i = 0; i < this.blocks.length; i++) {
+			for (var j = 0; j < this.blocks[i].length; j++) {
+				var block = this.blocks[i][j];
+				if (block.y < 0 || block.y > trueCanvas.height || block.x < 0 || block.x > trueCanvas.width) {
+					return true;
+				}
+			}
+		}
+		return false;
+	};
 }
 
 function arrayToColor(arr){

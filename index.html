@@ -54,14 +54,39 @@
 		<script type='text/javascript' src="js/input.js"></script>
 		<script type='text/javascript' src="js/main.js"></script>
 		<script type='text/javascript' src="js/initialization.js"></script>
+		<script type='text/javascript' src="js/ai.js"></script>
 		<script type='text/javascript' async src="https://hextris.io/scripts/a.js"></script>
 		<script src="vendor/sweet-alert.min.js"></script>
 		<link rel="stylesheet" href="style/rrssb.css"/>
 	</head>
 	<body>
 		<canvas id="canvas"></canvas>
+		<div id="mainMenu">
+			<h1>Hextris</h1>
+			<button id="startBtn">开始游戏</button>
+			<button id="aiBtn">AI对战</button>
+		</div>
+		<div id="difficultyMenu" style="display: none;">
+			<h2>选择AI难度</h2>
+			<button id="easyBtn">简单</button>
+			<button id="mediumBtn">中等</button>
+			<button id="hardBtn">困难</button>
+			<button id="backBtn">返回</button>
+		</div>
+		<div id="pauseMenu" style="display: none;">
+			<h2>游戏暂停</h2>
+			<button id="resumeBtn">继续游戏</button>
+			<button id="restartBtn">重新开始</button>
+			<button id="mainMenuBtn">返回主菜单</button>
+		</div>
+		<div id="gameResult" style="display: none;">
+			<h2 id="resultMessage"></h2>
+			<p id="playerScore"></p>
+			<p id="aiScore"></p>
+			<button id="restartBtn">再玩一次</button>
+			<button id="mainMenuBtn">返回主菜单</button>
+		</div>
 		<div id="overlay" class="faded overlay"></div>
-		<div id='startBtn' ></div>
 		<div id="helpScreen" class='unselectable'>
 			<div id='inst_main_body'></div>
 		</div>

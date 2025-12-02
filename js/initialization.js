@@ -30,14 +30,44 @@ function initialize(a) {
 	window.hexagonBackgroundColor = 'rgb(236, 240, 241)';
 	window.hexagonBackgroundColorClear = 'rgba(236, 240, 241, 0.5)';
 	window.centerBlue = 'rgb(44,62,80)';
-	window.angularVelocityConst = 4;
-	window.scoreOpacity = 0;
-	window.textOpacity = 0;
-	window.prevGameState = undefined;
-	window.op = 0;
-	window.saveState = localStorage.getItem("saveState") || "{}";
+window.angularVelocityConst = 4;
+window.scoreOpacity = 0;
+window.textOpacity = 0;
+window.prevGameState = undefined;
+window.op = 0;
+window.saveState = localStorage.getItem("saveState") || "{}";
+
+// AI对战相关变量
+window.aiMode = false;
+window.aiDifficulty = 'easy'; // easy, medium, hard
+window.aiHex = null;
+window.playerHex = null;
+window.aiScore = 0;
+window.playerScore = 0;
+window.aiWins = 0;
+window.playerWins = 0;
+
+// AI难度设置
+window.aiSettings = {
+    easy: { delay: 300, strategy: 'simple' },
+    medium: { delay: 150, strategy: 'medium' },
+    hard: { delay: 50, strategy: 'optimal' }
+};
+
+// AI对战记录
+window.aiStats = {
+    easy: { wins: 0, losses: 0 },
+    medium: { wins: 0, losses: 0 },
+    hard: { wins: 0, losses: 0 }
+};
 	if (saveState !== "{}") {
 		op = 1;
+	}
+
+	// 初始化AI对战记录
+	var aiStats = localStorage.getItem('hextrisAIStats');
+	if (aiStats) {
+		window.aiStats = JSON.parse(aiStats);
 	}
 
 	window.textShown = false;
