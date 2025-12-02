@@ -185,6 +185,62 @@ function addKeyListeners() {
 	}
 
 }
+// 添加主菜单点击事件处理
+function addMainMenuClickListeners() {
+	var canvas = document.getElementById('canvas');
+	
+	// 鼠标点击事件
+	canvas.addEventListener('mousedown', function(e) {
+		if (gameState === 0) {
+			var rect = canvas.getBoundingClientRect();
+			var x = e.clientX - rect.left;
+			var y = e.clientY - rect.top;
+			
+			// 检测是否点击了"多人对战"按钮区域
+			if (isClickOnMultiplayerButton(x, y)) {
+				showMultiplayerLobby();
+			}
+		}
+	});
+	
+	// 触摸事件（移动设备）
+	canvas.addEventListener('touchstart', function(e) {
+		if (gameState === 0) {
+			var rect = canvas.getBoundingClientRect();
+			var touch = e.touches[0];
+			var x = touch.clientX - rect.left;
+			var y = touch.clientY - rect.top;
+			
+			// 检测是否点击了"多人对战"按钮区域
+			if (isClickOnMultiplayerButton(x, y)) {
+				showMultiplayerLobby();
+			}
+		}
+	});
+}
+
+// 检测点击是否在"多人对战"按钮区域
+function isClickOnMultiplayerButton(x, y) {
+	var canvasCenterX = trueCanvas.width / 2;
+	var canvasCenterY = trueCanvas.height / 2;
+	
+	// 计算"多人对战"按钮的大致位置
+	var fontSize = settings.platform == 'mobile' ? 28 : 24;
+	var buttonY = canvasCenterY + 100 * settings.scale + 60;
+	var buttonWidth = fontSize * 5; // 大致宽度，5个字符
+	var buttonHeight = fontSize * 1.5; // 大致高度
+	
+	// 检测点击是否在按钮区域内
+	if (x > canvasCenterX - buttonWidth / 2 &&
+		x < canvasCenterX + buttonWidth / 2 &&
+		y > buttonY - buttonHeight / 2 &&
+		y < buttonY + buttonHeight / 2) {
+		return true;
+	}
+	
+	return false;
+}
+
 function inside (point, vs) {
 	// ray-casting algorithm based on
 	// http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html

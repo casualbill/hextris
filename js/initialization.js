@@ -159,6 +159,9 @@ function initialize(a) {
 		});
 
 		addKeyListeners();
+		
+		// 初始化多人对战UI事件
+		initMultiplayerUIEvents();
 		(function(i, s, o, g, r, a, m) {
 			i['GoogleAnalyticsObject'] = r;
 			i[r] = i[r] || function() {

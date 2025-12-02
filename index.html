@@ -52,11 +52,46 @@
 		<script type='text/javascript' src='js/update.js'></script>
 		<script type='text/javascript' src='js/render.js'></script>
 		<script type='text/javascript' src="js/input.js"></script>
-		<script type='text/javascript' src="js/main.js"></script>
-		<script type='text/javascript' src="js/initialization.js"></script>
+		<script type='text/javascript' src='js/main.js'></script>
+		<script type='text/javascript' src='js/initialization.js'></script>
+		<script type='text/javascript' src='js/multiplayer.js'></script>
 		<script type='text/javascript' async src="https://hextris.io/scripts/a.js"></script>
 		<script src="vendor/sweet-alert.min.js"></script>
 		<link rel="stylesheet" href="style/rrssb.css"/>
+
+		<!-- 多人对战UI元素 -->
+		<div id="multiplayerLobby" class="overlay unselectable" style="display:none;">
+			<div class="centeredHeader">多人对战</div>
+			<div id="lobbyButtons" style="margin-top: 50px;">
+				<button id="createRoomBtn" style="margin: 10px; padding: 15px 30px; font-size: 18px;">创建房间</button>
+				<button id="joinRoomBtn" style="margin: 10px; padding: 15px 30px; font-size: 18px;">加入房间</button>
+			</div>
+			<div id="roomList" style="margin-top: 30px; max-height: 300px; overflow-y: auto;">
+				<!-- 房间列表将通过JavaScript动态生成 -->
+			</div>
+			<button id="backToMainBtn" style="margin-top: 30px; padding: 10px 20px;">返回主菜单</button>
+		</div>
+
+		<div id="multiplayerRoom" class="overlay unselectable" style="display:none;">
+			<div class="centeredHeader">房间号: <span id="roomId"></span></div>
+			<div id="playerList" style="margin-top: 30px;">
+				<!-- 玩家列表将通过JavaScript动态生成 -->
+			</div>
+			<div id="roomButtons" style="margin-top: 50px;">
+				<button id="startGameBtn" style="margin: 10px; padding: 15px 30px; font-size: 18px; display:none;">开始游戏</button>
+				<button id="leaveRoomBtn" style="margin: 10px; padding: 15px 30px; font-size: 18px;">离开房间</button>
+			</div>
+		</div>
+
+		<div id="multiplayerGame" style="display:none;">
+			<!-- 多人游戏界面将通过JavaScript动态生成 -->
+			<div id="playerAreas" style="display: flex; flex-wrap: wrap;">
+				<!-- 玩家游戏区域将通过JavaScript动态生成 -->
+			</div>
+			<div id="gameInfo" style="position: absolute; top: 10px; right: 10px;">
+				<!-- 游戏信息将通过JavaScript动态生成 -->
+			</div>
+		</div>
 	</head>
 	<body>
 		<canvas id="canvas"></canvas>
