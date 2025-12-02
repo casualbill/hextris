@@ -112,10 +112,12 @@ function initialize(a) {
 	window.prevScore = 0;
 	window.numHighScores = 3;
 
-	highscores = [];
-	if (localStorage.getItem('highscores')) {
+	// 根据多边形边数加载最高分记录
+	var sides = parseInt(localStorage.getItem('lastPolygonSides')) || 6;
+	window.highscores = [];
+	if (localStorage.getItem('highscores_' + sides)) {
 		try {
-			highscores = JSON.parse(localStorage.getItem('highscores'));
+			highscores = JSON.parse(localStorage.getItem('highscores_' + sides));
 		} catch (e) {
 			highscores = [];
 		}
@@ -132,8 +134,14 @@ function initialize(a) {
 	window.importing = 0;
 	window.importedHistory = undefined;
 	window.startTime = undefined;
-	window.gameState;
-	setStartScreen();
+	window.gameState = 0;
+	// 显示多边形选择界面
+	$('#polygonSelectionScreen').show();
+	// 加载上次使用的多边形类型
+	var lastPolygonSides = localStorage.getItem('lastPolygonSides') || 6;
+	$('#polygonSlider').val(lastPolygonSides);
+	updatePolygonInfo(lastPolygonSides);
+	
 	if (a != 1) {
 		window.canRestart = 1;
 		window.onblur = function(e) {
@@ -154,8 +162,16 @@ function initialize(a) {
 		$(window).resize(scaleCanvas);
 		$(window).unload(function() {
 
-			if (gameState == 1 || gameState == -1 || gameState === 0) localStorage.setItem("saveState", exportSaveState());
-			else localStorage.setItem("saveState", "{}");
+			if (gameState == 1 || gameState == -1 || gameState === 0) {
+				// 检查 MainHex 是否存在
+				if (typeof MainHex !== 'undefined') {
+					localStorage.setItem("saveState", exportSaveState());
+				} else {
+					localStorage.setItem("saveState", "{}");
+				}
+			} else {
+				localStorage.setItem("saveState", "{}");
+			}
 		});
 
 		addKeyListeners();
@@ -209,6 +225,56 @@ function initialize(a) {
 		}, 1);
 	}
 }
+
+// 更新多边形信息
+function updatePolygonInfo(sides) {
+	// 更新滑块值
+	$('#polygonSliderValue').text(sides);
+	$('#sidesValue').text(sides);
+	
+	// 计算颜色数量
+	var colors;
+	if (sides >= 5 && sides <= 8) {
+		colors = 5;
+	} else if (sides >= 9 && sides <= 14) {
+		colors = 6;
+	} else if (sides >= 15 && sides <= 20) {
+		colors = 7;
+	}
+	$('#colorsValue').text(colors);
+	
+	// 计算匹配数量
+	var match;
+	if (sides >= 5 && sides <= 7) {
+		match = 3;
+	} else if (sides >= 8 && sides <= 12) {
+		match = 4;
+	} else if (sides >= 13 && sides <= 20) {
+		match = 5;
+	}
+	$('#matchValue').text(match);
+	
+	// 计算速度
+	var speed = 0.9 + (sides - 5) * 0.04;
+	$('#speedValue').text(speed.toFixed(1) + 'x');
+}
+
+// 多边形滑块事件监听器
+$('#polygonSlider').on('input', function() {
+	var sides = parseInt($(this).val());
+	updatePolygonInfo(sides);
+});
+
+// 开始游戏按钮事件监听器
+$('#startGameBtn').on('click', function() {
+	var sides = parseInt($('#polygonSlider').val());
+	// 保存上次使用的多边形类型
+	localStorage.setItem('lastPolygonSides', sides);
+	// 隐藏多边形选择界面
+	$('#polygonSelectionScreen').hide();
+	// 初始化游戏
+	init(1);
+});
 
 function startBtnHandler() {
 	setTimeout(function() {

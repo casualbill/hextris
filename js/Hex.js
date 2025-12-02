@@ -1,4 +1,4 @@
-function Hex(sideLength) {
+function Hex(sideLength, sides) {
 	this.playThrough = 0;
 	this.fillColor = [44,62,80];
 	this.tempColor = [44,62,80];
@@ -6,7 +6,7 @@ function Hex(sideLength) {
 	this.position = 0;
 	this.dy = 0;
 	this.dt = 1;
-	this.sides = 6;
+	this.sides = sides || 6;
 	this.blocks = [];
 	this.angle = 180 / this.sides;
 	this.targetAngle = this.angle;
@@ -105,7 +105,11 @@ function Hex(sideLength) {
 	};
 
 	this.rotate = function(steps) {
-				if(Date.now()-this.lastRotate<75 && !(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) ) return;
+				// 根据多边形边数动态调整旋转速度
+				var timeInterval = 75 - (this.sides - 5) * 2.6667;
+				// 确保时间间隔不小于30ms
+				timeInterval = Math.max(timeInterval, 30);
+				if(Date.now()-this.lastRotate<timeInterval && !(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) ) return;
 		if (!(gameState === 1 || gameState === 0)) return;
 		this.position += steps;
 		if (!history[this.ct]) {

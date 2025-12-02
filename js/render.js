@@ -11,7 +11,11 @@ function render() {
 			op += 0.01;
 		}
 		ctx.globalAlpha = op;
-		drawPolygon(trueCanvas.width / 2 , trueCanvas.height / 2 , 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false,6);
+		// 根据多边形边数绘制多边形
+		var sides = MainHex.sides;
+		var radius = (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth;
+		var startAngle = 30;
+		drawPolygon(trueCanvas.width / 2 , trueCanvas.height / 2 , sides, radius, startAngle, grey, false, sides);
 		drawTimer();
 		ctx.globalAlpha = 1;
 	}
