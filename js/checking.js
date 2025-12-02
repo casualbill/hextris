@@ -46,8 +46,10 @@ function consolidateBlocks(hex,side,index){
 	deleting.push([side,index]);
 	//fill deleting	
 	floodFill(hex,side,index,deleting);
-	//make sure there are more than 3 blocks to be deleted
-	if(deleting.length<3){return;}
+	//根据边数获取消除判定数量
+	var matchCount = getMatchCountBySides(hex.sides);
+	//make sure there are enough blocks to be deleted
+	if(deleting.length < matchCount){return;}
 	var i;
 	for(i=0; i<deleting.length;i++) {
 		var arr = deleting[i];

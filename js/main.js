@@ -132,7 +132,7 @@ function init(b) {
 
 	settings.blockHeight = settings.baseBlockHeight * settings.scale;
 	settings.hexWidth = settings.baseHexWidth * settings.scale;
-	MainHex = saveState.hex || new Hex(settings.hexWidth);
+	MainHex = saveState.hex || new Hex(settings.hexWidth, polygonSides);
 	if (saveState.hex) {
 		MainHex.playThrough += 1;
 	}

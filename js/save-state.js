@@ -27,7 +27,8 @@ function exportSaveState() {
 		state.blocks.map(descaleBlock);
 	}
 
-	localStorage.setItem('highscores', JSON.stringify(highscores));
+	// 根据当前多边形边数保存对应的最高分记录
+	localStorage.setItem('highscores_' + polygonSides, JSON.stringify(highscores));
 
 	return JSONfn.stringify(state);
 }
@@ -51,7 +52,8 @@ function writeHighScores() {
 		}
 	);
 	highscores = highscores.slice(0,3);
-	localStorage.setItem("highscores", JSON.stringify(highscores));
+	// 根据当前多边形边数保存对应的最高分记录
+	localStorage.setItem("highscores_" + polygonSides, JSON.stringify(highscores));
 }
 
 function clearSaveState() {
