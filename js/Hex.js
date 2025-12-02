@@ -44,6 +44,18 @@ function Hex(sideLength) {
 
 	this.addBlock = function(block) {
 		if (!(gameState == 1 || gameState === 0)) return;
+		
+		// Handle powerup blocks
+		if (block.powerupType) {
+			if (playerPowerups[block.powerupType] < 1) {
+				playerPowerups[block.powerupType] = 1;
+				updatePowerupUI();
+			}
+			// Remove the powerup block
+			block.removed = 1;
+			return;
+		}
+		
 		block.settled = 1;
 		block.tint = 0.6;
 		var lane = this.sides - block.fallingLane;// -this.position;

@@ -1,4 +1,4 @@
-function Block(fallingLane, color, iter, distFromHex, settled) {
+function Block(fallingLane, color, iter, distFromHex, settled, powerupType) {
 	// whether or not a block is rested on the center hex or another block
 	this.settled = (settled === undefined) ? 0 : 1;
 	this.height = settings.blockHeight;
@@ -31,6 +31,9 @@ function Block(fallingLane, color, iter, distFromHex, settled) {
 	this.attachedLane = 0;
 	//distance from center hex
 	this.distFromHex = distFromHex || settings.startDist * settings.scale ;
+	// powerup properties
+	this.powerupType = powerupType || null;
+	this.flashTimer = 0;
 
 	this.incrementOpacity = function() {
 		if (this.deleted) {
@@ -76,9 +79,17 @@ function Block(fallingLane, color, iter, distFromHex, settled) {
 
 		this.incrementOpacity();
 		if(attached === undefined)
-			attached = false;
+		attached = false;
 
-		if(this.angle > this.targetAngle) {
+	// Handle powerup flashing
+	if (this.powerupType) {
+		this.flashTimer += MainHex.dt;
+		var flashSpeed = 10; // flashes per second
+		var flashIntensity = 0.3 + 0.3 * Math.sin(this.flashTimer * flashSpeed * Math.PI * 2);
+		this.tint = flashIntensity;
+	}
+
+	if(this.angle > this.targetAngle) {
 			this.angularVelocity -= angularVelocityConst * MainHex.dt;
 		}
 		else if(this.angle < this.targetAngle) {
@@ -122,15 +133,19 @@ function Block(fallingLane, color, iter, distFromHex, settled) {
 		if (this.deleted) {
 			ctx.fillStyle = "#FFF";
 		} else if (gameState === 0) {
-			if (this.color.charAt(0) == 'r') {
+			if (this.powerupType && powerupColors[this.powerupType]) {
+				ctx.fillStyle = powerupColors[this.powerupType];
+			} else if (this.color.charAt(0) == 'r') {
 				ctx.fillStyle = rgbColorsToTintedColors[this.color];
-			}
-			else {
+			} else {
 				ctx.fillStyle = hexColorsToTintedColors[this.color];
 			}
-		}
-		else {
-			ctx.fillStyle = this.color;
+		} else {
+			if (this.powerupType && powerupColors[this.powerupType]) {
+				ctx.fillStyle = powerupColors[this.powerupType];
+			} else {
+				ctx.fillStyle = this.color;
+			}
 		}
 
 		ctx.globalAlpha = this.opacity;

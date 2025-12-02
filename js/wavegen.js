@@ -40,7 +40,13 @@ function waveGen(hex) {
 			this.ct++;
 			this.lastGen = this.dt;
 			var fv = randInt(0, MainHex.sides);
-			addNewBlock(fv, colors[randInt(0, colors.length)], 1.6 + (this.difficulty / 15) * 3);
+			var spawnPowerup = Math.random() < powerupSpawnChance;
+			if (spawnPowerup) {
+				var powerupType = powerupTypes[randInt(0, powerupTypes.length)];
+				addNewBlock(fv, powerupColors[powerupType], 1.6 + (this.difficulty / 15) * 3, powerupType);
+			} else {
+				addNewBlock(fv, colors[randInt(0, colors.length)], 1.6 + (this.difficulty / 15) * 3, null);
+			}
 			var lim = 5;
 			if (this.ct > lim) {
 				var nextPattern = randInt(0, 3 + 21);
@@ -86,20 +92,27 @@ function waveGen(hex) {
 				numColors = randInt(1, 4);
 			}
 
-			var colorList = [];
+			var colorDataList = [];
 			nextLoop: for (var i = 0; i < numColors; i++) {
-				var q = randInt(0, colors.length);
-				for (var j in colorList) {
-					if (colorList[j] == colors[q]) {
-						i--;
-						continue nextLoop;
+				var spawnPowerup = Math.random() < powerupSpawnChance;
+				if (spawnPowerup) {
+					var powerupType = powerupTypes[randInt(0, powerupTypes.length)];
+					colorDataList.push({color: powerupColors[powerupType], powerupType: powerupType});
+				} else {
+					var q = randInt(0, colors.length);
+					for (var j in colorDataList) {
+						if (colorDataList[j].color == colors[q]) {
+							i--;
+							continue nextLoop;
+						}
 					}
+					colorDataList.push({color: colors[q], powerupType: null});
 				}
-				colorList.push(colors[q]);
 			}
 
 			for (var i = 0; i < MainHex.sides; i++) {
-				addNewBlock(i, colorList[i % numColors], 1.5 + (this.difficulty / 15) * 3);
+				var colorData = colorDataList[i % numColors];
+				addNewBlock(i, colorData.color, 1.5 + (this.difficulty / 15) * 3, colorData.powerupType);
 			}
 
 			this.ct += 15;
@@ -111,15 +124,31 @@ function waveGen(hex) {
 	this.halfCircleGeneration = function() {
 		if (this.dt - this.lastGen > (this.nextGen + 500) / 2) {
 			var numColors = randInt(1, 3);
-			var c = colors[randInt(0, colors.length)];
-			var colorList = [c, c, c];
+			var spawnPowerup = Math.random() < powerupSpawnChance;
+			var cData;
+			if (spawnPowerup) {
+				var powerupType = powerupTypes[randInt(0, powerupTypes.length)];
+				cData = {color: powerupColors[powerupType], powerupType: powerupType};
+			} else {
+				cData = {color: colors[randInt(0, colors.length)], powerupType: null};
+			}
+			var colorDataList = [cData, cData, cData];
 			if (numColors == 2) {
-				colorList = [c, colors[randInt(0, colors.length)], c];
+				var secondColorData;
+				var spawnPowerup2 = Math.random() < powerupSpawnChance;
+				if (spawnPowerup2) {
+					var powerupType2 = powerupTypes[randInt(0, powerupTypes.length)];
+					secondColorData = {color: powerupColors[powerupType2], powerupType: powerupType2};
+				} else {
+					secondColorData = {color: colors[randInt(0, colors.length)], powerupType: null};
+				}
+				colorDataList = [cData, secondColorData, cData];
 			}
 
 			var d = randInt(0, 6);
 			for (var i = 0; i < 3; i++) {
-				addNewBlock((d + i) % 6, colorList[i], 1.5 + (this.difficulty / 15) * 3);
+				var colorData = colorDataList[i];
+				addNewBlock((d + i) % 6, colorData.color, 1.5 + (this.difficulty / 15) * 3, colorData.powerupType);
 			}
 
 			this.ct += 8;
@@ -130,10 +159,17 @@ function waveGen(hex) {
 
 	this.crosswiseGeneration = function() {
 		if (this.dt - this.lastGen > this.nextGen) {
-			var ri = randInt(0, colors.length);
+			var spawnPowerup = Math.random() < powerupSpawnChance;
+			var colorData;
+			if (spawnPowerup) {
+				var powerupType = powerupTypes[randInt(0, powerupTypes.length)];
+				colorData = {color: powerupColors[powerupType], powerupType: powerupType};
+			} else {
+				colorData = {color: colors[randInt(0, colors.length)], powerupType: null};
+			}
 			var i = randInt(0, colors.length);
-			addNewBlock(i, colors[ri], 0.6 + (this.difficulty / 15) * 3);
-			addNewBlock((i + 3) % MainHex.sides, colors[ri], 0.6 + (this.difficulty / 15) * 3);
+			addNewBlock(i, colorData.color, 0.6 + (this.difficulty / 15) * 3, colorData.powerupType);
+			addNewBlock((i + 3) % MainHex.sides, colorData.color, 0.6 + (this.difficulty / 15) * 3, colorData.powerupType);
 			this.ct += 1.5;
 			this.lastGen = this.dt;
 			this.shouldChangePattern();
@@ -143,10 +179,18 @@ function waveGen(hex) {
 	this.spiralGeneration = function() {
 		var dir = randInt(0, 2);
 		if (this.dt - this.lastGen > this.nextGen * (2 / 3)) {
-			if (dir) {
-				addNewBlock(5 - (this.ct % MainHex.sides), colors[randInt(0, colors.length)], 1.5 + (this.difficulty / 15) * (3 / 2));
+			var spawnPowerup = Math.random() < powerupSpawnChance;
+			var colorData;
+			if (spawnPowerup) {
+				var powerupType = powerupTypes[randInt(0, powerupTypes.length)];
+				colorData = {color: powerupColors[powerupType], powerupType: powerupType};
 			} else {
-				addNewBlock(this.ct % MainHex.sides, colors[randInt(0, colors.length)], 1.5 + (this.difficulty / 15) * (3 / 2));
+				colorData = {color: colors[randInt(0, colors.length)], powerupType: null};
+			}
+			if (dir) {
+				addNewBlock(5 - (this.ct % MainHex.sides), colorData.color, 1.5 + (this.difficulty / 15) * (3 / 2), colorData.powerupType);
+			} else {
+				addNewBlock(this.ct % MainHex.sides, colorData.color, 1.5 + (this.difficulty / 15) * (3 / 2), colorData.powerupType);
 			}
 			this.ct += 1;
 			this.lastGen = this.dt;
@@ -156,9 +200,27 @@ function waveGen(hex) {
 
 	this.doubleGeneration = function() {
 		if (this.dt - this.lastGen > this.nextGen) {
+			var spawnPowerup1 = Math.random() < powerupSpawnChance;
+			var colorData1;
+			if (spawnPowerup1) {
+				var powerupType1 = powerupTypes[randInt(0, powerupTypes.length)];
+				colorData1 = {color: powerupColors[powerupType1], powerupType: powerupType1};
+			} else {
+				colorData1 = {color: colors[randInt(0, colors.length)], powerupType: null};
+			}
+			
+			var spawnPowerup2 = Math.random() < powerupSpawnChance;
+			var colorData2;
+			if (spawnPowerup2) {
+				var powerupType2 = powerupTypes[randInt(0, powerupTypes.length)];
+				colorData2 = {color: powerupColors[powerupType2], powerupType: powerupType2};
+			} else {
+				colorData2 = {color: colors[randInt(0, colors.length)], powerupType: null};
+			}
+			
 			var i = randInt(0, colors.length);
-			addNewBlock(i, colors[randInt(0, colors.length)], 1.5 + (this.difficulty / 15) * 3);
-			addNewBlock((i + 1) % MainHex.sides, colors[randInt(0, colors.length)], 1.5 + (this.difficulty / 15) * 3);
+			addNewBlock(i, colorData1.color, 1.5 + (this.difficulty / 15) * 3, colorData1.powerupType);
+			addNewBlock((i + 1) % MainHex.sides, colorData2.color, 1.5 + (this.difficulty / 15) * 3, colorData2.powerupType);
 			this.ct += 2;
 			this.lastGen = this.dt;
 			this.shouldChangePattern();
