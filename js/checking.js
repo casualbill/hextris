@@ -46,8 +46,15 @@ function consolidateBlocks(hex,side,index){
 	deleting.push([side,index]);
 	//fill deleting	
 	floodFill(hex,side,index,deleting);
-	//make sure there are more than 3 blocks to be deleted
-	if(deleting.length<3){return;}
+	// 根据边数确定消除所需的最小方块数量
+	var minBlocks = 3;
+	if (hex.sides >=8 && hex.sides <=12) {
+		minBlocks = 4;
+	} else if (hex.sides >=13 && hex.sides <=20) {
+		minBlocks = 5;
+	}
+	//make sure there are enough blocks to be deleted
+	if(deleting.length < minBlocks){return;}
 	var i;
 	for(i=0; i<deleting.length;i++) {
 		var arr = deleting[i];

@@ -5,13 +5,20 @@ function initialize(a) {
 	window.rush = 1;
 	window.lastTime = Date.now();
 	window.iframHasLoaded = false;
-	window.colors = ["#e74c3c", "#f1c40f", "#3498db", "#2ecc71"];
+	window.baseColors = [
+		"#e74c3c", "#f1c40f", "#3498db", "#2ecc71",
+		"#9b59b6", "#e67e22", "#ecf0f1"
+	];
 	window.hexColorsToTintedColors = {
 		"#e74c3c": "rgb(241,163,155)",
 		"#f1c40f": "rgb(246,223,133)",
 		"#3498db": "rgb(151,201,235)",
-		"#2ecc71": "rgb(150,227,183)"
+		"#2ecc71": "rgb(150,227,183)",
+		"#9b59b6": "rgb(188,156,202)",
+		"#e67e22": "rgb(230,160,100)",
+		"#ecf0f1": "rgb(240,243,244)"
 	};
+	window.colors = baseColors.slice(0, 4);
 
 	window.rgbToHex = {
 		"rgb(231,76,60)": "#e74c3c",
@@ -36,6 +43,7 @@ function initialize(a) {
 	window.prevGameState = undefined;
 	window.op = 0;
 	window.saveState = localStorage.getItem("saveState") || "{}";
+	window.lastPolygonSides = parseInt(localStorage.getItem("lastPolygonSides")) || 6;
 	if (saveState !== "{}") {
 		op = 1;
 	}
@@ -158,8 +166,17 @@ function initialize(a) {
 			else localStorage.setItem("saveState", "{}");
 		});
 
-		addKeyListeners();
-		(function(i, s, o, g, r, a, m) {
+		// 初始化多边形边数选择框
+	$('#sidesSelect').val(window.lastPolygonSides);
+	
+	// 添加边数选择事件监听器
+	$('#sidesSelect').change(function() {
+		window.lastPolygonSides = parseInt($(this).val());
+		localStorage.setItem('lastPolygonSides', window.lastPolygonSides.toString());
+	});
+	
+	addKeyListeners();
+	(function(i, s, o, g, r, a, m) {
 			i['GoogleAnalyticsObject'] = r;
 			i[r] = i[r] || function() {
 				(i[r].q = i[r].q || []).push(arguments)
@@ -210,6 +227,41 @@ function initialize(a) {
 	}
 }
 
+function setupColorsBySides(sides) {
+	if (sides >=5 && sides <=8) {
+		window.colors = baseColors.slice(0, 5);
+	} else if (sides >=9 && sides <=14) {
+		window.colors = baseColors.slice(0, 6);
+	} else if (sides >=15 && sides <=20) {
+		window.colors = baseColors.slice(0, 7);
+	} else {
+		window.colors = baseColors.slice(0, 4);
+	}
+	
+	// 更新颜色映射
+	window.rgbToHex = {};
+	window.rgbColorsToTintedColors = {};
+	colors.forEach(function(color) {
+		var rgb = hexToRgb(color);
+		rgbToHex[rgb] = color;
+		rgbColorsToTintedColors[rgb] = hexColorsToTintedColors[color];
+	});
+}
+
+function setupSpeedBySides(sides) {
+	// 5边0.9x，20边1.6x，线性插值
+	var minSpeed = 0.9;
+	var maxSpeed = 1.6;
+	var speed = minSpeed + (maxSpeed - minSpeed) * (sides -5) / (20-5);
+	settings.speedModifier = speed * (settings.platform === 'mobile' ? 0.73 : 0.65);
+	settings.creationSpeedModifier = settings.speedModifier;
+}
+
+function hexToRgb(hex) {
+	var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+	return result ? "rgb(" + parseInt(result[1], 16) + "," + parseInt(result[2], 16) + "," + parseInt(result[3], 16) + ")" : hex;
+}
+
 function startBtnHandler() {
 	setTimeout(function() {
 		if (settings.platform == "mobile") {
@@ -249,12 +301,9 @@ function startBtnHandler() {
 		$('#openSideBar').fadeOut(150, "linear");
 	}
 
-	if (importing == 1) {
-		init(1);
-		checkVisualElements(0);
-	} else {
-		resumeGame();
-	}
+	// 总是重新初始化游戏以应用选择的多边形边数
+	init(1);
+	checkVisualElements(0);
 }
 
 function handlePause() {

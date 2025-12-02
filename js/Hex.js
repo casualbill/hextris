@@ -1,4 +1,4 @@
-function Hex(sideLength) {
+function Hex(sideLength, sides) {
 	this.playThrough = 0;
 	this.fillColor = [44,62,80];
 	this.tempColor = [44,62,80];
@@ -6,7 +6,7 @@ function Hex(sideLength) {
 	this.position = 0;
 	this.dy = 0;
 	this.dt = 1;
-	this.sides = 6;
+	this.sides = sides || 6;
 	this.blocks = [];
 	this.angle = 180 / this.sides;
 	this.targetAngle = this.angle;
@@ -26,7 +26,8 @@ function Hex(sideLength) {
 	}
 
 	this.shake = function(obj) { //lane as in particle lane
-		var angle = 30 + obj.lane * 60;
+		var startAngle = 90 - 180/this.sides;
+		var angle = startAngle + obj.lane * (360/this.sides);
 		angle *= Math.PI / 180;
 		var dx = Math.cos(angle) * obj.magnitude;
 		var dy = Math.sin(angle) * obj.magnitude;
@@ -120,17 +121,18 @@ function Hex(sideLength) {
 		}
 
 		while (this.position < 0) {
-			this.position += 6;
-		}
+		this.position += this.sides;
+	}
 
-		this.position = this.position % this.sides;
-		this.blocks.forEach(function(blocks) {
-			blocks.forEach(function(block) {
-				block.targetAngle = block.targetAngle - steps * 60;
-			});
+	this.position = this.position % this.sides;
+		var rotationAngle = 360 / this.sides;
+	this.blocks.forEach(function(blocks) {
+		blocks.forEach(function(block) {
+			block.targetAngle = block.targetAngle - steps * rotationAngle;
 		});
+	});
 
-		this.targetAngle = this.targetAngle - steps * 60;
+	this.targetAngle = this.targetAngle - steps * rotationAngle;
 				this.lastRotate = Date.now();
 	};
 
