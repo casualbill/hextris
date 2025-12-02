@@ -9,6 +9,21 @@ var maxFileSize = 100 * 1024 * 1024; // 100MB
 function initRecording() {
 	var recordBtn = document.getElementById('recordBtn');
 	recordBtn.addEventListener('click', toggleRecording);
+
+	// 初始化格式选择弹出层按钮
+	var mp4Btn = document.getElementById('mp4FormatBtn');
+	var webmBtn = document.getElementById('webmFormatBtn');
+	var cancelBtn = document.getElementById('cancelFormatBtn');
+
+	mp4Btn.addEventListener('click', function() {
+		selectFormat('video/mp4');
+	});
+
+	webmBtn.addEventListener('click', function() {
+		selectFormat('video/webm');
+	});
+
+	cancelBtn.addEventListener('click', closeFormatModal);
 }
 
 // 切换录制状态
@@ -22,23 +37,23 @@ function toggleRecording() {
 	}
 }
 
-// 选择视频格式
+// 显示格式选择弹出层
 function selectVideoFormat() {
-	var format = prompt('请选择视频格式：\n1 - MP4\n2 - WebM', '1');
-	
-	switch (format) {
-		case '1':
-			videoFormat = 'video/mp4';
-			startRecording();
-			break;
-		case '2':
-			videoFormat = 'video/webm';
-			startRecording();
-			break;
-		default:
-			alert('请选择有效的视频格式');
-			break;
-	}
+	var modal = document.getElementById('formatModal');
+	modal.style.display = 'flex';
+}
+
+// 选择格式
+function selectFormat(format) {
+	videoFormat = format;
+	closeFormatModal();
+	startRecording();
+}
+
+// 关闭格式选择弹出层
+function closeFormatModal() {
+	var modal = document.getElementById('formatModal');
+	modal.style.display = 'none';
 }
 
 // 开始录制
