@@ -229,7 +229,42 @@ function setStartScreen() {
 
 var spd = 1;
 
+// 关卡模式相关变量
+var isLevelMode = false;
+var currentLevel = 1;
+var levelTargetScore = 0;
+var levelStartTime = 0;
+var levelProgress = {};
+var levelDifficulty = {};
+var levelScoreBoard = []; // 关卡模式的高分榜
+var levelScoreBoardLength = 3; // 关卡模式高分榜显示前3名
+
 function animLoop() {
+	// 关卡模式逻辑
+	if (isLevelMode) {
+		// 检查关卡是否完成
+		if (score >= levelTargetScore) {
+			completeLevel();
+			return;
+		}
+		
+		// 关卡模式下使用固定难度，不随时间变化
+		var t = Date.now();
+		if (t - lastMove > levelDifficulty.dropSpeed) {
+			moveDown();
+			lastMove = t;
+		}
+		if (t - lastNew > levelDifficulty.spawnSpeed) {
+			newBlock();
+			lastNew = t;
+		}
+		
+		// 渲染游戏
+		render();
+		return;
+	}
+
+	// 原始游戏循环逻辑
 	switch (gameState) {
 	case 1:
 		requestAnimFrame(animLoop);
@@ -254,7 +289,13 @@ function animLoop() {
 		if (checkGameOver() && !importing) {
 			var saveState = localStorage.getItem("saveState") || "{}";
 			saveState = JSONfn.parse(saveState);
-			gameState = 2;
+
+			// 关卡模式游戏结束处理
+			if (isLevelMode) {
+				failLevel();
+			} else {
+				gameState = 2;
+			}
 
 			setTimeout(function() {
 				enableRestart();
@@ -320,6 +361,135 @@ function enableRestart() {
 	canRestart = 1;
 }
 
+// 关卡模式相关函数
+function startLevelMode(level) {
+	// 初始化关卡
+	currentLevel = level;
+	isLevelMode = true;
+	isGameOver = false;
+	isPaused = false;
+	
+	// 获取关卡进度和难度
+	levelProgress = getLevelProgress();
+	levelDifficulty = getLevelDifficulty(level);
+	levelTargetScore = level * 100; // 每关递增100分，第1关100分，第2关200分，以此类推
+	
+	// 重置游戏状态
+	blocks = [];
+	score = 0;
+	prevScore = 0;
+	spawnLane = 0;
+	op = 0;
+	tweetblock=false;
+	scoreOpacity = 0;
+	gameState = 1;
+	
+	// 重置游戏设置
+	settings.blockHeight = settings.baseBlockHeight * settings.scale;
+	settings.hexWidth = settings.baseHexWidth * settings.scale;
+	MainHex = new Hex(settings.hexWidth);
+	MainHex.sideLength = settings.hexWidth;
+	
+	// 重置其他游戏状态
+	history = {};
+	importedHistory = undefined;
+	importing = 0;
+	gdx = 0;
+	gdy = 0;
+	comboTime = 0;
+	
+	// 重置主六边形的块
+	for (var i = 0; i < MainHex.blocks.length; i++) {
+		for (var j = 0; j < MainHex.blocks[i].length; j++) {
+			MainHex.blocks[i][j].height = settings.blockHeight;
+			MainHex.blocks[i][j].settled = 0;
+		}
+	}
+	
+	// 重置主六边形位置和状态
+	MainHex.y = -100;
+	MainHex.texts = [];
+	MainHex.delay = 15;
+	
+	// 重置游戏时间
+	startTime = Date.now();
+	waveone = new waveGen(MainHex);
+	
+	// 隐藏UI元素和文本
+	hideUIElements();
+	hideText();
+	
+	// 显示暂停按钮
+	$('#pauseBtn').show();
+	$('#restartBtn').hide();
+	
+	// 保存关卡尝试记录
+	updateLevelScore(level, 0, false);
+}
+
+function completeLevel() {
+	// 暂停游戏
+	isPaused = true;
+	
+	// 保存关卡完成记录
+	var isNewHighScore = updateLevelScore(currentLevel, score, true);
+	
+	// 显示关卡完成消息
+	showText('levelComplete');
+	
+	// 5秒后自动进入下一关
+	setTimeout(function() {
+		var nextLevel = currentLevel + 1;
+		if (nextLevel <= 30) {
+			// 进入下一关
+			startLevelMode(nextLevel);
+		} else {
+			// 所有关卡完成
+			showText('allLevelsComplete');
+			isLevelMode = false;
+		}
+	}, 5000);
+}
+
+function failLevel() {
+	// 暂停游戏
+	isPaused = true;
+	
+	// 保存关卡失败记录
+	updateLevelScore(currentLevel, score, false);
+	
+	// 显示关卡失败消息
+	showText('levelFailed');
+}
+
+function enterLevelSelection() {
+	// 重置游戏状态
+	isLevelMode = false;
+	isGameOver = false;
+	isPaused = false;
+	
+	// 显示关卡选择界面
+	drawLevelSelection();
+	
+	// 隐藏其他UI元素
+	hideUIElements();
+	$(".overlay").hide();
+}
+
+// 关卡模式相关函数使用save-state.js中定义的函数
+// 确保在调用这些函数之前已经加载了save-state.js文件
+
+// 重写drawLevelSelection函数，调用view.js中的实现
+function drawLevelSelection() {
+	// 调用view.js中的drawLevelSelection函数
+	// 确保在调用这个函数之前已经加载了view.js文件
+	if (typeof window.drawLevelSelection === 'function') {
+		window.drawLevelSelection();
+	} else {
+		console.error("drawLevelSelection函数未定义，请确保view.js文件已正确加载");
+	}
+}
+
 function isInfringing(hex) {
 	for (var i = 0; i < hex.sides; i++) {
 		var subTotal = 0;
@@ -342,7 +512,15 @@ function checkGameOver() {
 				highscores.push(score);
 			}
 			writeHighScores();
-			gameOverDisplay();
+
+			// 关卡模式游戏结束处理
+			if (isLevelMode) {
+				// 关卡模式下不立即显示游戏结束界面
+				// 而是在failLevel函数中处理
+			} else {
+				gameOverDisplay();
+			}
+
 			return true;
 		}
 	}
