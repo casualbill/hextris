@@ -249,11 +249,23 @@ function startBtnHandler() {
 		$('#openSideBar').fadeOut(150, "linear");
 	}
 
-	if (importing == 1) {
-		init(1);
-		checkVisualElements(0);
+	// 检查点击的位置是否在关卡模式按钮区域
+	var clickY = event.clientY || event.changedTouches[0].clientY;
+	var h = trueCanvas.height / 2 + gdy + 100 * settings.scale;
+	var levelButtonY = h + 60;
+	var buttonHeight = 30 * settings.scale;
+
+	if (clickY >= levelButtonY - buttonHeight / 2 && clickY <= levelButtonY + buttonHeight / 2) {
+		// 点击了关卡模式按钮
+		enterLevelMode();
 	} else {
-		resumeGame();
+		// 点击了普通模式按钮
+		if (importing == 1) {
+			init(1);
+			checkVisualElements(0);
+		} else {
+			resumeGame();
+		}
 	}
 }
 

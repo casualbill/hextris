@@ -43,6 +43,7 @@ function drawScoreboard() {
 		renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2 + gdy, 60, "rgb(236, 240, 241)", String.fromCharCode("0xf04b"), 'px FontAwesome');
 		renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2.1 + gdy - 155 * settings.scale, 150, "#2c3e50", "Hextris");
 		renderText(trueCanvas.width / 2 + gdx + 5 * settings.scale, h + 10, fontSize, "rgb(44,62,80)", 'Play!');
+		renderText(trueCanvas.width / 2 + gdx + 5 * settings.scale, h + 60, fontSize, "rgb(44,62,80)", '关卡模式');
 	} else if (gameState != 0 && textOpacity > 0) {
 		textOpacity -= 0.05;
 		renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2 + gdy, 60, "rgb(236, 240, 241)", String.fromCharCode("0xf04b"), 'px FontAwesome');
@@ -146,19 +147,27 @@ function gameOverDisplay() {
 	Cookies.set("visited",true);
 	var c = document.getElementById("canvas");
 	c.className = "blur";
-	updateHighScores();
-	if (highscores.length === 0 ){
-		$("#currentHighScore").text(0);
+	
+	// 检查是否在关卡模式下
+	if (levelMode.active) {
+		// 关卡失败
+		levelFailed();
+	} else {
+		// 普通模式游戏结束
+		updateHighScores();
+		if (highscores.length === 0 ){
+			$("#currentHighScore").text(0);
+		}
+		else {
+			$("#currentHighScore").text(highscores[0])
+		}
+		$("#gameoverscreen").fadeIn();
+		$("#buttonCont").fadeIn();
+		$("#container").fadeIn();
+		$("#socialShare").fadeIn();
+		$("#restart").fadeIn();
+        set_score_pos();
 	}
-	else {
-		$("#currentHighScore").text(highscores[0])
-	}
-	$("#gameoverscreen").fadeIn();
-	$("#buttonCont").fadeIn();
-	$("#container").fadeIn();
-	$("#socialShare").fadeIn();
-	$("#restart").fadeIn();
-    set_score_pos();
 }
 
 function updateHighScores (){
@@ -204,9 +213,18 @@ function pause(o) {
 		$('#restartBtn').fadeIn(300, "linear");
 		$('#buttonCont').fadeIn(300, "linear");
 		$('.helpText').fadeIn(300, 'linear');
-		if (message == 'paused') {
-			showText(message);
+		
+		// 检查是否在关卡模式下
+		if (levelMode.active) {
+			// 显示关卡模式暂停菜单
+			showLevelPauseMenu();
+		} else {
+			// 显示普通模式暂停菜单
+			if (message == 'paused') {
+				showText(message);
+			}
 		}
+		
 		$('#fork-ribbon').fadeIn(300, 'linear');
 		$("#pauseBtn").attr("src","./images/btn_resume.svg");
 		$('#overlay').fadeIn(300, 'linear');
