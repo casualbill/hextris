@@ -1,13 +1,40 @@
 
 //remember to update history function to show the respective iter speeds
 function update(dt) {
-	MainHex.dt = dt;
-	if (gameState == 1) {
-		waveone.update();
-		if (MainHex.ct - waveone.prevTimeScored > 1000) {
-			waveone.prevTimeScored = MainHex.ct;
+	if (twoPlayerMode) {
+		// Update Player 1
+		Player1Hex.dt = dt;
+		if (gameState == 1) {
+			waveone1.update();
+			if (Player1Hex.ct - waveone1.prevTimeScored > 1000) {
+				waveone1.prevTimeScored = Player1Hex.ct;
+			}
 		}
+		updatePlayer(Player1Hex, blocks1, waveone1, dt);
+		
+		// Update Player 2
+		Player2Hex.dt = dt;
+		if (gameState == 1) {
+			waveone2.update();
+			if (Player2Hex.ct - waveone2.prevTimeScored > 1000) {
+				waveone2.prevTimeScored = Player2Hex.ct;
+			}
+		}
+		updatePlayer(Player2Hex, blocks2, waveone2, dt);
+	} else {
+		// Single player mode
+		MainHex.dt = dt;
+		if (gameState == 1) {
+			waveone.update();
+			if (MainHex.ct - waveone.prevTimeScored > 1000) {
+				waveone.prevTimeScored = MainHex.ct;
+			}
+		}
+		updatePlayer(MainHex, blocks, waveone, dt);
 	}
+}
+
+function updatePlayer(MainHex, blocks, waveone, dt) {
 	var lowestDeletedIndex = 99;
 	var i;
 	var j;
@@ -38,7 +65,7 @@ function update(dt) {
 			block = MainHex.blocks[i][j];
 			if (block.deleted == 2) {
 				MainHex.blocks[i].splice(j,1);
-				blockDestroyed();
+				blockDestroyed(MainHex);
 				if (j < lowestDeletedIndex) lowestDeletedIndex = j;
 				j--;
 			}

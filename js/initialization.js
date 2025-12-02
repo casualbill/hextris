@@ -108,9 +108,18 @@ function initialize(a) {
 	window.framerate = 60;
 	window.history = {};
 	window.score = 0;
+	window.score2 = 0;
 	window.scoreAdditionCoeff = 1;
 	window.prevScore = 0;
+	window.prevScore2 = 0;
 	window.numHighScores = 3;
+	window.twoPlayerMode = false;
+	window.Player1Hex;
+	window.Player2Hex;
+	window.blocks1 = [];
+	window.blocks2 = [];
+	window.waveone1;
+	window.waveone2;
 
 	highscores = [];
 	if (localStorage.getItem('highscores')) {
@@ -142,10 +151,13 @@ function initialize(a) {
 			}
 		};
 		$('#startBtn').off();
+		$('#twoPlayerBtn').off();
 		if (settings.platform == 'mobile') {
 			$('#startBtn').on('touchstart', startBtnHandler);
+			$('#twoPlayerBtn').on('touchstart', twoPlayerBtnHandler);
 		} else {
 			$('#startBtn').on('mousedown', startBtnHandler);
+			$('#twoPlayerBtn').on('mousedown', twoPlayerBtnHandler);
 		}
 
 		document.addEventListener('touchmove', function(e) {
@@ -211,6 +223,7 @@ function initialize(a) {
 }
 
 function startBtnHandler() {
+	twoPlayerMode = false;
 	setTimeout(function() {
 		if (settings.platform == "mobile") {
 			try {
@@ -255,6 +268,50 @@ function startBtnHandler() {
 	} else {
 		resumeGame();
 	}
+}
+
+function twoPlayerBtnHandler() {
+	twoPlayerMode = true;
+	setTimeout(function() {
+		if (settings.platform == "mobile") {
+			try {
+				document.body.removeEventListener('touchstart', handleTapBefore, false);
+			} catch (e) {
+
+			}
+
+			try {
+				document.body.removeEventListener('touchstart', handleTap, false);
+			} catch (e) {
+
+			}
+
+			document.body.removeEventListener('touchstart', handleTap, false);
+		} else {
+			try {
+				document.body.removeEventListener('mousedown', handleClickBefore, false);
+			} catch (e) {
+
+			}
+
+			try {
+				document.body.removeEventListener('mousedown', handleClick, false);
+			} catch (e) {
+
+			}
+
+			document.body.removeEventListener('mousedown', handleClick, false);
+		}
+	}, 5);
+
+	if (!canRestart) return false;
+
+	if ($('#openSideBar').is(':visible')) {
+		$('#openSideBar').fadeOut(150, "linear");
+	}
+
+	init(1);
+	checkVisualElements(0);
 }
 
 function handlePause() {

@@ -97,7 +97,7 @@ function init(b) {
 
 		setTimeout(function() {
             if (gameState == 1) {
-			    $('#openSideBar').fadeOut(150, "linear");
+				$('#openSideBar').fadeOut(150, "linear");
             }
 			infobuttonfading = false;
 		}, 7000);
@@ -120,7 +120,9 @@ function init(b) {
 	importedHistory = undefined;
 	importing = 0;
 	score = saveState.score || 0;
+	score2 = 0;
 	prevScore = 0;
+	prevScore2 = 0;
 	spawnLane = 0;
 	op = 0;
 	tweetblock=false;
@@ -132,77 +134,108 @@ function init(b) {
 
 	settings.blockHeight = settings.baseBlockHeight * settings.scale;
 	settings.hexWidth = settings.baseHexWidth * settings.scale;
-	MainHex = saveState.hex || new Hex(settings.hexWidth);
-	if (saveState.hex) {
-		MainHex.playThrough += 1;
-	}
-	MainHex.sideLength = settings.hexWidth;
-
-	var i;
-	var block;
-	if (saveState.blocks) {
-		saveState.blocks.map(function(o) {
-			if (rgbToHex[o.color]) {
-				o.color = rgbToHex[o.color];
-			}
-		});
-
-		for (i = 0; i < saveState.blocks.length; i++) {
-			block = saveState.blocks[i];
-			blocks.push(block);
-		}
+	
+	if (twoPlayerMode) {
+		// Initialize Player 1
+		Player1Hex = new Hex(settings.hexWidth);
+		Player1Hex.sideLength = settings.hexWidth;
+		Player1Hex.x = trueCanvas.width / 4;
+		Player1Hex.y = trueCanvas.height / 2;
+		Player1Hex.playerColor = "#3498db";
+		
+		// Initialize Player 2
+		Player2Hex = new Hex(settings.hexWidth);
+		Player2Hex.sideLength = settings.hexWidth;
+		Player2Hex.x = trueCanvas.width * 3 / 4;
+		Player2Hex.y = trueCanvas.height / 2;
+		Player2Hex.playerColor = "#e74c3c";
+		
+		blocks1 = [];
+		blocks2 = [];
+		
+		waveone1 = new waveGen(Player1Hex);
+		waveone2 = new waveGen(Player2Hex);
+		
+		Player1Hex.texts = [];
+		Player2Hex.texts = [];
+		Player1Hex.delay = 15;
+		Player2Hex.delay = 15;
 	} else {
-		blocks = [];
-	}
-
-	gdx = saveState.gdx || 0;
-	gdy = saveState.gdy || 0;
-	comboTime = saveState.comboTime || 0;
-
-	for (i = 0; i < MainHex.blocks.length; i++) {
-		for (var j = 0; j < MainHex.blocks[i].length; j++) {
-			MainHex.blocks[i][j].height = settings.blockHeight;
-			MainHex.blocks[i][j].settled = 0;
+		MainHex = saveState.hex || new Hex(settings.hexWidth);
+		if (saveState.hex) {
+			MainHex.playThrough += 1;
 		}
-	}
+		MainHex.sideLength = settings.hexWidth;
 
-	MainHex.blocks.map(function(i) {
-		i.map(function(o) {
-			if (rgbToHex[o.color]) {
-				o.color = rgbToHex[o.color];
+		var i;
+		var block;
+		if (saveState.blocks) {
+			saveState.blocks.map(function(o) {
+				if (rgbToHex[o.color]) {
+					o.color = rgbToHex[o.color];
+				}
+			});
+
+			for (i = 0; i < saveState.blocks.length; i++) {
+				block = saveState.blocks[i];
+				blocks.push(block);
 			}
+		} else {
+			blocks = [];
+		}
+
+		gdx = saveState.gdx || 0;
+		gdy = saveState.gdy || 0;
+		comboTime = saveState.comboTime || 0;
+
+		for (i = 0; i < MainHex.blocks.length; i++) {
+			for (var j = 0; j < MainHex.blocks[i].length; j++) {
+				MainHex.blocks[i][j].height = settings.blockHeight;
+				MainHex.blocks[i][j].settled = 0;
+			}
+		}
+
+		MainHex.blocks.map(function(i) {
+			i.map(function(o) {
+				if (rgbToHex[o.color]) {
+					o.color = rgbToHex[o.color];
+				}
+			});
 		});
-	});
 
-	MainHex.y = -100;
+		MainHex.y = -100;
 
-	startTime = Date.now();
-	waveone = saveState.wavegen || new waveGen(MainHex);
+		startTime = Date.now();
+		waveone = saveState.wavegen || new waveGen(MainHex);
 
-	MainHex.texts = []; //clear texts
-	MainHex.delay = 15;
+		MainHex.texts = []; //clear texts
+		MainHex.delay = 15;
+	}
 	hideText();
 }
 
-function addNewBlock(blocklane, color, iter, distFromHex, settled) { //last two are optional parameters
+function addNewBlock(blocklane, color, iter, distFromHex, settled, player) { //last two are optional parameters
 	iter *= settings.speedModifier;
-	if (!history[MainHex.ct]) {
-		history[MainHex.ct] = {};
+	var currentHex = player || (twoPlayerMode ? Player1Hex : MainHex);
+	var currentBlocks = twoPlayerMode ? (player === Player1Hex ? blocks1 : blocks2) : blocks;
+	
+	if (!history[currentHex.ct]) {
+		history[currentHex.ct] = {};
 	}
 
-	history[MainHex.ct].block = {
+	history[currentHex.ct].block = {
 		blocklane: blocklane,
 		color: color,
 		iter: iter
 	};
 
 	if (distFromHex) {
-		history[MainHex.ct].distFromHex = distFromHex;
+		history[currentHex.ct].distFromHex = distFromHex;
 	}
 	if (settled) {
-		blockHist[MainHex.ct].settled = settled;
+		blockHist[currentHex.ct].settled = settled;
 	}
-	blocks.push(new Block(blocklane, color, iter, distFromHex, settled));
+	currentBlocks.push(new Block(blocklane, color, iter, distFromHex, settled, currentHex));
 }
 
 function exportHistory() {
@@ -212,6 +245,7 @@ function exportHistory() {
 
 function setStartScreen() {
 	$('#startBtn').show();
+	$('#twoPlayerBtn').show();
 	init();
 	if (isStateSaved()) {
 		importing = 0;
@@ -222,6 +256,7 @@ function setStartScreen() {
 	$('#pauseBtn').hide();
 	$('#restartBtn').hide();
 	$('#startBtn').show();
+	$('#twoPlayerBtn').show();
 
 	gameState = 0;
 	requestAnimFrame(animLoop);
@@ -335,15 +370,31 @@ function isInfringing(hex) {
 }
 
 function checkGameOver() {
-	for (var i = 0; i < MainHex.sides; i++) {
-		if (isInfringing(MainHex)) {
-			$.get('http://54.183.184.126/' + String(score))
-			if (highscores.indexOf(score) == -1) {
-				highscores.push(score);
-			}
-			writeHighScores();
-			gameOverDisplay();
+	if (twoPlayerMode) {
+		var p1Lost = isInfringing(Player1Hex);
+		var p2Lost = isInfringing(Player2Hex);
+		
+		if (p1Lost || p2Lost) {
+			// Determine winner
+			var winner = p2Lost ? "Player 1" : "Player 2";
+			var winnerScore = p2Lost ? score : score2;
+			var loserScore = p2Lost ? score2 : score;
+			
+			// Display game over with winner info
+			gameOverDisplay(winner, winnerScore, loserScore);
 			return true;
+		}
+	} else {
+		for (var i = 0; i < MainHex.sides; i++) {
+			if (isInfringing(MainHex)) {
+				$.get('http://54.183.184.126/' + String(score));
+				if (highscores.indexOf(score) == -1) {
+					highscores.push(score);
+				}
+				writeHighScores();
+				gameOverDisplay();
+				return true;
+			}
 		}
 	}
 	return false;
