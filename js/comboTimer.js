@@ -1,4 +1,4 @@
-function drawTimer() {
+function drawTimer(ctx) {
 	if(gameState==1){
 		var leftVertexes = [];
 		var rightVertexes = [];
@@ -6,22 +6,22 @@ function drawTimer() {
 		for(var i=0;i<6;i++){
 			var done = (MainHex.ct -MainHex.lastCombo);
 			if(done<(settings.comboTime)*(5-i)*(1/6)){
-				leftVertexes.push(calcSide(i,i+1,1,1));
-								rightVertexes.push(calcSide(12-i,11-i,1,1));
+				leftVertexes.push(calcSide(ctx, i,i+1,1,1));
+								rightVertexes.push(calcSide(ctx, 12-i,11-i,1,1));
 			}
 			else{
-				leftVertexes.push(calcSide(i,i+1,1-((done*6)/settings.comboTime)%(1),1));
-				rightVertexes.push(calcSide(12-i,11-i,1-((done*6)/settings.comboTime)%(1),1));
+				leftVertexes.push(calcSide(ctx, i,i+1,1-((done*6)/settings.comboTime)%(1),1));
+				rightVertexes.push(calcSide(ctx, 12-i,11-i,1-((done*6)/settings.comboTime)%(1),1));
 				break;
 			}
 		}
 	}
-		if(rightVertexes.length !== 0) drawSide(rightVertexes);
-		if(leftVertexes.length !== 0) drawSide(leftVertexes);
+		if(rightVertexes.length !== 0) drawSide(ctx, rightVertexes);
+		if(leftVertexes.length !== 0) drawSide(ctx, leftVertexes);
 	}
 }
 
-function calcSide(startVertex,endVertex,fraction,offset){
+function calcSide(ctx, startVertex,endVertex,fraction,offset){
 	startVertex = (startVertex+offset)%12;
 	endVertex = (endVertex+offset)%12;
 	ctx.globalAlpha=1;
@@ -51,7 +51,7 @@ function calcSide(startVertex,endVertex,fraction,offset){
 	var endY = trueCanvas.height/2 + Vertexes[endVertex][1];
 		return [[startX,startY],[((endX-startX)*fraction)+startX,((endY-startY)*fraction)+startY]];
 }
-function drawSide(vertexes){
+function drawSide(ctx, vertexes){
 	if (gameState === 0) {
 		ctx.strokeStyle = hexColorsToTintedColors[MainHex.lastColorScored];
 	} else {

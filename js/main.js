@@ -97,7 +97,7 @@ function init(b) {
 
 		setTimeout(function() {
             if (gameState == 1) {
-			    $('#openSideBar').fadeOut(150, "linear");
+				$('#openSideBar').fadeOut(150, "linear");
             }
 			infobuttonfading = false;
 		}, 7000);
@@ -182,6 +182,9 @@ function init(b) {
 	MainHex.texts = []; //clear texts
 	MainHex.delay = 15;
 	hideText();
+	
+	// 初始化Three.js
+	if (!window.scene) { window.initThreeJS(); }
 }
 
 function addNewBlock(blocklane, color, iter, distFromHex, settled) { //last two are optional parameters
@@ -233,7 +236,10 @@ function animLoop() {
 	switch (gameState) {
 	case 1:
 		requestAnimFrame(animLoop);
-		render();
+		// 执行3D渲染
+		render3D();
+		// 执行2D UI渲染
+		renderUI();
 		var now = Date.now();
 		var dt = (now - lastTime)/16.666 * rush;
 		if (spd > 1) {
@@ -275,12 +281,14 @@ function animLoop() {
 
 	case 0:
 		requestAnimFrame(animLoop);
-		render();
+		render3D();
+		renderUI();
 		break;
 
 	case -1:
 		requestAnimFrame(animLoop);
-		render();
+		render3D();
+		renderUI();
 		break;
 
 	case 2:
@@ -288,21 +296,24 @@ function animLoop() {
 		var dt = (now - lastTime)/16.666 * rush;
 		requestAnimFrame(animLoop);
 		update(dt);
-		render();
+		render3D();
+		renderUI();
 		lastTime = now;
 		break;
 
 	case 3:
 		requestAnimFrame(animLoop);
 		fadeOutObjectsOnScreen();
-		render();
+		render3D();
+		renderUI();
 		break;
 
 	case 4:
 		setTimeout(function() {
 			initialize(1);
 		}, 1);
-		render();
+		render3D();
+		renderUI();
 		return;
 
 	default:
