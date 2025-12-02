@@ -130,10 +130,18 @@ function initialize(a) {
 	window.nextGen = undefined;
 	window.spawnLane = 0;
 	window.importing = 0;
-	window.importedHistory = undefined;
-	window.startTime = undefined;
-	window.gameState;
-	setStartScreen();
+		window.importedHistory = undefined;
+		window.startTime = undefined;
+		window.gameState;
+		window.replayMode = false;
+		window.replayData = null;
+		window.replayIndex = 0;
+		window.replaySpeed = 1;
+		window.replayPaused = false;
+		window.replayStartTime = null;
+		window.totalReplayTime = 0;
+		window.replayHighscores = [];
+		setStartScreen();
 	if (a != 1) {
 		window.canRestart = 1;
 		window.onblur = function(e) {
@@ -171,6 +179,74 @@ function initialize(a) {
 		})(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 		ga('create', 'UA-51272720-1', 'teamsnowman.github.io');
 		ga('send', 'pageview');
+
+		// 显示回放按钮如果有回放数据
+		var replayBtn = document.getElementById('replayBtn');
+		var replays = getReplays();
+		if (replays.length > 0) {
+			replayBtn.style.display = 'inline-block';
+		} else {
+			replayBtn.style.display = 'none';
+		}
+
+		// 回放按钮点击事件处理
+		replayBtn.addEventListener('click', function() {
+			showReplayList();
+		});
+
+		// 回到菜单按钮点击事件处理
+		document.getElementById('backToMenuBtn').addEventListener('click', function() {
+			backToMenu();
+		});
+
+		// 回放暂停/继续按钮点击事件处理
+		document.getElementById('replayPauseBtn').addEventListener('click', function() {
+			replayPaused = !replayPaused;
+			this.textContent = replayPaused ? 'Resume' : 'Pause';
+		});
+
+		// 回放倍速控制按钮点击事件处理
+		document.getElementById('replaySpeed05Btn').addEventListener('click', function() {
+			replaySpeed = 0.5;
+			// 更新按钮样式
+			document.getElementById('replaySpeed05Btn').style.backgroundColor = '#3498db';
+			document.getElementById('replaySpeed1Btn').style.backgroundColor = '#95a5a6';
+			document.getElementById('replaySpeed2Btn').style.backgroundColor = '#95a5a6';
+		});
+
+		document.getElementById('replaySpeed1Btn').addEventListener('click', function() {
+			replaySpeed = 1;
+			// 更新按钮样式
+			document.getElementById('replaySpeed05Btn').style.backgroundColor = '#95a5a6';
+			document.getElementById('replaySpeed1Btn').style.backgroundColor = '#3498db';
+			document.getElementById('replaySpeed2Btn').style.backgroundColor = '#95a5a6';
+		});
+
+		document.getElementById('replaySpeed2Btn').addEventListener('click', function() {
+			replaySpeed = 2;
+			// 更新按钮样式
+			document.getElementById('replaySpeed05Btn').style.backgroundColor = '#95a5a6';
+			document.getElementById('replaySpeed1Btn').style.backgroundColor = '#95a5a6';
+			document.getElementById('replaySpeed2Btn').style.backgroundColor = '#3498db';
+		});
+
+		// 退出回放按钮点击事件处理
+		document.getElementById('exitReplayBtn').addEventListener('click', function() {
+			replayEnd();
+		});
+
+		// 重新播放按钮点击事件处理
+		document.getElementById('replayAgainBtn').addEventListener('click', function() {
+			document.getElementById('replayEndScreen').style.display = 'none';
+			// 重新加载当前回放
+			loadReplay(replayData);
+		});
+
+		// 回到回放列表按钮点击事件处理
+		document.getElementById('backToReplayListBtn').addEventListener('click', function() {
+			document.getElementById('replayEndScreen').style.display = 'none';
+			showReplayList();
+		});
 
 		document.addEventListener("pause", handlePause, false);
 		document.addEventListener("backbutton", handlePause, false);

@@ -25,22 +25,39 @@ function waveGen(hex) {
 	this.difficulty = 1;
 	this.dt = 0;
 	this.update = function() {
-		this.currentFunction();
-		this.dt = (settings.platform == 'mobile' ? 14 : 16.6667) * MainHex.ct;
-		this.computeDifficulty();
-		if ((this.dt - this.lastGen) * settings.creationSpeedModifier > this.nextGen) {
-			if (this.nextGen > 600) {
-				this.nextGen -= 11 * ((this.nextGen / 1300)) * settings.creationSpeedModifier;
+			this.currentFunction();
+			this.dt = (settings.platform == 'mobile' ? 14 : 16.6667) * MainHex.ct;
+			if (!replayMode) {
+				this.computeDifficulty();
+			} else {
+				// 回放模式：从回放数据中获取难度
+				if (replayData && replayData.difficulty) {
+					this.difficulty = replayData.difficulty;
+				}
 			}
-		}
-	};
+			if ((this.dt - this.lastGen) * settings.creationSpeedModifier > this.nextGen) {
+				if (this.nextGen > 600) {
+					this.nextGen -= 11 * ((this.nextGen / 1300)) * settings.creationSpeedModifier;
+				}
+			}
+		};
 
 	this.randomGeneration = function() {
 		if (this.dt - this.lastGen > this.nextGen) {
 			this.ct++;
 			this.lastGen = this.dt;
 			var fv = randInt(0, MainHex.sides);
-			addNewBlock(fv, colors[randInt(0, colors.length)], 1.6 + (this.difficulty / 15) * 3);
+			var color = colors[randInt(0, colors.length)];
+		addNewBlock(fv, color, 1.6 + (this.difficulty / 15) * 3);
+		// 记录方块生成事件
+		if (!replayMode) {
+			replayData.operations.push({
+				time: Date.now() - startTime,
+				type: 'block_create',
+				position: [fv, 0], // 0 表示六边形的外部位置
+				color: color
+			});
+		}
 			var lim = 5;
 			if (this.ct > lim) {
 				var nextPattern = randInt(0, 3 + 21);
@@ -99,7 +116,17 @@ function waveGen(hex) {
 			}
 
 			for (var i = 0; i < MainHex.sides; i++) {
-				addNewBlock(i, colorList[i % numColors], 1.5 + (this.difficulty / 15) * 3);
+				var color = colorList[i % numColors];
+					addNewBlock(i, color, 1.5 + (this.difficulty / 15) * 3);
+					// 记录方块生成事件
+					if (!replayMode) {
+						replayData.operations.push({
+							time: Date.now() - startTime,
+							type: 'block_create',
+							position: [i, 0], // 0 表示六边形的外部位置
+							color: color
+						});
+					}
 			}
 
 			this.ct += 15;
@@ -119,7 +146,18 @@ function waveGen(hex) {
 
 			var d = randInt(0, 6);
 			for (var i = 0; i < 3; i++) {
-				addNewBlock((d + i) % 6, colorList[i], 1.5 + (this.difficulty / 15) * 3);
+				var pos = (d + i) % 6;
+				var color = colorList[i];
+				addNewBlock(pos, color, 1.5 + (this.difficulty / 15) * 3);
+				// 记录方块生成事件
+				if (!replayMode) {
+					replayData.operations.push({
+						time: Date.now() - startTime,
+						type: 'block_create',
+						position: [pos, 0], // 0 表示六边形的外部位置
+						color: color
+					});
+				}
 			}
 
 			this.ct += 8;
@@ -132,8 +170,28 @@ function waveGen(hex) {
 		if (this.dt - this.lastGen > this.nextGen) {
 			var ri = randInt(0, colors.length);
 			var i = randInt(0, colors.length);
-			addNewBlock(i, colors[ri], 0.6 + (this.difficulty / 15) * 3);
-			addNewBlock((i + 3) % MainHex.sides, colors[ri], 0.6 + (this.difficulty / 15) * 3);
+			var color = colors[ri];
+				addNewBlock(i, color, 0.6 + (this.difficulty / 15) * 3);
+				// 记录方块生成事件
+				if (!replayMode) {
+					replayData.operations.push({
+						time: Date.now() - startTime,
+						type: 'block_create',
+						position: [i, 0], // 0 表示六边形的外部位置
+						color: color
+					});
+				}
+				var pos2 = (i + 3) % MainHex.sides;
+				addNewBlock(pos2, color, 0.6 + (this.difficulty / 15) * 3);
+				// 记录方块生成事件
+				if (!replayMode) {
+					replayData.operations.push({
+						time: Date.now() - startTime,
+						type: 'block_create',
+						position: [pos2, 0], // 0 表示六边形的外部位置
+						color: color
+					});
+				}
 			this.ct += 1.5;
 			this.lastGen = this.dt;
 			this.shouldChangePattern();
@@ -144,9 +202,31 @@ function waveGen(hex) {
 		var dir = randInt(0, 2);
 		if (this.dt - this.lastGen > this.nextGen * (2 / 3)) {
 			if (dir) {
-				addNewBlock(5 - (this.ct % MainHex.sides), colors[randInt(0, colors.length)], 1.5 + (this.difficulty / 15) * (3 / 2));
+				var pos = 5 - (this.ct % MainHex.sides);
+				var color = colors[randInt(0, colors.length)];
+				addNewBlock(pos, color, 1.5 + (this.difficulty / 15) * (3 / 2));
+				// 记录方块生成事件
+				if (!replayMode) {
+					replayData.operations.push({
+						time: Date.now() - startTime,
+						type: 'block_create',
+						position: [pos, 0], // 0 表示六边形的外部位置
+						color: color
+					});
+				}
 			} else {
-				addNewBlock(this.ct % MainHex.sides, colors[randInt(0, colors.length)], 1.5 + (this.difficulty / 15) * (3 / 2));
+				var pos = this.ct % MainHex.sides;
+				var color = colors[randInt(0, colors.length)];
+				addNewBlock(pos, color, 1.5 + (this.difficulty / 15) * (3 / 2));
+				// 记录方块生成事件
+				if (!replayMode) {
+					replayData.operations.push({
+						time: Date.now() - startTime,
+						type: 'block_create',
+						position: [pos, 0], // 0 表示六边形的外部位置
+						color: color
+					});
+				}
 			}
 			this.ct += 1;
 			this.lastGen = this.dt;
@@ -157,8 +237,29 @@ function waveGen(hex) {
 	this.doubleGeneration = function() {
 		if (this.dt - this.lastGen > this.nextGen) {
 			var i = randInt(0, colors.length);
-			addNewBlock(i, colors[randInt(0, colors.length)], 1.5 + (this.difficulty / 15) * 3);
-			addNewBlock((i + 1) % MainHex.sides, colors[randInt(0, colors.length)], 1.5 + (this.difficulty / 15) * 3);
+			var color1 = colors[randInt(0, colors.length)];
+				addNewBlock(i, color1, 1.5 + (this.difficulty / 15) * 3);
+				// 记录方块生成事件
+				if (!replayMode) {
+					replayData.operations.push({
+						time: Date.now() - startTime,
+						type: 'block_create',
+						position: [i, 0], // 0 表示六边形的外部位置
+						color: color1
+					});
+				}
+				var pos2 = (i + 1) % MainHex.sides;
+				var color2 = colors[randInt(0, colors.length)];
+				addNewBlock(pos2, color2, 1.5 + (this.difficulty / 15) * 3);
+				// 记录方块生成事件
+				if (!replayMode) {
+					replayData.operations.push({
+						time: Date.now() - startTime,
+						type: 'block_create',
+						position: [pos2, 0], // 0 表示六边形的外部位置
+						color: color2
+					});
+				}
 			this.ct += 2;
 			this.lastGen = this.dt;
 			this.shouldChangePattern();

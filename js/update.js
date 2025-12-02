@@ -3,9 +3,44 @@
 function update(dt) {
 	MainHex.dt = dt;
 	if (gameState == 1) {
-		waveone.update();
-		if (MainHex.ct - waveone.prevTimeScored > 1000) {
-			waveone.prevTimeScored = MainHex.ct;
+		if (replayMode && !replayPaused) {
+			// 回放模式：根据回放数据自动执行操作
+			var elapsedTime = (Date.now() - replayStartTime) * replaySpeed;
+			var currentOperation = replayData.operations[replayIndex];
+
+			while (currentOperation && currentOperation.time <= elapsedTime) {
+				// 执行当前操作
+				switch (currentOperation.type) {
+					case 'rotate':
+						if (currentOperation.direction === 'left') {
+							MainHex.rotate(1);
+						} else {
+							MainHex.rotate(-1);
+						}
+						break;
+					case 'blockGenerated':
+						// 在回放模式下，方块生成已经由waveone.update()处理
+						break;
+					case 'scoreChange':
+						// 在回放模式下，分数变化已经由游戏逻辑处理
+						break;
+					case 'blockDestroyed':
+						// 在回放模式下，方块消除已经由游戏逻辑处理
+						break;
+				}
+
+				replayIndex++;
+				currentOperation = replayData.operations[replayIndex];
+			}
+
+			// 更新回放进度
+			updateReplayProgress();
+		} else {
+			// 正常模式：玩家操作
+			waveone.update();
+			if (MainHex.ct - waveone.prevTimeScored > 1000) {
+				waveone.prevTimeScored = MainHex.ct;
+			}
 		}
 	}
 	var lowestDeletedIndex = 99;
@@ -37,6 +72,8 @@ function update(dt) {
 		for (j = 0; j < MainHex.blocks[i].length; j++) {
 			block = MainHex.blocks[i][j];
 			if (block.deleted == 2) {
+				// 记录消除事件
+				recordBlockDestroyed(i, j);
 				MainHex.blocks[i].splice(j,1);
 				blockDestroyed();
 				if (j < lowestDeletedIndex) lowestDeletedIndex = j;
