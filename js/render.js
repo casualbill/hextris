@@ -6,51 +6,128 @@ function render() {
 	
 	ctx.clearRect(0, 0, trueCanvas.width, trueCanvas.height);
 	clearGameBoard();
-	if (gameState === 1 || gameState === 2 || gameState === -1 || gameState === 0) {
-		if (op < 1) {
-			op += 0.01;
-		}
-		ctx.globalAlpha = op;
-		drawPolygon(trueCanvas.width / 2 , trueCanvas.height / 2 , 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false,6);
-		drawTimer();
-		ctx.globalAlpha = 1;
-	}
 
-	var i;
-	for (i = 0; i < MainHex.blocks.length; i++) {
-		for (var j = 0; j < MainHex.blocks[i].length; j++) {
-			var block = MainHex.blocks[i][j];
-			block.draw(true, j);
-		}
-	}
-	for (i = 0; i < blocks.length; i++) {
-		blocks[i].draw();
-	}
-
-	MainHex.draw();
-	if (gameState ==1 || gameState ==-1 || gameState === 0) {
-		drawScoreboard();
-	}
-
-	for (i = 0; i < MainHex.texts.length; i++) {
-		var alive = MainHex.texts[i].draw();
-		if(!alive){
-			MainHex.texts.splice(i,1);
-			i--;
-		}
-	}
-
-	if ((MainHex.ct < 650 && (gameState !== 0) && !MainHex.playThrough)) {
-		if (MainHex.ct > (650 - 50)) {
-			ctx.globalAlpha = (50 - (MainHex.ct - (650 - 50)))/50;
+	if (window.isAIBattle) {
+		// AI Battle mode rendering
+		if (gameState === 1 || gameState === 2 || gameState === -1 || gameState === 0) {
+			if (op < 1) {
+				op += 0.01;
+			}
+			ctx.globalAlpha = op;
+			
+			// Draw both hexagon backgrounds
+			drawPolygon(window.PlayerHex.x, window.PlayerHex.y, 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false,6);
+			drawPolygon(window.AIHex.x, window.AIHex.y, 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false,6);
+			
+			drawTimer();
+			ctx.globalAlpha = 1;
 		}
 
-		if (MainHex.ct < 50) {
-			ctx.globalAlpha = (MainHex.ct)/50;
+		var i;
+		
+		// Draw player's blocks
+		for (i = 0; i < window.PlayerHex.blocks.length; i++) {
+			for (var j = 0; j < window.PlayerHex.blocks[i].length; j++) {
+				var block = window.PlayerHex.blocks[i][j];
+				block.draw(true, j);
+			}
+		}
+		for (i = 0; i < window.playerBlocks.length; i++) {
+			window.playerBlocks[i].draw();
 		}
 
-		renderBeginningText();
-		ctx.globalAlpha = 1;
+		// Draw AI's blocks
+		for (i = 0; i < window.AIHex.blocks.length; i++) {
+			for (var j = 0; j < window.AIHex.blocks[i].length; j++) {
+				var block = window.AIHex.blocks[i][j];
+				block.draw(true, j);
+			}
+		}
+		for (i = 0; i < window.aiBlocks.length; i++) {
+			window.aiBlocks[i].draw();
+		}
+
+		// Draw both hexagons
+		window.PlayerHex.draw();
+		window.AIHex.draw();
+
+		// Draw beginning text only for player
+		if ((window.PlayerHex.ct < 650 && (gameState !== 0) && !window.PlayerHex.playThrough)) {
+			if (window.PlayerHex.ct > (650 - 50)) {
+				ctx.globalAlpha = (50 - (window.PlayerHex.ct - (650 - 50)))/50;
+			}
+
+			if (window.PlayerHex.ct < 50) {
+				ctx.globalAlpha = (window.PlayerHex.ct)/50;
+			}
+
+			renderBeginningTextForAIBattle();
+			ctx.globalAlpha = 1;
+		}
+
+		// Draw texts for both players
+		for (i = 0; i < window.PlayerHex.texts.length; i++) {
+			var alive = window.PlayerHex.texts[i].draw();
+			if(!alive){
+				window.PlayerHex.texts.splice(i,1);
+				i--;
+			}
+		}
+		for (i = 0; i < window.AIHex.texts.length; i++) {
+			var alive = window.AIHex.texts[i].draw();
+			if(!alive){
+				window.AIHex.texts.splice(i,1);
+				i--;
+			}
+		}
+	} else {
+		// Normal game mode rendering
+		if (gameState === 1 || gameState === 2 || gameState === -1 || gameState === 0) {
+			if (op < 1) {
+				op += 0.01;
+			}
+			ctx.globalAlpha = op;
+			drawPolygon(trueCanvas.width / 2 , trueCanvas.height / 2 , 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false,6);
+			drawTimer();
+			ctx.globalAlpha = 1;
+		}
+
+		var i;
+		for (i = 0; i < MainHex.blocks.length; i++) {
+			for (var j = 0; j < MainHex.blocks[i].length; j++) {
+				var block = MainHex.blocks[i][j];
+				block.draw(true, j);
+			}
+		}
+		for (i = 0; i < blocks.length; i++) {
+			blocks[i].draw();
+		}
+
+		MainHex.draw();
+		if (gameState ==1 || gameState ==-1 || gameState === 0) {
+			drawScoreboard();
+		}
+
+		for (i = 0; i < MainHex.texts.length; i++) {
+			var alive = MainHex.texts[i].draw();
+			if(!alive){
+				MainHex.texts.splice(i,1);
+				i--;
+			}
+		}
+
+		if ((MainHex.ct < 650 && (gameState !== 0) && !MainHex.playThrough)) {
+			if (MainHex.ct > (650 - 50)) {
+				ctx.globalAlpha = (50 - (MainHex.ct - (650 - 50)))/50;
+			}
+
+			if (MainHex.ct < 50) {
+				ctx.globalAlpha = (MainHex.ct)/50;
+			}
+
+			renderBeginningText();
+			ctx.globalAlpha = 1;
+		}
 	}
 
 	if (gameState == -1) {
@@ -86,10 +163,37 @@ function renderBeginningText() {
 	renderText((trueCanvas.width)/2 + 2 * settings.scale,upperheight-0*settings.scale, fontSize, '#2c3e50', input_text);
 	renderText((trueCanvas.width)/2 + 2 * settings.scale,upperheight+33*settings.scale, fontSize, '#2c3e50', action_text);
     if (!mob) {
-	    drawKey("",(trueCanvas.width)/2 + 2 * settings.scale-2.5,upperheight+38*settings.scale);
+		drawKey("",(trueCanvas.width)/2 + 2 * settings.scale-2.5,upperheight+38*settings.scale);
     }
 
 	renderText((trueCanvas.width)/2 + 2 * settings.scale,lowerheight,fontSize, '#2c3e50', score_text);
+}
+
+function renderBeginningTextForAIBattle() {
+	var upperheight = (window.PlayerHex.y) - ((settings.rows * settings.blockHeight) * (2/Math.sqrt(3))) * (5/6);
+	var lowerheight = (window.PlayerHex.y) + ((settings.rows * settings.blockHeight) * (2/Math.sqrt(3))) * (11/16);
+    var text = '';
+    var mob, fontSize;
+    if(/mobile|Mobile|iOS|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        mob = true;
+        input_text = 'Tap the screen\'s left and right'
+        action_text = 'sides to rotate the hexagon'
+        score_text = 'Match 3+ blocks to score'
+        fontSize = 35
+    } else {
+        mob = false
+        input_text = 'Use the right and left arrow keys'
+        action_text = 'to rotate the hexagon'
+        score_text = 'Match 3+ blocks to score!'
+        fontSize = 27
+    }
+	renderText(window.PlayerHex.x + 2 * settings.scale,upperheight-0*settings.scale, fontSize, '#2c3e50', input_text);
+	renderText(window.PlayerHex.x + 2 * settings.scale,upperheight+33*settings.scale, fontSize, '#2c3e50', action_text);
+    if (!mob) {
+		drawKey("", window.PlayerHex.x + 2 * settings.scale-2.5, upperheight+38*settings.scale);
+    }
+
+	renderText(window.PlayerHex.x + 2 * settings.scale,lowerheight,fontSize, '#2c3e50', score_text);
 }
 
 function drawKey(key, x, y) {

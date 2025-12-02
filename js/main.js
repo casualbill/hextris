@@ -73,6 +73,44 @@ function resumeGame() {
 	checkVisualElements(0);
 }
 
+function showPauseMenu() {
+	var pauseMenu = document.getElementById('pauseMenu');
+	pauseMenu.style.display = 'block';
+	
+	var resumeBtn = document.getElementById('resumeBtn');
+	var restartBtn = document.getElementById('restartBtn');
+	var menuBtn = document.getElementById('menuBtn');
+	
+	// Remove existing event listeners
+	resumeBtn.replaceWith(resumeBtn.cloneNode(true));
+	restartBtn.replaceWith(restartBtn.cloneNode(true));
+	menuBtn.replaceWith(menuBtn.cloneNode(true));
+	
+	// Add new event listeners
+	document.getElementById('resumeBtn').addEventListener('click', function() {
+		hidePauseMenu();
+		gameState = 1;
+	});
+	
+	document.getElementById('restartBtn').addEventListener('click', function() {
+		hidePauseMenu();
+		resetGame();
+		
+		if (window.isAIBattle) {
+			startAIBattle(window.AIDifficulty);
+		} else {
+			init();
+		}
+	});
+	
+	document.getElementById('menuBtn').addEventListener('click', function() {
+		hidePauseMenu();
+		resetGame();
+		window.isAIBattle = false;
+		showMenu();
+	});
+}
+
 function checkVisualElements(arg) {
 	if (arg && $('#openSideBar').is(":visible")) $('#openSideBar').fadeOut(150, "linear");
 	if (!$('#pauseBtn').is(':visible')) $('#pauseBtn').fadeIn(150, "linear");
@@ -97,7 +135,7 @@ function init(b) {
 
 		setTimeout(function() {
             if (gameState == 1) {
-			    $('#openSideBar').fadeOut(150, "linear");
+				$('#openSideBar').fadeOut(150, "linear");
             }
 			infobuttonfading = false;
 		}, 7000);
@@ -119,10 +157,6 @@ function init(b) {
 	history = {};
 	importedHistory = undefined;
 	importing = 0;
-	score = saveState.score || 0;
-	prevScore = 0;
-	spawnLane = 0;
-	op = 0;
 	tweetblock=false;
 	scoreOpacity = 0;
 	gameState = 1;
@@ -132,55 +166,113 @@ function init(b) {
 
 	settings.blockHeight = settings.baseBlockHeight * settings.scale;
 	settings.hexWidth = settings.baseHexWidth * settings.scale;
-	MainHex = saveState.hex || new Hex(settings.hexWidth);
-	if (saveState.hex) {
-		MainHex.playThrough += 1;
+
+	// Create score display for AI battle
+	if (window.isAIBattle && !document.getElementById('scoreComparison')) {
+		var scoreDiv = document.createElement('div');
+		scoreDiv.id = 'scoreComparison';
+		scoreDiv.style.position = 'absolute';
+		scoreDiv.style.top = '20px';
+		scoreDiv.style.left = '50%';
+		scoreDiv.style.transform = 'translateX(-50%)';
+		scoreDiv.style.fontSize = '3vw';
+		scoreDiv.style.color = '#2c3e50';
+		scoreDiv.style.fontFamily = 'Exo';
+		scoreDiv.innerHTML = '<span style="margin-right:20px;">玩家: <span id="playerScore">0</span></span>VS<span style="margin-left:20px;">AI: <span id="aiScore">0</span></span>';
+		document.body.appendChild(scoreDiv);
 	}
-	MainHex.sideLength = settings.hexWidth;
 
-	var i;
-	var block;
-	if (saveState.blocks) {
-		saveState.blocks.map(function(o) {
-			if (rgbToHex[o.color]) {
-				o.color = rgbToHex[o.color];
-			}
-		});
+	// Initialize game for AI battle mode or normal mode
+	if (window.isAIBattle) {
+		// Player's hex (left side)
+		window.PlayerHex = new Hex(settings.hexWidth);
+		window.PlayerHex.x = trueCanvas.width / 4;
+		window.PlayerHex.y = trueCanvas.height / 2;
+		window.PlayerHex.playThrough = saveState.hex ? saveState.hex.playThrough + 1 : 0;
+		window.PlayerHex.sideLength = settings.hexWidth;
+		window.playerScore = 0;
 
-		for (i = 0; i < saveState.blocks.length; i++) {
-			block = saveState.blocks[i];
-			blocks.push(block);
-		}
+		// AI's hex (right side)
+		window.AIHex = new Hex(settings.hexWidth);
+		window.AIHex.x = trueCanvas.width * 3 / 4;
+		window.AIHex.y = trueCanvas.height / 2;
+		window.AIHex.playThrough = saveState.hex ? saveState.hex.playThrough + 1 : 0;
+		window.AIHex.sideLength = settings.hexWidth;
+		window.aiScore = 0;
+
+		// Initialize blocks arrays
+		window.playerBlocks = [];
+		window.aiBlocks = [];
+
+		// Create wave generators for both players
+		window.playerWave = new waveGen(window.PlayerHex);
+		window.aiWave = new waveGen(window.AIHex);
+
+		// Initialize AI controller
+		// AI controller is started in startAIBattle function
 	} else {
-		blocks = [];
-	}
-
-	gdx = saveState.gdx || 0;
-	gdy = saveState.gdy || 0;
-	comboTime = saveState.comboTime || 0;
-
-	for (i = 0; i < MainHex.blocks.length; i++) {
-		for (var j = 0; j < MainHex.blocks[i].length; j++) {
-			MainHex.blocks[i][j].height = settings.blockHeight;
-			MainHex.blocks[i][j].settled = 0;
+		// Normal game mode
+		MainHex = saveState.hex || new Hex(settings.hexWidth);
+		if (saveState.hex) {
+			MainHex.playThrough += 1;
 		}
-	}
+		MainHex.sideLength = settings.hexWidth;
+		score = saveState.score || 0;
+		prevScore = 0;
 
-	MainHex.blocks.map(function(i) {
-		i.map(function(o) {
-			if (rgbToHex[o.color]) {
-				o.color = rgbToHex[o.color];
+		var i;
+		var block;
+		if (saveState.blocks) {
+			saveState.blocks.map(function(o) {
+				if (rgbToHex[o.color]) {
+					o.color = rgbToHex[o.color];
+				}
+			});
+
+			for (i = 0; i < saveState.blocks.length; i++) {
+				block = saveState.blocks[i];
+				blocks.push(block);
 			}
-		});
-	});
+		} else {
+			blocks = [];
+		}
 
-	MainHex.y = -100;
+		gdx = saveState.gdx || 0;
+		gdy = saveState.gdy || 0;
+		comboTime = saveState.comboTime || 0;
+
+		for (i = 0; i < MainHex.blocks.length; i++) {
+			for (var j = 0; j < MainHex.blocks[i].length; j++) {
+				MainHex.blocks[i][j].height = settings.blockHeight;
+				MainHex.blocks[i][j].settled = 0;
+			}
+		}
+
+		MainHex.blocks.map(function(i) {
+			i.map(function(o) {
+				if (rgbToHex[o.color]) {
+					o.color = rgbToHex[o.color];
+				}
+			});
+		});
+
+		MainHex.y = -100;
+
+		waveone = saveState.wavegen || new waveGen(MainHex);
+	}
 
 	startTime = Date.now();
-	waveone = saveState.wavegen || new waveGen(MainHex);
 
-	MainHex.texts = []; //clear texts
-	MainHex.delay = 15;
+	// Clear texts
+	if (window.isAIBattle) {
+		window.PlayerHex.texts = [];
+		window.PlayerHex.delay = 15;
+		window.AIHex.texts = [];
+		window.AIHex.delay = 15;
+	} else {
+		MainHex.texts = []; //clear texts
+		MainHex.delay = 15;
+	}
 	hideText();
 }
 

@@ -2,8 +2,8 @@ function addKeyListeners() {
 	keypress.register_combo({
 		keys: "left",
 		on_keydown: function() {
-			if (MainHex && gameState !== 0) {
-				MainHex.rotate(1);
+			if ((window.isAIBattle ? window.PlayerHex : MainHex) && gameState !== 0) {
+				(window.isAIBattle ? window.PlayerHex : MainHex).rotate(1);
 			}
 		}
 	});
@@ -11,8 +11,8 @@ function addKeyListeners() {
 	keypress.register_combo({
 		keys: "right",
 		on_keydown: function() {
-			if (MainHex && gameState !== 0){
-				MainHex.rotate(-1);
+			if ((window.isAIBattle ? window.PlayerHex : MainHex) && gameState !== 0){
+				(window.isAIBattle ? window.PlayerHex : MainHex).rotate(-1);
 			}
 		}
 	});
@@ -42,8 +42,8 @@ function addKeyListeners() {
 	keypress.register_combo({
 		keys: "a",
 		on_keydown: function() {
-			if (MainHex && gameState !== 0) {
-				MainHex.rotate(1);
+			if ((window.isAIBattle ? window.PlayerHex : MainHex) && gameState !== 0) {
+				(window.isAIBattle ? window.PlayerHex : MainHex).rotate(1);
 			}
 		}
 	});
@@ -51,8 +51,8 @@ function addKeyListeners() {
 	keypress.register_combo({
 		keys: "d",
 		on_keydown: function() {
-			if (MainHex && gameState !== 0){
-				MainHex.rotate(-1);
+			if ((window.isAIBattle ? window.PlayerHex : MainHex) && gameState !== 0){
+				(window.isAIBattle ? window.PlayerHex : MainHex).rotate(-1);
 			}
 		}
 	});
@@ -61,17 +61,17 @@ function addKeyListeners() {
 		keys: "s",
 		on_keydown: function() {
 			var tempSpeed = settings.speedModifier;
-			if (MainHex && gameState !== 0){
+			if ((window.isAIBattle ? window.PlayerHex : MainHex) && gameState !== 0){
 				//speed up block temporarily
 				if(settings.speedUpKeyHeld == false){
 					settings.speedUpKeyHeld = true;
-					window.rush *=4;
+				window.rush *=4;
 				}
 			}
 			//settings.speedModifier = tempSpeed;
 		},
 		on_keyup:function(){
-			if (MainHex && gameState !== 0){
+			if ((window.isAIBattle ? window.PlayerHex : MainHex) && gameState !== 0){
 				//speed up block temporarily
 				
 				window.rush /=4;
