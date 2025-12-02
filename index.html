@@ -52,8 +52,8 @@
 		<script type='text/javascript' src='js/update.js'></script>
 		<script type='text/javascript' src='js/render.js'></script>
 		<script type='text/javascript' src="js/input.js"></script>
-		<script type='text/javascript' src="js/main.js"></script>
 		<script type='text/javascript' src="js/initialization.js"></script>
+		<script type='text/javascript' src="js/main.js"></script>
 		<script type='text/javascript' async src="https://hextris.io/scripts/a.js"></script>
 		<script src="vendor/sweet-alert.min.js"></script>
 		<link rel="stylesheet" href="style/rrssb.css"/>
@@ -86,6 +86,7 @@
 			</div>
 			<div id='bottomContainer'>
 				<img id='restart' src='./images/btn_restart.svg' height='57px'>
+				<img id='replayBtn' src='./images/btn_back.svg' onclick="showReplayList()" style="margin-left: 20px; height: 57px; cursor: pointer;" title="View replays">
 				<div id='socialShare'>
 					<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 					<svg width="224.6377px" height="57px"  viewBox="0 0 255 65" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -148,5 +149,38 @@
 					}})()
 			</script>
 		<script type="text/javascript" src='vendor/rrssb.min.js'></script>
+
+		<!-- Replay List Screen -->
+		<div id="replayListScreen" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; color: white; font-family: 'Exo 2', sans-serif;">
+			<div style="max-width: 800px; margin: 50px auto; padding: 20px;">
+				<h1 style="text-align: center; font-size: 3em; margin-bottom: 30px;">REPLAYS</h1>
+				<div id="replayList" style="margin-bottom: 30px;">
+					<!-- Replays will be populated here -->
+				</div>
+				<button onclick="hideReplayList()" style="display: block; margin: 0 auto; padding: 10px 30px; font-size: 1.2em; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">BACK TO MENU</button>
+			</div>
+		</div>
+
+		<!-- Replay Controls -->
+		<div id="replayControls" style="display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); padding: 15px 25px; border-radius: 10px; z-index: 100;">
+			<button id="replayPauseBtn" onclick="toggleReplayPause()" style="margin: 0 10px; padding: 8px 16px; font-size: 1em; cursor: pointer;">⏸️ Pause</button>
+			<button onclick="setReplaySpeed(0.5)" style="margin: 0 10px; padding: 8px 16px; font-size: 1em; cursor: pointer;">0.5x</button>
+			<button onclick="setReplaySpeed(1.0)" style="margin: 0 10px; padding: 8px 16px; font-size: 1em; cursor: pointer; background: #3498db; color: white;">1.0x</button>
+			<button onclick="setReplaySpeed(2.0)" style="margin: 0 10px; padding: 8px 16px; font-size: 1em; cursor: pointer;">2.0x</button>
+			<button onclick="exitReplay()" style="margin: 0 10px; padding: 8px 16px; font-size: 1em; cursor: pointer; background: #e74c3c; color: white;">Exit</button>
+			<div id="replayProgress" style="margin: 10px 0; color: white; text-align: center;">
+				<span id="replayCurrentTime">00:00</span> / <span id="replayTotalTime">00:00</span>
+				<div style="width: 100%; height: 5px; background: #555; margin-top: 5px;">
+					<div id="replayProgressBar" style="width: 0%; height: 100%; background: #3498db;"></div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Replay End Screen -->
+		<div id="replayEndScreen" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.95); padding: 30px; border-radius: 10px; z-index: 2000; color: white; text-align: center; font-family: 'Exo 2', sans-serif;">
+			<h2>REPLAY ENDED</h2>
+			<button onclick="restartReplay()" style="margin: 10px; padding: 10px 20px; font-size: 1.1em; cursor: pointer; background: #2ecc71; color: white; border: none; border-radius: 5px;">Replay Again</button>
+			<button onclick="exitReplay()" style="margin: 10px; padding: 10px 20px; font-size: 1.1em; cursor: pointer; background: #e74c3c; color: white; border: none; border-radius: 5px;">Back to Replay List</button>
+		</div>
 	</body>
 </html>

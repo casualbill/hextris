@@ -5,6 +5,7 @@ function initialize(a) {
 	window.rush = 1;
 	window.lastTime = Date.now();
 	window.iframHasLoaded = false;
+	window.replayMode = false;
 	window.colors = ["#e74c3c", "#f1c40f", "#3498db", "#2ecc71"];
 	window.hexColorsToTintedColors = {
 		"#e74c3c": "rgb(241,163,155)",
@@ -48,6 +49,8 @@ function initialize(a) {
 	})();
 	$('#clickToExit').bind('click', toggleDevTools);
 	window.settings;
+	$("#bottomContainer").hide();
+	$("#replayBtn").hide();
 	if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
         $('.rrssb-email').remove();
 		settings = {

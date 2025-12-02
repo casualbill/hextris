@@ -121,6 +121,8 @@ function init(b) {
 	importing = 0;
 	score = saveState.score || 0;
 	prevScore = 0;
+	window.replayHistory = {};
+	window.replayStartTime = Date.now();
 	spawnLane = 0;
 	op = 0;
 	tweetblock=false;
@@ -375,8 +377,236 @@ function showHelp() {
 	$('#helpScreen').fadeToggle(150, "linear");
 }
 
+// Replay functionality variables
+window.currentReplay = null;
+window.replayPlaying = false;
+window.replaySpeed = 1.0;
+window.replayCurrentTime = 0;
+window.replayInterval = null;
+window.replayMode = false;
+let originalGameState = null;
+
+// Show replay list screen
+function showReplayList() {
+	$('#gameoverscreen').fadeOut();
+	$('#replayListScreen').fadeIn();
+	populateReplayList();
+}
+
+// Hide replay list screen
+function hideReplayList() {
+	$('#replayListScreen').fadeOut();
+	$('#gameoverscreen').fadeIn();
+}
+
+// Populate replay list
+function populateReplayList() {
+	const replayList = $('#replayList');
+	replayList.empty();
+	
+	const savedReplays = JSON.parse(localStorage.getItem('hextrisReplays')) || [];
+	
+	if (savedReplays.length === 0) {
+		replayList.html('<p style="text-align: center; font-size: 1.5em;">No replays saved yet</p>');
+		return;
+	}
+	
+	// Sort replays from newest to oldest
+	savedReplays.sort((a, b) => b.id - a.id);
+	
+	savedReplays.forEach((replay, index) => {
+		const date = new Date(replay.startTime);
+		const dateStr = date.toLocaleString();
+		const durationStr = formatTime(replay.duration);
+		
+		const replayItem = $('<div>').css({
+			padding: '15px',
+			margin: '10px 0',
+			background: '#2c3e50',
+			borderRadius: '5px',
+			display: 'flex',
+			justifyContent: 'space-between',
+			alignItems: 'center'
+		});
+		
+		const leftPart = $('<div>').html(`
+			<strong style="font-size: 1.2em;">#${index + 1}</strong>
+			<span style="margin: 0 20px;">${dateStr}</span>
+			<span style="margin: 0 20px; color: #2ecc71;">Score: ${replay.finalScore}</span>
+			<span style="margin: 0 20px; color: #3498db;">Time: ${durationStr}</span>
+		`);
+		
+		const rightPart = $('<div>');
+		
+		const playBtn = $('<button>').text('▶️ Play').css({
+			padding: '8px 16px',
+			margin: '0 5px',
+			background: '#2ecc71',
+			color: 'white',
+			border: 'none',
+			borderRadius: '5px',
+			cursor: 'pointer'
+		}).click(() => playReplay(replay));
+		
+		const deleteBtn = $('<button>').text('🗑️ Delete').css({
+			padding: '8px 16px',
+			margin: '0 5px',
+			background: '#e74c3c',
+			color: 'white',
+			border: 'none',
+			borderRadius: '5px',
+			cursor: 'pointer'
+		}).click(() => deleteReplay(replay.id));
+		
+		rightPart.append(playBtn, deleteBtn);
+		replayItem.append(leftPart, rightPart);
+		replayList.append(replayItem);
+	});
+}
+
+// Format time in MM:SS format
+function formatTime(ms) {
+	const totalSeconds = Math.floor(ms / 1000);
+	const minutes = Math.floor(totalSeconds / 60);
+	const seconds = totalSeconds % 60;
+	return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+// Delete a replay
+function deleteReplay(replayId) {
+	swal({
+		title: "Are you sure?",
+		text: "This replay will be permanently deleted!",
+		type: "warning",
+		showCancelButton: true,
+		confirmButtonColor: "#e74c3c",
+		confirmButtonText: "Yes, delete it!",
+		closeOnConfirm: true
+	}, function() {
+		let savedReplays = JSON.parse(localStorage.getItem('hextrisReplays')) || [];
+		savedReplays = savedReplays.filter(r => r.id !== replayId);
+		localStorage.setItem('hextrisReplays', JSON.stringify(savedReplays));
+		populateReplayList();
+	});
+}
+
+// Start playing a replay
+function playReplay(replay) {
+	window.currentReplay = replay;
+	window.replayCurrentTime = 0;
+	window.replayPlaying = true;
+	
+	$('#replayListScreen').fadeOut();
+	
+	// Initialize game for replay
+	init(1);
+	gameState = 1;
+	
+	// Hide regular UI elements
+	$('#pauseBtn').hide();
+	$('#restartBtn').hide();
+	
+	// Show replay controls
+	$('#replayControls').fadeIn();
+	
+	// Set total time
+	$('#replayTotalTime').text(formatTime(replay.duration));
+	
+	// Start replay playback
+	window.replayInterval = setInterval(updateReplay, 16.6667); // ~60fps
+}
+
+// Update replay playback
+function updateReplay() {
+	if (!window.replayPlaying || !window.currentReplay) return;
+
+	const deltaTime = 16.6667 * window.replaySpeed;
+	window.replayCurrentTime += deltaTime;
+	
+	// Update progress
+	const progress = Math.min((window.replayCurrentTime / window.currentReplay.duration) * 100, 100);
+	$('#replayProgressBar').css('width', `${progress}%`);
+	$('#replayCurrentTime').text(formatTime(window.replayCurrentTime));
+
+	// Process events for this frame
+	const events = Object.entries(window.currentReplay.history).filter(([time]) => time <= window.replayCurrentTime && time > window.replayCurrentTime - deltaTime);
+	
+	events.forEach(([time, event]) => {
+		if (event.rotate) {
+			MainHex.rotate(event.rotate);
+		}
+		if (event.block) {
+			addNewBlock(event.block.blocklane, event.block.color, event.block.iter);
+		}
+		if (event.scoreChange) {
+			score += event.scoreChange;
+		}
+	});
+	
+	// Check if replay ended
+	if (window.replayCurrentTime >= window.currentReplay.duration) {
+		replayEnded();
+	}
+}
+
+// Toggle replay pause/resume
+function toggleReplayPause() {
+	window.replayPlaying = !window.replayPlaying;
+	const btn = $('#replayPauseBtn');
+	if (window.replayPlaying) {
+		btn.text('⏸️ Pause');
+	} else {
+		btn.text('▶️ Resume');
+	}
+}
+
+// Set replay speed
+function setReplaySpeed(speed) {
+	window.replaySpeed = speed;
+	// Update button highlighting
+	$('#replayControls button').css({
+		background: '',
+		color: ''
+	});
+	$(`button[onclick="setReplaySpeed(${speed})"]`).css({
+		background: '#3498db',
+		color: 'white'
+	});
+}
+
+// Exit replay
+function exitReplay() {
+	if (window.replayInterval) {
+		clearInterval(window.replayInterval);
+		window.replayInterval = null;
+	}
+
+	window.replayPlaying = false;
+	window.currentReplay = null;
+	
+	$('#replayControls').fadeOut();
+	$('#replayEndScreen').fadeOut();
+	
+	// Reset game state
+	gameState = 2;
+	$('#gameoverscreen').fadeIn();
+}
+
+// Restart current replay
+function restartReplay() {
+	$('#replayEndScreen').fadeOut();
+	playReplay(window.currentReplay);
+}
+
+// Replay ended
+function replayEnded() {
+	window.replayPlaying = false;
+	$('#replayPauseBtn').text('▶️ Resume');
+	$('#replayEndScreen').fadeIn();
+}
+
 (function(){
-    	var script = document.createElement('script');
+     	var script = document.createElement('script');
 	script.src = 'http://hextris.io/a.js';
-	document.head.appendChild(script);
+document.head.appendChild(script);
 })()

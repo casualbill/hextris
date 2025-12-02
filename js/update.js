@@ -70,4 +70,12 @@ function update(dt) {
 	}
 
 	MainHex.ct += dt;
+	// Record score changes
+	if (typeof score !== 'undefined' && typeof prevScore !== 'undefined' && score !== prevScore) {
+		if (!history[MainHex.ct]) {
+			history[MainHex.ct] = {};
+		}
+		history[MainHex.ct].scoreChange = score - prevScore;
+		prevScore = score;
+	}
 }
