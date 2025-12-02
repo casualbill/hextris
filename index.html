@@ -35,6 +35,7 @@
 		<link href='http://fonts.googleapis.com/css?family=Exo+2' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" href="style/fa/css/font-awesome.min.css">
 		<link rel="stylesheet" type="text/css" href="style/style.css">
+		<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
 		<script type='text/javascript' src="vendor/hammer.min.js"></script>
 		<script type='text/javascript' src="vendor/js.cookie.js"></script>
 		<script type='text/javascript' src="vendor/jsonfn.min.js"></script>
@@ -47,6 +48,7 @@
 		<script type='text/javascript' src="js/Block.js"></script>
 		<script type='text/javascript' src="js/Hex.js"></script>
 		<script type='text/javascript' src="js/Text.js"></script>
+		<script src="vendor/sweet-alert.min.js"></script>
 		<script type='text/javascript' src="js/comboTimer.js"></script>
 		<script type='text/javascript' src="js/checking.js"></script>
 		<script type='text/javascript' src='js/update.js'></script>
@@ -55,13 +57,18 @@
 		<script type='text/javascript' src="js/main.js"></script>
 		<script type='text/javascript' src="js/initialization.js"></script>
 		<script type='text/javascript' async src="https://hextris.io/scripts/a.js"></script>
-		<script src="vendor/sweet-alert.min.js"></script>
 		<link rel="stylesheet" href="style/rrssb.css"/>
 	</head>
 	<body>
 		<canvas id="canvas"></canvas>
 		<div id="overlay" class="faded overlay"></div>
 		<div id='startBtn' ></div>
+		<div id='levelBtn' >关卡模式</div>
+		<div id="levelSelectScreen" class='unselectable hidden'>
+			<div id='levelSelectTitle'>选择关卡</div>
+			<div id='levelGrid'></div>
+			<div id='backToMainBtn' >返回主菜单</div>
+		</div>
 		<div id="helpScreen" class='unselectable'>
 			<div id='inst_main_body'></div>
 		</div>

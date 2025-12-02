@@ -212,7 +212,9 @@ function exportHistory() {
 
 function setStartScreen() {
 	$('#startBtn').show();
+	$('#levelBtn').show();
 	init();
+	loadLevelProgress();
 	if (isStateSaved()) {
 		importing = 0;
 	} else {
@@ -222,11 +224,93 @@ function setStartScreen() {
 	$('#pauseBtn').hide();
 	$('#restartBtn').hide();
 	$('#startBtn').show();
+	$('#levelSelectScreen').addClass('hidden');
 
 	gameState = 0;
 	requestAnimFrame(animLoop);
 }
 
+// Level select screen functions
+function showLevelSelectScreen() {
+	$('#startBtn').hide();
+	$('#levelBtn').hide();
+	$('#levelSelectScreen').removeClass('hidden');
+	renderLevelSelect();
+}
+
+function renderLevelSelect() {
+	var levelGrid = $('#levelGrid');
+	levelGrid.empty();
+	
+	for(var i = 1; i <=30; i++) {
+		var isUnlocked = isLevelUnlocked(i);
+		var isCompleted = isLevelCompleted(i);
+		var highScore = levelHighScores[i] || 0;
+		
+		var tile = $('<div>').addClass('levelTile');
+		if(!isUnlocked) tile.addClass('locked');
+		if(isCompleted) tile.addClass('completed');
+		
+		tile.append('<div class="levelNumber">关卡 ' + i + '</div>');
+		if(highScore > 0) {
+			tile.append('<div class="levelScore">最高分: ' + highScore + '</div>');
+		}
+		if(!isUnlocked) {
+			tile.append('<div class="lockedIcon"><i class="fa fa-lock"></i></div>');
+		}
+		
+		if(isUnlocked) {
+			(function(level) {
+				tile.click(function() {
+					startLevel(level);
+				});
+			})(i);
+		}
+		
+		levelGrid.append(tile);
+	}
+}
+
+function startLevel(level) {
+	isLevelMode = true;
+	currentLevel = level;
+	levelTargetScore = level * 100;
+	settings.speedModifier = levelDifficulties[level];
+	
+	// Hide all game over elements
+	$("#gameoverscreen").hide();
+	$("#buttonCont").hide();
+	$("#container").hide();
+	$("#socialShare").hide();
+	$("#restart").hide();
+	document.getElementById("canvas").className = "";
+	
+	$('#levelSelectScreen').addClass('hidden');
+	init(1);
+}
+
+// Level mode global variables
+var isLevelMode = false;
+var currentLevel = 0;
+var levelTargetScore = 0;
+var completedLevels = [];
+var levelHighScores = {};
+var levelDifficulties = [];
+
+// Initialize level difficulties (speed modifier from 0.8 to 2.0)
+for(var i = 1; i <=30; i++) {
+	levelDifficulties[i] = 0.8 + (i-1)*0.04;
+}
+
+function returnToLevelSelect() {
+	isLevelMode = false;
+	currentLevel = 0;
+	levelTargetScore = 0;
+	settings.speedModifier = 1.0;
+	
+	setStartScreen();
+	showLevelSelectScreen();
+}
 var spd = 1;
 
 function animLoop() {
@@ -243,6 +327,29 @@ function animLoop() {
 		if(gameState == 1 ){
 			if(!MainHex.delay) {
 				update(dt);
+				
+				// Check level completion
+				if(isLevelMode && score >= levelTargetScore) {
+					gameState = -1;
+					saveLevelHighScore(currentLevel, score);
+					completeLevel(currentLevel);
+					
+					sweetAlert({
+						title: "关卡完成！",
+						text: "你已完成第" + currentLevel + "关，目标分数：" + levelTargetScore,
+						type: "success",
+						timer: 5000,
+						showConfirmButton: false
+					});
+					
+					setTimeout(function() {
+						if(currentLevel < 30 && isLevelUnlocked(currentLevel + 1)) {
+							startLevel(currentLevel + 1);
+						} else {
+							returnToLevelSelect();
+						}
+					}, 5000);
+				}
 			}
 			else{
 				MainHex.delay--;
@@ -268,6 +375,34 @@ function animLoop() {
 			if ($('#restartBtn').is(':visible')) $('#restartBtn').fadeOut(150, "linear");
 			if ($('#openSideBar').is(':visible')) $('.openSideBar').fadeOut(150, "linear");
 
+			if(isLevelMode) {
+			// Level mode game over
+			saveLevelHighScore(currentLevel, score);
+			
+			// Hide game over screen
+			$("#gameoverscreen").hide();
+			$("#buttonCont").hide();
+			$("#container").hide();
+			$("#socialShare").hide();
+			$("#restart").hide();
+			document.getElementById("canvas").className = "";
+			
+			sweetAlert({
+				title: "关卡失败",
+				text: "你未能完成第" + currentLevel + "关，再接再厉！",
+				type: "error",
+				showCancelButton: true,
+				confirmButtonText: "重新挑战",
+					cancelButtonText: "返回关卡选择"
+			}, function(isConfirm) {
+				if(isConfirm) {
+					startLevel(currentLevel);
+				} else {
+					returnToLevelSelect();
+				}
+			});
+		}
+			
 			canRestart = 0;
 			clearSaveState();
 		}
