@@ -176,12 +176,6 @@ function pause(o) {
 
 	pausable = false;
 	writeHighScores();
-	var message;
-	if (o) {
-		message = '';
-	} else {
-		message = 'paused';
-	}
 
 	var c = document.getElementById("canvas");
 	if (gameState == -1) {
@@ -201,19 +195,52 @@ function pause(o) {
 			pausable =true;
 		}, 400);
 	} else if (gameState != -2 && gameState !== 0 && gameState !== 2) {
-		$('#restartBtn').fadeIn(300, "linear");
-		$('#buttonCont').fadeIn(300, "linear");
-		$('.helpText').fadeIn(300, 'linear');
-		if (message == 'paused') {
-			showText(message);
+		if(isLevelMode) {
+			// Show level mode pause menu
+			sweetAlert({
+				title: "游戏暂停",
+				text: "第" + currentLevel + "关 - 当前分数：" + Math.round(score) + " / " + levelTargetScore,
+				type: "info",
+				showCancelButton: true,
+				confirmButtonText: "继续游戏",
+				cancelButtonText: "重新开始本关",
+				showReverseButtons: true,
+				closeOnConfirm: true,
+				closeOnCancel: true,
+				showNeutralButton: true,
+				neutralButtonText: "返回关卡选择"
+			}, function(isConfirm) {
+				if(isConfirm) {
+					// Resume game
+					gameState = prevGameState;
+					$("#pauseBtn").attr("src", "./images/btn_pause.svg");
+					hideText();
+					setTimeout(function() {
+						pausable = true;
+					}, 400);
+				} else if(isConfirm === null) {
+					// Return to level select
+					returnToLevelSelect();
+				} else {
+					// Restart current level
+					startLevel(currentLevel);
+				}
+			});
+		} else {
+			// Normal pause menu
+			$('#restartBtn').fadeIn(300, "linear");
+			$('#buttonCont').fadeIn(300, "linear");
+			$('.helpText').fadeIn(300, 'linear');
+			showText('paused');
+			$('#fork-ribbon').fadeIn(300, 'linear');
+			$("#pauseBtn").attr("src","./images/btn_resume.svg");
+			$('#overlay').fadeIn(300, 'linear');
 		}
-		$('#fork-ribbon').fadeIn(300, 'linear');
-		$("#pauseBtn").attr("src","./images/btn_resume.svg");
-		$('#overlay').fadeIn(300, 'linear');
+		
 		prevGameState = gameState;
 		setTimeout(function() {
-		    pausable = true;
-		}, 400);
+	        pausable = true;
+	    }, 400);
 		gameState = -1;
 	}
 }

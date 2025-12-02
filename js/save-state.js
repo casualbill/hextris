@@ -61,3 +61,49 @@ function clearSaveState() {
 function isStateSaved() {
 	return localStorage.getItem("saveState") != "{}" && localStorage.getItem("saveState") != undefined;
 }
+
+// Level mode save state functions
+function saveLevelProgress() {
+	var levelProgress = {
+		completedLevels: completedLevels,
+		levelHighScores: levelHighScores
+	};
+	localStorage.setItem("levelProgress", JSON.stringify(levelProgress));
+}
+
+function loadLevelProgress() {
+	var saved = localStorage.getItem("levelProgress");
+	if(saved) {
+		var levelProgress = JSON.parse(saved);
+		completedLevels = levelProgress.completedLevels || [1,2,3,4,5];
+		levelHighScores = levelProgress.levelHighScores || {};
+	} else {
+		// Default: first 5 levels unlocked
+		completedLevels = [1,2,3,4,5];
+		levelHighScores = {};
+	}
+}
+
+function saveLevelHighScore(level, score) {
+	if(!levelHighScores[level] || score > levelHighScores[level]) {
+		levelHighScores[level] = score;
+		saveLevelProgress();
+	}
+}
+
+function completeLevel(level) {
+	if(completedLevels.indexOf(level) === -1) {
+		completedLevels.push(level);
+		completedLevels.sort(function(a,b) { return a - b; });
+		saveLevelProgress();
+	}
+}
+
+function isLevelUnlocked(level) {
+	if(level <= 5) return true;
+	return completedLevels.indexOf(level - 1) !== -1;
+}
+
+function isLevelCompleted(level) {
+	return completedLevels.indexOf(level) !== -1;
+}

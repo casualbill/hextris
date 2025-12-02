@@ -168,21 +168,42 @@ function addKeyListeners() {
 	}
 	if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
 			$("#restartBtn").on('touchstart', function() {
-			init(1);
-			canRestart = false;
-			$("#gameoverscreen").fadeOut();
-		});
+		init(1);
+		canRestart = false;
+		$("#gameoverscreen").fadeOut();
+	});
 
+		$("#levelBtn").on('touchstart', function() {
+			showLevelSelectScreen();
+		});
+		
+		$("#backToMainBtn").on('touchstart', function() {
+			returnToLevelSelect();
+		});
 	}
 	else {
 		$("#restartBtn").on('mousedown', function() {
-			init(1);
-			canRestart = false;
-			$("#gameoverscreen").fadeOut();
+		init(1);
+		canRestart = false;
+		$("#gameoverscreen").fadeOut();
+	});
+
+		$("#levelBtn").on('mousedown', function() {
+			showLevelSelectScreen();
 		});
-
-
+		
+		$("#backToMainBtn").on('mousedown', function() {
+			returnToLevelSelect();
+		});
 	}
+	
+	$("#startBtn").on('mousedown touchstart', function() {
+		isLevelMode = false;
+		currentLevel = 0;
+		levelTargetScore = 0;
+		settings.speedModifier = 1.0;
+		resumeGame();
+	});
 
 }
 function inside (point, vs) {
