@@ -115,6 +115,60 @@ button:focus {
 	z-index:99;
 }
 
+.record-button {
+	display:none;
+	position:fixed;
+	top:10px;
+	right:10px;
+	width:80px;
+	height:35px;
+	background-color:#3498db;
+	color:#fff;
+	border-radius:5px;
+	text-align:center;
+	line-height:35px;
+	font-size:16px;
+	cursor:pointer;
+	z-index:3002;
+	transition:background-color 0.3s ease;
+}
+
+.record-button:hover {
+	background-color:#2980b9;
+}
+
+.record-button.recording {
+	background-color:#e74c3c;
+}
+
+.recording-indicator {
+	display:none;
+	position:fixed;
+	top:55px;
+	right:10px;
+	background-color:rgba(231, 76, 60, 0.9);
+	color:#fff;
+	padding:5px 10px;
+	border-radius:5px;
+	font-size:14px;
+	z-index:3001;
+}
+
+.recording-dot {
+	display:inline-block;
+	width:8px;
+	height:8px;
+	background-color:#fff;
+	border-radius:50%;
+	margin-right:5px;
+	animation:recording-blink 1s infinite;
+}
+
+@keyframes recording-blink {
+	0%, 100% { opacity:1; }
+	50% { opacity:0.3; }
+}
+
 #restartBtn {
 	display:none;
 	position:fixed;
@@ -256,6 +310,22 @@ button:focus {
 	#restartBtn {
 		width:60px;
 		height:60px;
+	}
+
+	.record-button {
+		top:5px;
+		right:5px;
+		width:70px;
+		height:30px;
+		font-size:14px;
+		line-height:30px;
+	}
+
+	.recording-indicator {
+		top:45px;
+		right:5px;
+		font-size:12px;
+		padding:3px 8px;
 	}
 }
 
