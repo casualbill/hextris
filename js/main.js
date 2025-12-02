@@ -31,6 +31,11 @@ function scaleCanvas() {
 	}
     setBottomContainer();
     set_score_pos();
+    
+    // 调整Three.js场景大小
+    if (typeof resizeThreeJS === 'function' && typeof threeCamera !== 'undefined') {
+		resizeThreeJS();
+	}
 }
 
 function setBottomContainer() {
@@ -71,6 +76,11 @@ function resumeGame() {
 	}, 7000);
 
 	checkVisualElements(0);
+	
+	// 确保Three.js场景存在
+	if (typeof initThreeJS === 'function' && typeof threeScene === 'undefined') {
+		initThreeJS();
+	}
 }
 
 function checkVisualElements(arg) {
