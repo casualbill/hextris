@@ -144,6 +144,29 @@ function hideText() {
 function gameOverDisplay() {
 	settings.ending_block=false;
 	Cookies.set("visited",true);
+	
+	// Save replay data to localStorage
+	var replayData = {
+		id: Date.now(),
+		startTime: replayStartTime,
+		endTime: Date.now(),
+		duration: Date.now() - replayStartTime,
+		finalScore: score,
+		history: JSON.parse(JSON.stringify(history))
+	};
+	
+	// Get existing replays
+	var savedReplays = JSON.parse(localStorage.getItem('hextrisReplays')) || [];
+	
+	// Add new replay and keep only last 10
+	savedReplays.push(replayData);
+	if (savedReplays.length > 10) {
+		savedReplays.shift(); // Remove oldest replay
+	}
+	
+	// Save back to localStorage
+	localStorage.setItem('hextrisReplays', JSON.stringify(savedReplays));
+	
 	var c = document.getElementById("canvas");
 	c.className = "blur";
 	updateHighScores();
@@ -155,6 +178,8 @@ function gameOverDisplay() {
 	}
 	$("#gameoverscreen").fadeIn();
 	$("#buttonCont").fadeIn();
+	$("#bottomContainer").show();
+	$("#replayBtn").show();
 	$("#container").fadeIn();
 	$("#socialShare").fadeIn();
 	$("#restart").fadeIn();

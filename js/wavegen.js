@@ -1,4 +1,12 @@
 function blockDestroyed() {
+	// Record block destruction event
+	if (typeof history !== 'undefined' && MainHex) {
+		if (!history[MainHex.ct]) {
+			history[MainHex.ct] = {};
+		}
+		history[MainHex.ct].blockDestroyed = true;
+	}
+
 	if (waveone.nextGen > 1350) {
 		waveone.nextGen -= 30 * settings.creationSpeedModifier;
 	} else if (waveone.nextGen > 600) {
