@@ -40,19 +40,40 @@ function drawScoreboard() {
     var fontSize = settings.platform == 'mobile' ? 35 : 30;
     var h = trueCanvas.height / 2 + gdy + 100 * settings.scale;
 	if (gameState === 0) {
-		renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2 + gdy, 60, "rgb(236, 240, 241)", String.fromCharCode("0xf04b"), 'px FontAwesome');
-		renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2.1 + gdy - 155 * settings.scale, 150, "#2c3e50", "Hextris");
-		renderText(trueCanvas.width / 2 + gdx + 5 * settings.scale, h + 10, fontSize, "rgb(44,62,80)", 'Play!');
-	} else if (gameState != 0 && textOpacity > 0) {
+				renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2 + gdy, 60, "rgb(236, 240, 241)", String.fromCharCode("0xf04b"), 'px FontAwesome');
+				renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2.1 + gdy - 155 * settings.scale, 150, "#2c3e50", "Hextris");
+				renderText(trueCanvas.width / 2 + gdx + 5 * settings.scale, h + 10, fontSize, "rgb(44,62,80)", 'Play!');
+				renderText(trueCanvas.width / 2 + gdx + 5 * settings.scale, h + 50, fontSize, "rgb(44,62,80)", '2 Player!');
+			} else if (gameState != 0 && textOpacity > 0) {
 		textOpacity -= 0.05;
 		renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2 + gdy, 60, "rgb(236, 240, 241)", String.fromCharCode("0xf04b"), 'px FontAwesome');
 		renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2 + gdy - 155 * settings.scale, 150, "#2c3e50", "Hextris");
 		renderText(trueCanvas.width / 2 + gdx + 5 * settings.scale, h, fontSize, "rgb(44,62,80)", 'Play!');
 		ctx.globalAlpha = scoreOpacity;
-		renderText(trueCanvas.width / 2 + gdx, trueCanvas.height / 2 + gdy, scoreSize, color, score);
+		
+		// 如果是双人模式，显示两个玩家的分数
+		if (gameMode === 1) {
+			// 玩家1的分数（蓝色）
+			renderText(trueCanvas.width / 2 + gdx, trueCanvas.height / 2 + gdy - 150, scoreSize, "#3498db", score);
+			// 玩家2的分数（红色）
+			renderText(trueCanvas.width / 2 + gdx, trueCanvas.height / 2 + gdy + 150, scoreSize, "#e74c3c", score2);
+		} else {
+			// 单人模式下显示一个分数
+			renderText(trueCanvas.width / 2 + gdx, trueCanvas.height / 2 + gdy, scoreSize, color, score);
+		}
 	} else {
 		ctx.globalAlpha = scoreOpacity;
-		renderText(trueCanvas.width / 2 + gdx, trueCanvas.height / 2 + gdy, scoreSize, color, score);
+		
+		// 如果是双人模式，显示两个玩家的分数
+		if (gameMode === 1) {
+			// 玩家1的分数（蓝色）
+			renderText(trueCanvas.width / 2 + gdx, trueCanvas.height / 2 + gdy - 150, scoreSize, "#3498db", score);
+			// 玩家2的分数（红色）
+			renderText(trueCanvas.width / 2 + gdx, trueCanvas.height / 2 + gdy + 150, scoreSize, "#e74c3c", score2);
+		} else {
+			// 单人模式下显示一个分数
+			renderText(trueCanvas.width / 2 + gdx, trueCanvas.height / 2 + gdy, scoreSize, color, score);
+		}
 	}
 
 	ctx.globalAlpha = 1;
@@ -141,7 +162,7 @@ function hideText() {
 	})
 }
 
-function gameOverDisplay() {
+function gameOverDisplay(winner) {
 	settings.ending_block=false;
 	Cookies.set("visited",true);
 	var c = document.getElementById("canvas");
@@ -153,6 +174,26 @@ function gameOverDisplay() {
 	else {
 		$("#currentHighScore").text(highscores[0])
 	}
+	
+	// 如果是双人模式，显示获胜玩家和双方分数
+	if (gameMode === 1 && winner !== undefined) {
+		// 显示获胜玩家
+		$("#gameOverTitle").text("玩家 " + winner + " 获胜！");
+		
+		// 显示双方分数
+		$("#player1Score").text("玩家1: " + score);
+		$("#player2Score").text("玩家2: " + score2);
+		
+		// 显示双人模式特定的元素
+		$("#player1Score").show();
+		$("#player2Score").show();
+	} else {
+		// 单人模式下显示普通结束界面
+		$("#gameOverTitle").text("游戏结束");
+		$("#player1Score").hide();
+		$("#player2Score").hide();
+	}
+	
 	$("#gameoverscreen").fadeIn();
 	$("#buttonCont").fadeIn();
 	$("#container").fadeIn();

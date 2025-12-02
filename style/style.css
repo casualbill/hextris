@@ -128,14 +128,24 @@ button:focus {
 	bottom:0;
 	z-index:99;
 }
-#startBtn {
-	position:absolute;
-	left:40%;
-	top:38%;
-	height:25%;
-	width:25%;
-	z-index:99999999;
-	cursor:pointer;
+#startBtn { 
+	position:absolute; 
+	left:40%; 
+	top:38%; 
+	height:25%; 
+	width:25%; 
+	z-index:99999999; 
+	cursor:pointer; 
+}
+
+#start2PlayerBtn { 
+	position:absolute; 
+	left:40%; 
+	top:65%; 
+	height:25%; 
+	width:25%; 
+	z-index:99999999; 
+	cursor:pointer; 
 }
 
 #helpScreen {

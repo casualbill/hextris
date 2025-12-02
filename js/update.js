@@ -1,11 +1,11 @@
 
 //remember to update history function to show the respective iter speeds
-function update(dt) {
-	MainHex.dt = dt;
+function updateGame(hex, blocks, waveone, dt) {
+	hex.dt = dt;
 	if (gameState == 1) {
 		waveone.update();
-		if (MainHex.ct - waveone.prevTimeScored > 1000) {
-			waveone.prevTimeScored = MainHex.ct;
+		if (hex.ct - waveone.prevTimeScored > 1000) {
+			waveone.prevTimeScored = hex.ct;
 		}
 	}
 	var lowestDeletedIndex = 99;
@@ -15,7 +15,7 @@ function update(dt) {
 
 	var objectsToRemove = [];
 	for (i = 0; i < blocks.length; i++) {
-		MainHex.doesBlockCollide(blocks[i]);
+		hex.doesBlockCollide(blocks[i]);
 		if (!blocks[i].settled) {
 			if (!blocks[i].initializing) blocks[i].distFromHex -= blocks[i].iter * dt * settings.scale;
 		} else if (!blocks[i].removed) {
@@ -23,41 +23,41 @@ function update(dt) {
 		}
 	}
 
-	for (i = 0; i < MainHex.blocks.length; i++) {
-		for (j = 0; j < MainHex.blocks[i].length; j++) {
-			if (MainHex.blocks[i][j].checked ==1 ) {
-				consolidateBlocks(MainHex,MainHex.blocks[i][j].attachedLane,MainHex.blocks[i][j].getIndex());
-				MainHex.blocks[i][j].checked=0;
+	for (i = 0; i < hex.blocks.length; i++) {
+		for (j = 0; j < hex.blocks[i].length; j++) {
+			if (hex.blocks[i][j].checked ==1 ) {
+				consolidateBlocks(hex,hex.blocks[i][j].attachedLane,hex.blocks[i][j].getIndex());
+				hex.blocks[i][j].checked=0;
 			}
 		}
 	}
 
-	for (i = 0; i < MainHex.blocks.length; i++) {
+	for (i = 0; i < hex.blocks.length; i++) {
 		lowestDeletedIndex = 99;
-		for (j = 0; j < MainHex.blocks[i].length; j++) {
-			block = MainHex.blocks[i][j];
+		for (j = 0; j < hex.blocks[i].length; j++) {
+			block = hex.blocks[i][j];
 			if (block.deleted == 2) {
-				MainHex.blocks[i].splice(j,1);
+				hex.blocks[i].splice(j,1);
 				blockDestroyed();
 				if (j < lowestDeletedIndex) lowestDeletedIndex = j;
 				j--;
 			}
 		}
 
-		if (lowestDeletedIndex < MainHex.blocks[i].length) {
-			for (j = lowestDeletedIndex; j < MainHex.blocks[i].length; j++) {
-				MainHex.blocks[i][j].settled = 0;
+		if (lowestDeletedIndex < hex.blocks[i].length) {
+			for (j = lowestDeletedIndex; j < hex.blocks[i].length; j++) {
+				hex.blocks[i][j].settled = 0;
 			}
 		}
 	}
 
-	for (i = 0; i < MainHex.blocks.length; i++) {
-		for (j = 0; j < MainHex.blocks[i].length; j++) {
-			block = MainHex.blocks[i][j];
-			MainHex.doesBlockCollide(block, j, MainHex.blocks[i]);
+	for (i = 0; i < hex.blocks.length; i++) {
+		for (j = 0; j < hex.blocks[i].length; j++) {
+			block = hex.blocks[i][j];
+			hex.doesBlockCollide(block, j, hex.blocks[i]);
 
-			if (!MainHex.blocks[i][j].settled) {
-				MainHex.blocks[i][j].distFromHex -= block.iter * dt * settings.scale;
+			if (!hex.blocks[i][j].settled) {
+				hex.blocks[i][j].distFromHex -= block.iter * dt * settings.scale;
 			}
 		}
 	}
@@ -69,5 +69,15 @@ function update(dt) {
 		}
 	}
 
-	MainHex.ct += dt;
+	hex.ct += dt;
+}
+
+function update(dt) {
+	// 更新第一个游戏区域
+	updateGame(MainHex, blocks, waveone, dt);
+	
+	// 如果是双人模式，更新第二个游戏区域
+	if (gameMode === 1) {
+		updateGame(MainHex2, blocks2, waveone2, dt);
+	}
 }
