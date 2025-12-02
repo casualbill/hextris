@@ -4,6 +4,13 @@ function addKeyListeners() {
 		on_keydown: function() {
 			if (MainHex && gameState !== 0) {
 				MainHex.rotate(1);
+				if (!replayMode) {
+					replayData.operations.push({
+						time: Date.now() - startTime,
+						type: 'rotate',
+						direction: 'left'
+					});
+				}
 			}
 		}
 	});
@@ -13,6 +20,13 @@ function addKeyListeners() {
 		on_keydown: function() {
 			if (MainHex && gameState !== 0){
 				MainHex.rotate(-1);
+				if (!replayMode) {
+					replayData.operations.push({
+						time: Date.now() - startTime,
+						type: 'rotate',
+						direction: 'right'
+					});
+				}
 			}
 		}
 	});
@@ -44,6 +58,13 @@ function addKeyListeners() {
 		on_keydown: function() {
 			if (MainHex && gameState !== 0) {
 				MainHex.rotate(1);
+				if (!replayMode) {
+					replayData.operations.push({
+						time: Date.now() - startTime,
+						type: 'rotate',
+						direction: 'left'
+					});
+				}
 			}
 		}
 	});
@@ -53,6 +74,13 @@ function addKeyListeners() {
 		on_keydown: function() {
 			if (MainHex && gameState !== 0){
 				MainHex.rotate(-1);
+				if (!replayMode) {
+					replayData.operations.push({
+						time: Date.now() - startTime,
+						type: 'rotate',
+						direction: 'right'
+					});
+				}
 			}
 		}
 	});
@@ -228,9 +256,59 @@ function handleClickTap(x,y) {
 
 	if (x < window.innerWidth/2) {
 		MainHex.rotate(1);
+		if (!replayMode) {
+			replayData.operations.push({
+				time: Date.now() - startTime,
+				type: 'rotate',
+				direction: 'left'
+			});
+		}
 	}
 	if (x > window.innerWidth/2) {
-		MainHex.rotate(-1);
+	MainHex.rotate(-1);
+	if (!replayMode) {
+		replayData.operations.push({
+			time: Date.now() - startTime,
+			type: 'rotate',
+			direction: 'right'
+		});
 	}
 }
+}
+
+// 回放相关事件监听器
+$(document).ready(function() {
+	// 回放按钮点击事件
+	$('#replayBtn').on('click', function() {
+		showReplayList();
+	});
+
+	// 返回菜单按钮点击事件
+	$('#backToMenuBtn').on('click', function() {
+		hideReplayList();
+	});
+
+	// 回放播放按钮点击事件
+	$(document).on('click', '.replay-play-btn', function() {
+		var replayId = parseInt($(this).data('replay-id'));
+		startReplay(replayId);
+	});
+
+	// 回放删除按钮点击事件
+	$(document).on('click', '.replay-delete-btn', function() {
+		var replayId = parseInt($(this).data('replay-id'));
+		deleteReplayWithConfirmation(replayId);
+	});
+
+	// 回放控制按钮事件
+	$('#replayPauseBtn').on('click', toggleReplayPause);
+	$('#replaySpeed05Btn').on('click', function() { setReplaySpeed(0.5); });
+	$('#replaySpeed1Btn').on('click', function() { setReplaySpeed(1); });
+	$('#replaySpeed2Btn').on('click', function() { setReplaySpeed(2); });
+	$('#exitReplayBtn').on('click', exitReplay);
+
+	// 回放结束按钮事件
+	$('#replayAgainBtn').on('click', replayAgain);
+	$('#backToReplayListBtn').on('click', backToReplayList);
+});
 
