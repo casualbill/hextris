@@ -142,10 +142,13 @@ function initialize(a) {
 			}
 		};
 		$('#startBtn').off();
+		$('#start2PlayerBtn').off();
 		if (settings.platform == 'mobile') {
 			$('#startBtn').on('touchstart', startBtnHandler);
+			$('#start2PlayerBtn').on('touchstart', start2PlayerBtnHandler);
 		} else {
 			$('#startBtn').on('mousedown', startBtnHandler);
+			$('#start2PlayerBtn').on('mousedown', start2PlayerBtnHandler);
 		}
 
 		document.addEventListener('touchmove', function(e) {
@@ -249,12 +252,62 @@ function startBtnHandler() {
 		$('#openSideBar').fadeOut(150, "linear");
 	}
 
+	// 设置游戏模式为单人模式
+	gameMode = 0;
+
 	if (importing == 1) {
 		init(1);
 		checkVisualElements(0);
 	} else {
 		resumeGame();
 	}
+}
+
+function start2PlayerBtnHandler() {
+	setTimeout(function() {
+		if (settings.platform == "mobile") {
+			try {
+				document.body.removeEventListener('touchstart', handleTapBefore, false);
+			} catch (e) {
+
+			}
+
+			try {
+				document.body.removeEventListener('touchstart', handleTap, false);
+			} catch (e) {
+
+			}
+
+			document.body.addEventListener('touchstart', handleTap, false);
+		} else {
+			try {
+				document.body.removeEventListener('mousedown', handleClickBefore, false);
+			} catch (e) {
+
+			}
+
+			try {
+				document.body.removeEventListener('mousedown', handleClick, false);
+			} catch (e) {
+
+			}
+
+			document.body.addEventListener('mousedown', handleClick, false);
+		}
+	}, 5);
+
+	if (!canRestart) return false;
+
+	if ($('#openSideBar').is(':visible')) {
+		$('#openSideBar').fadeOut(150, "linear");
+	}
+
+	// 设置游戏模式为双人模式
+	gameMode = 1;
+
+	// 初始化双人游戏
+	init(1);
+	checkVisualElements(0);
 }
 
 function handlePause() {

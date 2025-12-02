@@ -1,3 +1,26 @@
+function renderGame(hex, blocks, isPlayer1) {
+	var i;
+	for (i = 0; i < hex.blocks.length; i++) {
+		for (var j = 0; j < hex.blocks[i].length; j++) {
+			var block = hex.blocks[i][j];
+			block.draw(true, j);
+		}
+	}
+	for (i = 0; i < blocks.length; i++) {
+		blocks[i].draw();
+	}
+
+	hex.draw();
+
+	for (i = 0; i < hex.texts.length; i++) {
+		var alive = hex.texts[i].draw();
+		if(!alive){
+			hex.texts.splice(i,1);
+			i--;
+		}
+	}
+}
+
 function render() {
 	var grey = '#bdc3c7';
 	if (gameState === 0) {
@@ -11,36 +34,35 @@ function render() {
 			op += 0.01;
 		}
 		ctx.globalAlpha = op;
-		drawPolygon(trueCanvas.width / 2 , trueCanvas.height / 2 , 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false,6);
+		
+		if (gameMode === 1) {
+			// 双人模式下绘制两个背景六边形
+			drawPolygon(trueCanvas.width / 2 , trueCanvas.height / 2 - 150, 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false,6);
+			drawPolygon(trueCanvas.width / 2 , trueCanvas.height / 2 + 150, 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false,6);
+		} else {
+			// 单人模式下绘制一个背景六边形
+			drawPolygon(trueCanvas.width / 2 , trueCanvas.height / 2 , 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false,6);
+		}
+		
 		drawTimer();
 		ctx.globalAlpha = 1;
 	}
 
-	var i;
-	for (i = 0; i < MainHex.blocks.length; i++) {
-		for (var j = 0; j < MainHex.blocks[i].length; j++) {
-			var block = MainHex.blocks[i][j];
-			block.draw(true, j);
-		}
-	}
-	for (i = 0; i < blocks.length; i++) {
-		blocks[i].draw();
+	// 渲染第一个游戏区域
+	renderGame(MainHex, blocks, true);
+	
+	// 如果是双人模式，渲染第二个游戏区域
+	if (gameMode === 1) {
+		renderGame(MainHex2, blocks2, false);
 	}
 
-	MainHex.draw();
+	// 绘制分数板
 	if (gameState ==1 || gameState ==-1 || gameState === 0) {
 		drawScoreboard();
 	}
 
-	for (i = 0; i < MainHex.texts.length; i++) {
-		var alive = MainHex.texts[i].draw();
-		if(!alive){
-			MainHex.texts.splice(i,1);
-			i--;
-		}
-	}
-
-	if ((MainHex.ct < 650 && (gameState !== 0) && !MainHex.playThrough)) {
+	// 渲染开始文本（只在单人模式下显示）
+	if (gameMode === 0 && (MainHex.ct < 650 && (gameState !== 0) && !MainHex.playThrough)) {
 		if (MainHex.ct > (650 - 50)) {
 			ctx.globalAlpha = (50 - (MainHex.ct - (650 - 50)))/50;
 		}

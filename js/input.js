@@ -1,9 +1,16 @@
 function addKeyListeners() {
+	// 玩家1使用方向键控制
 	keypress.register_combo({
 		keys: "left",
 		on_keydown: function() {
-			if (MainHex && gameState !== 0) {
-				MainHex.rotate(1);
+			if (gameState !== 0) {
+				if (gameMode === 1 && MainHex) {
+					// 双人模式下控制玩家1的游戏区域
+					MainHex.rotate(1);
+				} else if (MainHex) {
+					// 单人模式下控制唯一的游戏区域
+					MainHex.rotate(1);
+				}
 			}
 		}
 	});
@@ -11,39 +18,63 @@ function addKeyListeners() {
 	keypress.register_combo({
 		keys: "right",
 		on_keydown: function() {
-			if (MainHex && gameState !== 0){
-				MainHex.rotate(-1);
+			if (gameState !== 0) {
+				if (gameMode === 1 && MainHex) {
+					// 双人模式下控制玩家1的游戏区域
+					MainHex.rotate(-1);
+				} else if (MainHex) {
+					// 单人模式下控制唯一的游戏区域
+					MainHex.rotate(-1);
+				}
 			}
 		}
 	});
-		keypress.register_combo({
+	
+	keypress.register_combo({
 		keys: "down",
 		on_keydown: function() {
 			var tempSpeed = settings.speedModifier;
-			if (MainHex && gameState !== 0){
-				//speed up block temporarily
-				if(settings.speedUpKeyHeld == false){
-					settings.speedUpKeyHeld = true;
-					window.rush *=4;
+			if (gameState !== 0) {
+				if (gameMode === 1 && MainHex) {
+					// 双人模式下控制玩家1的游戏区域加速
+					if(settings.speedUpKeyHeld == false){
+						settings.speedUpKeyHeld = true;
+						window.rush *=4;
+					}
+				} else if (MainHex) {
+					// 单人模式下控制唯一的游戏区域加速
+					if(settings.speedUpKeyHeld == false){
+						settings.speedUpKeyHeld = true;
+						window.rush *=4;
+					}
 				}
 			}
 			//settings.speedModifier = tempSpeed;
 		},
 		on_keyup:function(){
-			if (MainHex && gameState !== 0){
-				//speed up block temporarily
-				
-				window.rush /=4;
-				settings.speedUpKeyHeld = false;
+			if (gameState !== 0) {
+				if (gameMode === 1 && MainHex) {
+					// 双人模式下控制玩家1的游戏区域减速
+					window.rush /=4;
+					settings.speedUpKeyHeld = false;
+				} else if (MainHex) {
+					// 单人模式下控制唯一的游戏区域减速
+					window.rush /=4;
+					settings.speedUpKeyHeld = false;
+				}
 			}
 		}	
 	});
 	
+	// 玩家2使用WASD控制
 	keypress.register_combo({
 		keys: "a",
 		on_keydown: function() {
-			if (MainHex && gameState !== 0) {
-				MainHex.rotate(1);
+			if (gameState !== 0) {
+				if (gameMode === 1 && MainHex2) {
+					// 双人模式下控制玩家2的游戏区域
+					MainHex2.rotate(1);
+				}
 			}
 		}
 	});
@@ -51,8 +82,11 @@ function addKeyListeners() {
 	keypress.register_combo({
 		keys: "d",
 		on_keydown: function() {
-			if (MainHex && gameState !== 0){
-				MainHex.rotate(-1);
+			if (gameState !== 0) {
+				if (gameMode === 1 && MainHex2) {
+					// 双人模式下控制玩家2的游戏区域
+					MainHex2.rotate(-1);
+				}
 			}
 		}
 	});
@@ -61,21 +95,24 @@ function addKeyListeners() {
 		keys: "s",
 		on_keydown: function() {
 			var tempSpeed = settings.speedModifier;
-			if (MainHex && gameState !== 0){
-				//speed up block temporarily
-				if(settings.speedUpKeyHeld == false){
-					settings.speedUpKeyHeld = true;
-					window.rush *=4;
+			if (gameState !== 0) {
+				if (gameMode === 1 && MainHex2) {
+					// 双人模式下控制玩家2的游戏区域加速
+					if(settings.speedUpKeyHeld == false){
+						settings.speedUpKeyHeld = true;
+						window.rush *=4;
+					}
 				}
 			}
 			//settings.speedModifier = tempSpeed;
 		},
 		on_keyup:function(){
-			if (MainHex && gameState !== 0){
-				//speed up block temporarily
-				
-				window.rush /=4;
-				settings.speedUpKeyHeld = false;
+			if (gameState !== 0) {
+				if (gameMode === 1 && MainHex2) {
+					// 双人模式下控制玩家2的游戏区域减速
+					window.rush /=4;
+					settings.speedUpKeyHeld = false;
+				}
 			}
 		}	
 	});

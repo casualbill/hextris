@@ -85,7 +85,22 @@ function hideUIElements() {
 	$('#pauseBtn').hide();
 	$('#restartBtn').hide();
 	$('#startBtn').hide();
+	$('#start2PlayerBtn').hide();
 }
+
+// 游戏模式：0 - 单人，1 - 双人
+var gameMode = 0;
+
+// 双人模式下的第二个游戏区域
+var MainHex2;
+var blocks2 = [];
+var waveone2;
+var score2 = 0;
+var prevScore2 = 0;
+var spawnLane2 = 0;
+var gdx2 = 0;
+var gdy2 = 0;
+var comboTime2 = 0;
 
 function init(b) {
 	if(settings.ending_block && b == 1){return;}
@@ -97,7 +112,7 @@ function init(b) {
 
 		setTimeout(function() {
             if (gameState == 1) {
-			    $('#openSideBar').fadeOut(150, "linear");
+				$('#openSideBar').fadeOut(150, "linear");
             }
 			infobuttonfading = false;
 		}, 7000);
@@ -132,6 +147,8 @@ function init(b) {
 
 	settings.blockHeight = settings.baseBlockHeight * settings.scale;
 	settings.hexWidth = settings.baseHexWidth * settings.scale;
+	
+	// 初始化第一个游戏区域
 	MainHex = saveState.hex || new Hex(settings.hexWidth);
 	if (saveState.hex) {
 		MainHex.playThrough += 1;
@@ -174,13 +191,45 @@ function init(b) {
 		});
 	});
 
-	MainHex.y = -100;
+	// 如果是双人模式，初始化第二个游戏区域
+	if (gameMode === 1) {
+		MainHex2 = new Hex(settings.hexWidth);
+		MainHex2.sideLength = settings.hexWidth;
+		blocks2 = [];
+		score2 = 0;
+		prevScore2 = 0;
+		spawnLane2 = 0;
+		gdx2 = 0;
+		gdy2 = 0;
+		comboTime2 = 0;
+
+		for (i = 0; i < MainHex2.blocks.length; i++) {
+			for (var j = 0; j < MainHex2.blocks[i].length; j++) {
+				MainHex2.blocks[i][j].height = settings.blockHeight;
+				MainHex2.blocks[i][j].settled = 0;
+			}
+		}
+
+		// 设置两个游戏区域的位置（上下分屏）
+		MainHex.y = -150;
+		MainHex2.y = 150;
+
+		// 初始化第二个游戏区域的波浪生成器
+		waveone2 = new waveGen(MainHex2);
+	} else {
+		// 单人模式下的位置
+		MainHex.y = -100;
+	}
 
 	startTime = Date.now();
 	waveone = saveState.wavegen || new waveGen(MainHex);
 
 	MainHex.texts = []; //clear texts
 	MainHex.delay = 15;
+	if (gameMode === 1) {
+		MainHex2.texts = [];
+		MainHex2.delay = 15;
+	}
 	hideText();
 }
 
@@ -212,6 +261,7 @@ function exportHistory() {
 
 function setStartScreen() {
 	$('#startBtn').show();
+	$('#start2PlayerBtn').show();
 	init();
 	if (isStateSaved()) {
 		importing = 0;
@@ -222,6 +272,7 @@ function setStartScreen() {
 	$('#pauseBtn').hide();
 	$('#restartBtn').hide();
 	$('#startBtn').show();
+	$('#start2PlayerBtn').show();
 
 	gameState = 0;
 	requestAnimFrame(animLoop);
@@ -335,17 +386,52 @@ function isInfringing(hex) {
 }
 
 function checkGameOver() {
-	for (var i = 0; i < MainHex.sides; i++) {
-		if (isInfringing(MainHex)) {
-			$.get('http://54.183.184.126/' + String(score))
-			if (highscores.indexOf(score) == -1) {
-				highscores.push(score);
+	// 检测玩家1是否失败
+	var player1Failed = false;
+	if (MainHex) {
+		for (var i = 0; i < MainHex.sides; i++) {
+			if (isInfringing(MainHex)) {
+				player1Failed = true;
+				break;
 			}
-			writeHighScores();
-			gameOverDisplay();
-			return true;
 		}
 	}
+	
+	// 检测玩家2是否失败
+	var player2Failed = false;
+	if (gameMode === 1 && MainHex2) {
+		for (var i = 0; i < MainHex2.sides; i++) {
+			if (isInfringing(MainHex2)) {
+				player2Failed = true;
+				break;
+			}
+		}
+	}
+	
+	// 如果任一玩家失败，结束游戏
+	if (player1Failed || player2Failed) {
+		// 保存分数
+		if (highscores.indexOf(score) == -1) {
+			highscores.push(score);
+		}
+		if (gameMode === 1 && highscores.indexOf(score2) == -1) {
+			highscores.push(score2);
+		}
+		writeHighScores();
+		
+		// 显示游戏结束界面
+		if (gameMode === 1) {
+			// 双人模式下显示获胜玩家
+			var winner = player1Failed ? 2 : 1;
+			gameOverDisplay(winner);
+		} else {
+			// 单人模式下显示普通结束界面
+			gameOverDisplay();
+		}
+		
+		return true;
+	}
+	
 	return false;
 }
 
