@@ -6,15 +6,86 @@ function render() {
 	
 	ctx.clearRect(0, 0, trueCanvas.width, trueCanvas.height);
 	clearGameBoard();
-	if (gameState === 1 || gameState === 2 || gameState === -1 || gameState === 0) {
-		if (op < 1) {
-			op += 0.01;
+	
+	// 多人对战模式渲染
+	if (typeof multiplayerState !== 'undefined' && multiplayerState.isMultiplayer && multiplayerState.currentRoom) {
+		const players = multiplayerState.currentRoom.players;
+		const playerCount = players.length;
+		
+		// 根据玩家数量布局
+		let layout = { cols: 1, rows: 1 };
+		if (playerCount === 2) {
+			layout = { cols: 2, rows: 1 };
+		} else if (playerCount === 3) {
+			layout = { cols: 2, rows: 2 };
+		} else if (playerCount >= 4) {
+			layout = { cols: 2, rows: 2 };
 		}
-		ctx.globalAlpha = op;
-		drawPolygon(trueCanvas.width / 2 , trueCanvas.height / 2 , 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false,6);
-		drawTimer();
-		ctx.globalAlpha = 1;
-	}
+		
+		const cellWidth = trueCanvas.width / layout.cols;
+		const cellHeight = trueCanvas.height / layout.rows;
+		
+		players.forEach((player, index) => {
+			const col = index % layout.cols;
+			const row = Math.floor(index / layout.cols);
+			const x = col * cellWidth + cellWidth / 2;
+			const y = row * cellHeight + cellHeight / 2;
+			
+			// 保存当前上下文状态
+			ctx.save();
+			
+			// 设置缩放以适应单元格
+			const scale = Math.min(cellWidth, cellHeight) / 800 * settings.baseScale;
+			ctx.translate(x, y);
+			ctx.scale(scale, scale);
+			
+			// 绘制游戏区域
+			if (player.isAlive) {
+				ctx.globalAlpha = op < 1 ? op : 1;
+				drawPolygon(0, 0, 6, (settings.rows * settings.baseBlockHeight) * (2/Math.sqrt(3)) + settings.baseHexWidth, 30, grey, false,6);
+				drawTimer();
+				ctx.globalAlpha = 1;
+				
+				// 绘制方块（这里需要修改为使用玩家的游戏数据）
+				var i;
+				for (i = 0; i < MainHex.blocks.length; i++) {
+					for (var j = 0; j < MainHex.blocks[i].length; j++) {
+						var block = MainHex.blocks[i][j];
+						block.draw(true, j);
+					}
+				}
+				for (i = 0; i < blocks.length; i++) {
+					blocks[i].draw();
+				}
+				
+				MainHex.draw();
+				drawScoreboard(player.score);
+			} else {
+				// 玩家已失败，显示灰色遮罩
+				ctx.globalAlpha = 0.7;
+				ctx.fillStyle = '#7f8c8d';
+				ctx.fillRect(-cellWidth / 2 / scale, -cellHeight / 2 / scale, cellWidth / scale, cellHeight / scale);
+				ctx.globalAlpha = 1;
+				renderText(0, 0, 30, '#ecf0f1', '已失败');
+			}
+			
+			// 绘制玩家昵称
+			renderText(0, -cellHeight / 2 / scale + 20, 18, '#2c3e50', player.nickname);
+			
+			// 恢复上下文状态
+			ctx.restore();
+		});
+	} else {
+		// 单人模式渲染
+		if (gameState === 1 || gameState === 2 || gameState === -1 || gameState === 0) {
+			if (op < 1) {
+				op += 0.01;
+			}
+			ctx.globalAlpha = op;
+			drawPolygon(trueCanvas.width / 2 , trueCanvas.height / 2 , 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false,6);
+			drawTimer();
+			ctx.globalAlpha = 1;
+		}
 
 	var i;
 	for (i = 0; i < MainHex.blocks.length; i++) {
@@ -27,10 +98,23 @@ function render() {
 		blocks[i].draw();
 	}
 
-	MainHex.draw();
-	if (gameState ==1 || gameState ==-1 || gameState === 0) {
-		drawScoreboard();
-	}
+			}
+
+		var i;
+		for (i = 0; i < MainHex.blocks.length; i++) {
+			for (var j = 0; j < MainHex.blocks[i].length; j++) {
+				var block = MainHex.blocks[i][j];
+				block.draw(true, j);
+			}
+		}
+		for (i = 0; i < blocks.length; i++) {
+			blocks[i].draw();
+		}
+
+		MainHex.draw();
+		if (gameState ==1 || gameState ==-1 || gameState === 0) {
+			drawScoreboard();
+		}
 
 	for (i = 0; i < MainHex.texts.length; i++) {
 		var alive = MainHex.texts[i].draw();

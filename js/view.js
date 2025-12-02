@@ -17,14 +17,15 @@ function renderText(x, y, fontSize, color, text, font) {
 	ctx.restore();
 }
 
-function drawScoreboard() {
+function drawScoreboard(customScore) {
+	const displayScore = typeof customScore !== 'undefined' ? customScore : score;
 	if (scoreOpacity < 1) {
 		scoreOpacity += 0.01;
 		textOpacity += 0.01;
 	}
 	ctx.globalAlpha = textOpacity;
 	var scoreSize = 50;
-	var scoreString = String(score);
+	var scoreString = String(displayScore);
 	if (scoreString.length == 6) {
 		scoreSize = 43;
 	} else if (scoreString.length == 7) {
@@ -37,23 +38,30 @@ function drawScoreboard() {
 	//if (rush ==1){
 		var color = "rgb(236, 240, 241)";
 	//}
-    var fontSize = settings.platform == 'mobile' ? 35 : 30;
-    var h = trueCanvas.height / 2 + gdy + 100 * settings.scale;
-	if (gameState === 0) {
-		renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2 + gdy, 60, "rgb(236, 240, 241)", String.fromCharCode("0xf04b"), 'px FontAwesome');
-		renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2.1 + gdy - 155 * settings.scale, 150, "#2c3e50", "Hextris");
-		renderText(trueCanvas.width / 2 + gdx + 5 * settings.scale, h + 10, fontSize, "rgb(44,62,80)", 'Play!');
-	} else if (gameState != 0 && textOpacity > 0) {
-		textOpacity -= 0.05;
-		renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2 + gdy, 60, "rgb(236, 240, 241)", String.fromCharCode("0xf04b"), 'px FontAwesome');
-		renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2 + gdy - 155 * settings.scale, 150, "#2c3e50", "Hextris");
-		renderText(trueCanvas.width / 2 + gdx + 5 * settings.scale, h, fontSize, "rgb(44,62,80)", 'Play!');
+    
+    // 多人对战模式下简化显示，只显示分数
+    if (typeof multiplayerState !== 'undefined' && multiplayerState.isMultiplayer) {
 		ctx.globalAlpha = scoreOpacity;
-		renderText(trueCanvas.width / 2 + gdx, trueCanvas.height / 2 + gdy, scoreSize, color, score);
+		renderText(0, 0, scoreSize, color, displayScore);
 	} else {
-		ctx.globalAlpha = scoreOpacity;
-		renderText(trueCanvas.width / 2 + gdx, trueCanvas.height / 2 + gdy, scoreSize, color, score);
-	}
+        var fontSize = settings.platform == 'mobile' ? 35 : 30;
+        var h = trueCanvas.height / 2 + gdy + 100 * settings.scale;
+		if (gameState === 0) {
+			renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2 + gdy, 60, "rgb(236, 240, 241)", String.fromCharCode("0xf04b"), 'px FontAwesome');
+			renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2.1 + gdy - 155 * settings.scale, 150, "#2c3e50", "Hextris");
+			renderText(trueCanvas.width / 2 + gdx + 5 * settings.scale, h + 10, fontSize, "rgb(44,62,80)", 'Play!');
+		} else if (gameState != 0 && textOpacity > 0) {
+			textOpacity -= 0.05;
+			renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2 + gdy, 60, "rgb(236, 240, 241)", String.fromCharCode("0xf04b"), 'px FontAwesome');
+			renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2 + gdy - 155 * settings.scale, 150, "#2c3e50", "Hextris");
+			renderText(trueCanvas.width / 2 + gdx + 5 * settings.scale, h, fontSize, "rgb(44,62,80)", 'Play!');
+			ctx.globalAlpha = scoreOpacity;
+			renderText(trueCanvas.width / 2 + gdx, trueCanvas.height / 2 + gdy, scoreSize, color, displayScore);
+		} else {
+			ctx.globalAlpha = scoreOpacity;
+			renderText(trueCanvas.width / 2 + gdx, trueCanvas.height / 2 + gdy, scoreSize, color, displayScore);
+		}
+    }
 
 	ctx.globalAlpha = 1;
 }

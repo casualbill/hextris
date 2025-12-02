@@ -342,7 +342,14 @@ function checkGameOver() {
 				highscores.push(score);
 			}
 			writeHighScores();
-			gameOverDisplay();
+			
+			// 多人对战模式下调用playerFailed
+			if (typeof multiplayerState !== 'undefined' && multiplayerState.isMultiplayer) {
+				playerFailed(multiplayerState.currentPlayer.id);
+				multiplayerState.currentPlayer.score = score;
+			} else {
+				gameOverDisplay();
+			}
 			return true;
 		}
 	}
