@@ -64,13 +64,13 @@ function consolidateBlocks(hex,side,index){
 	}
 
 	// add scores
-	var now = MainHex.ct;
+	var now = hex.ct;
 	if(now - hex.lastCombo < settings.comboTime ){
-		settings.comboTime = (1/settings.creationSpeedModifier) * (waveone.nextGen/16.666667) * 3;
+		settings.comboTime = (1/settings.creationSpeedModifier) * ((hex === MainHex ? waveone : player2.wavegen).nextGen/16.666667) * 3;
 		hex.comboMultiplier += 1;
 		hex.lastCombo = now;
 		var coords = findCenterOfBlocks(deletedBlocks);
-		hex.texts.push(new Text(coords['x'],coords['y'],"x "+hex.comboMultiplier.toString(),"bold Q","#fff",fadeUpAndOut));
+		hex.texts.push(new Text(coords['x'],coords['y'],'x '+hex.comboMultiplier.toString(),'bold Q','#fff',fadeUpAndOut));
 	}
 	else{
 		settings.comboTime = 240;
@@ -78,7 +78,13 @@ function consolidateBlocks(hex,side,index){
 		hex.comboMultiplier = 1;
 	}
 	var adder = deleting.length * deleting.length * hex.comboMultiplier;
-	hex.texts.push(new Text(hex.x,hex.y,"+ "+adder.toString(),"bold Q ",deletedBlocks[0].color,fadeUpAndOut));
-		hex.lastColorScored = deletedBlocks[0].color;
-	score += adder;
+	hex.texts.push(new Text(hex.x,hex.y,'+ '+adder.toString(),'bold Q ',deletedBlocks[0].color,fadeUpAndOut));
+	hex.lastColorScored = deletedBlocks[0].color;
+	
+	// 根据玩家更新分数
+	if (hex === MainHex) {
+		score += adder;
+	} else if (currentGameMode === GameMode.TWO_PLAYER) {
+		player2.score += adder;
+	}
 }

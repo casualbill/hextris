@@ -1,4 +1,5 @@
 function addKeyListeners() {
+	// 玩家1控制：方向键
 	keypress.register_combo({
 		keys: "left",
 		on_keydown: function() {
@@ -16,7 +17,8 @@ function addKeyListeners() {
 			}
 		}
 	});
-		keypress.register_combo({
+	
+	keypress.register_combo({
 		keys: "down",
 		on_keydown: function() {
 			var tempSpeed = settings.speedModifier;
@@ -39,10 +41,14 @@ function addKeyListeners() {
 		}	
 	});
 	
+	// 玩家2控制：WASD
 	keypress.register_combo({
 		keys: "a",
 		on_keydown: function() {
-			if (MainHex && gameState !== 0) {
+			if (currentGameMode === GameMode.TWO_PLAYER && player2.hex && gameState !== 0) {
+				player2.hex.rotate(1);
+			} else if (MainHex && gameState !== 0) {
+				// 单人模式下仍支持A键控制
 				MainHex.rotate(1);
 			}
 		}
@@ -51,7 +57,10 @@ function addKeyListeners() {
 	keypress.register_combo({
 		keys: "d",
 		on_keydown: function() {
-			if (MainHex && gameState !== 0){
+			if (currentGameMode === GameMode.TWO_PLAYER && player2.hex && gameState !== 0) {
+				player2.hex.rotate(-1);
+			} else if (MainHex && gameState !== 0) {
+				// 单人模式下仍支持D键控制
 				MainHex.rotate(-1);
 			}
 		}
@@ -61,8 +70,14 @@ function addKeyListeners() {
 		keys: "s",
 		on_keydown: function() {
 			var tempSpeed = settings.speedModifier;
-			if (MainHex && gameState !== 0){
-				//speed up block temporarily
+			if (currentGameMode === GameMode.TWO_PLAYER && player2.hex && gameState !== 0) {
+				// 玩家2加速块
+				if(settings.speedUpKeyHeld == false){
+					settings.speedUpKeyHeld = true;
+					window.rush *=4;
+				}
+			} else if (MainHex && gameState !== 0) {
+				// 单人模式下仍支持S键加速
 				if(settings.speedUpKeyHeld == false){
 					settings.speedUpKeyHeld = true;
 					window.rush *=4;
@@ -71,13 +86,21 @@ function addKeyListeners() {
 			//settings.speedModifier = tempSpeed;
 		},
 		on_keyup:function(){
-			if (MainHex && gameState !== 0){
+			if ((currentGameMode === GameMode.TWO_PLAYER && player2.hex && gameState !== 0) || (MainHex && gameState !== 0)) {
 				//speed up block temporarily
 				
 				window.rush /=4;
 				settings.speedUpKeyHeld = false;
 			}
 		}	
+	});
+	
+	// 玩家2上键：W键（暂时没有功能，可用于未来扩展）
+	keypress.register_combo({
+		keys: "w",
+		on_keydown: function() {
+			// 目前没有功能，可用于未来扩展
+		}
 	});
 	keypress.register_combo({
 		keys: "p",

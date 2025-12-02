@@ -144,8 +144,10 @@ function initialize(a) {
 		$('#startBtn').off();
 		if (settings.platform == 'mobile') {
 			$('#startBtn').on('touchstart', startBtnHandler);
+		$('#start2PlayerBtn').on('touchstart', start2PlayerBtnHandler);
 		} else {
 			$('#startBtn').on('mousedown', startBtnHandler);
+			$('#start2PlayerBtn').on('mousedown', start2PlayerBtnHandler);
 		}
 
 		document.addEventListener('touchmove', function(e) {

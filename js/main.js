@@ -87,7 +87,31 @@ function hideUIElements() {
 	$('#startBtn').hide();
 }
 
-function init(b) {
+// 游戏模式枚举
+var GameMode = {
+	SINGLE_PLAYER: 0,
+	TWO_PLAYER: 1
+};
+
+// 当前游戏模式
+var currentGameMode = GameMode.SINGLE_PLAYER;
+
+// 玩家2的游戏数据
+var player2 = {
+	hex: null,
+	blocks: [],
+	score: 0,
+	prevScore: 0,
+	spawnLane: 0,
+	wavegen: null,
+	gdx: 0,
+	gdy: 0,
+	comboTime: 0
+};
+
+function init(b, mode) {
+	currentGameMode = mode || GameMode.SINGLE_PLAYER;
+	
 	if(settings.ending_block && b == 1){return;}
 	if (b) {
 		$("#pauseBtn").attr('src',"./images/btn_pause.svg");
@@ -97,9 +121,9 @@ function init(b) {
 
 		setTimeout(function() {
             if (gameState == 1) {
-			    $('#openSideBar').fadeOut(150, "linear");
+				$('#openSideBar').fadeOut(150, "linear");
             }
-			infobuttonfading = false;
+				infobuttonfading = false;
 		}, 7000);
 		clearSaveState();
 		checkVisualElements(1);
@@ -119,6 +143,8 @@ function init(b) {
 	history = {};
 	importedHistory = undefined;
 	importing = 0;
+	
+	// 初始化玩家1
 	score = saveState.score || 0;
 	prevScore = 0;
 	spawnLane = 0;
@@ -174,7 +200,7 @@ function init(b) {
 		});
 	});
 
-	MainHex.y = -100;
+	MainHex.y = currentGameMode === GameMode.TWO_PLAYER ? trueCanvas.height / 4 : trueCanvas.height / 2;
 
 	startTime = Date.now();
 	waveone = saveState.wavegen || new waveGen(MainHex);
@@ -182,6 +208,28 @@ function init(b) {
 	MainHex.texts = []; //clear texts
 	MainHex.delay = 15;
 	hideText();
+	
+	// 初始化玩家2
+	if (currentGameMode === GameMode.TWO_PLAYER) {
+		player2.score = 0;
+		player2.prevScore = 0;
+		player2.spawnLane = 0;
+		player2.blocks = [];
+		player2.gdx = 0;
+		player2.gdy = 0;
+		player2.comboTime = 0;
+		
+		player2.hex = new Hex(settings.hexWidth);
+		player2.hex.sideLength = settings.hexWidth;
+		player2.hex.y = trueCanvas.height * 3 / 4;
+		
+		player2.wavegen = new waveGen(player2.hex);
+	}
+}
+
+// 2人对战按钮处理函数
+function start2PlayerBtnHandler() {
+	init(1, GameMode.TWO_PLAYER);
 }
 
 function addNewBlock(blocklane, color, iter, distFromHex, settled) { //last two are optional parameters

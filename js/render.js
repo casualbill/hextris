@@ -6,64 +6,71 @@ function render() {
 	
 	ctx.clearRect(0, 0, trueCanvas.width, trueCanvas.height);
 	clearGameBoard();
-	if (gameState === 1 || gameState === 2 || gameState === -1 || gameState === 0) {
-		if (op < 1) {
-			op += 0.01;
-		}
-		ctx.globalAlpha = op;
-		drawPolygon(trueCanvas.width / 2 , trueCanvas.height / 2 , 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false,6);
-		drawTimer();
-		ctx.globalAlpha = 1;
-	}
-
-	var i;
-	for (i = 0; i < MainHex.blocks.length; i++) {
-		for (var j = 0; j < MainHex.blocks[i].length; j++) {
-			var block = MainHex.blocks[i][j];
-			block.draw(true, j);
-		}
-	}
-	for (i = 0; i < blocks.length; i++) {
-		blocks[i].draw();
-	}
-
-	MainHex.draw();
-	if (gameState ==1 || gameState ==-1 || gameState === 0) {
-		drawScoreboard();
-	}
-
-	for (i = 0; i < MainHex.texts.length; i++) {
-		var alive = MainHex.texts[i].draw();
-		if(!alive){
-			MainHex.texts.splice(i,1);
-			i--;
-		}
-	}
-
-	if ((MainHex.ct < 650 && (gameState !== 0) && !MainHex.playThrough)) {
-		if (MainHex.ct > (650 - 50)) {
-			ctx.globalAlpha = (50 - (MainHex.ct - (650 - 50)))/50;
-		}
-
-		if (MainHex.ct < 50) {
-			ctx.globalAlpha = (MainHex.ct)/50;
-		}
-
-		renderBeginningText();
-		ctx.globalAlpha = 1;
-	}
-
-	if (gameState == -1) {
-		ctx.globalAlpha = 0.9;
-		ctx.fillStyle = 'rgb(236,240,241)';
-		ctx.fillRect(0, 0, trueCanvas.width, trueCanvas.height);
-		ctx.globalAlpha = 1;
+	
+	// 渲染玩家1的游戏
+	renderPlayer(MainHex, blocks, trueCanvas.width / 2, trueCanvas.height / 4, grey);
+	
+	// 渲染玩家2的游戏（如果是2人模式）
+	if (currentGameMode === GameMode.TWO_PLAYER) {
+		renderPlayer(player2.hex, player2.blocks, trueCanvas.width / 2, trueCanvas.height * 3 / 4, grey);
 	}
 
 	settings.prevScale = settings.scale;
 	settings.hexWidth = settings.baseHexWidth * settings.scale;
 	settings.blockHeight = settings.baseBlockHeight * settings.scale;
 }
+
+// 通用玩家渲染函数
+function renderPlayer(hex, blocksArray, x, y, grey) {
+	if (gameState === 1 || gameState === 2 || gameState === -1 || gameState === 0) {
+		if (op < 1) {
+			op += 0.01;
+		}
+		ctx.globalAlpha = op;
+		drawPolygon(x, y, 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false, 6);
+		//drawTimer(); // 暂时只显示一个计时器
+		ctx.globalAlpha = 1;
+	}
+
+	var i;
+	for (i = 0; i < hex.blocks.length; i++) {
+		for (var j = 0; j < hex.blocks[i].length; j++) {
+			var block = hex.blocks[i][j];
+			block.draw(true, j);
+		}
+	}
+	for (i = 0; i < blocksArray.length; i++) {
+		blocksArray[i].draw();
+	}
+
+	hex.draw();
+	if (gameState == 1 || gameState == -1 || gameState === 0) {
+		drawScoreboard();
+	}
+
+	for (i = 0; i < hex.texts.length; i++) {
+		var alive = hex.texts[i].draw();
+		if(!alive){
+			hex.texts.splice(i,1);
+			i--;
+		}
+	}
+
+	// 只在玩家1的游戏中显示开始文本
+	if (hex === MainHex && (hex.ct < 650 && (gameState !== 0) && !hex.playThrough)) {
+		if (hex.ct > (650 - 50)) {
+			ctx.globalAlpha = (50 - (hex.ct - (650 - 50)))/50;
+		}
+
+		if (hex.ct < 50) {
+			ctx.globalAlpha = (hex.ct)/50;
+		}
+
+		renderBeginningText();
+		ctx.globalAlpha = 1;
+	}
+}
+
 
 function renderBeginningText() {
 	var upperheight = (trueCanvas.height/2) - ((settings.rows * settings.blockHeight) * (2/Math.sqrt(3))) * (5/6);
