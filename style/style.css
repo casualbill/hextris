@@ -138,6 +138,40 @@ button:focus {
 	cursor:pointer;
 }
 
+#startBtn:hover {
+	color: white;
+	background: #1abc9c;
+	transition: all 0.4s ease;
+}
+
+/* AI对战按钮样式 */
+#aiBattleBtn {
+	position: absolute;
+	left: 50%;
+	top: 60%;
+	transform: translate(-50%, -50%);
+	width: 250px;
+	height: 60px;
+	font-size: 28px;
+	font-family: 'Exo', sans-serif;
+	text-transform: uppercase;
+	color: #2c3e50;
+	background: white;
+	border: none;
+	border-radius: 30px;
+	cursor: pointer;
+	text-align: center;
+	line-height: 60px;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+	z-index: 100;
+}
+
+#aiBattleBtn:hover {
+	color: white;
+	background: #3498db;
+	transition: all 0.4s ease;
+}
+
 #helpScreen {
 	height:100%;
 	width:100%;
@@ -492,6 +526,163 @@ body {
 	position:absolute;
 	width:100%;
 	bottom:0px;
+}
+
+#aiBattleBtn {
+	position:absolute;
+	left:55%;
+	top:38%;
+	height:25%;
+	width:25%;
+	z-index:99999999;
+	cursor:pointer;
+}
+
+#aiDifficultyScreen {
+	height:100%;
+	width:100%;
+	z-index:3002;
+	position:fixed;
+	top:0;
+	margin:0;
+	font-size:15px;
+	text-align:center;
+	display:none;
+	color:#232323;
+	background-color:rgba(236,240,241,0.95);
+}
+
+#aiDifficultyContainer {
+	padding:0px;
+	font-size:1.2em;
+	left:50%;
+	top:50%;
+	position: absolute;
+	text-align:center;
+	max-width:400px;
+	transform:translate(-50%, -50%);
+	-webkit-transform:translate(-50%, -50%);
+	-moz-transform:translate(-50%, -50%);
+	-ms-transform:translate(-50%, -50%);
+}
+
+.aiDifficultyTitle {
+	text-align:center;
+	font-size:2em;
+	font-weight:bold;
+	margin-bottom:30px;
+}
+
+.aiDifficultyButton {
+	padding:15px 30px;
+	margin:10px;
+	background-color:#3498db;
+	color:white;
+	border-radius:5px;
+	cursor:pointer;
+	font-size:1.5em;
+	transition:background-color 0.3s;
+}
+
+.aiDifficultyButton:hover {
+	background-color:#2980b9;
+}
+
+.scoreComparison {
+	position:absolute;
+	top:20px;
+	left:50%;
+	transform:translateX(-50%);
+	font-size:2em;
+	font-weight:bold;
+	color:#2c3e50;
+	text-align:center;
+}
+
+.playerScore,
+.aiScore {
+	display:inline-block;
+	margin:0 20px;
+}
+
+.vsText {
+	color:#bdc3c7;
+}
+
+#aiBattleGameOver {
+	height:100%;
+	width:100%;
+	z-index:3002;
+	position:fixed;
+	top:0;
+	margin:0;
+	font-size:15px;
+	text-align:center;
+	display:none;
+	color:#232323;
+	background-color:rgba(236,240,241,0.95);
+}
+
+#aiBattleGameOverContainer {
+	padding:0px;
+	font-size:1.2em;
+	left:50%;
+	top:50%;
+	position: absolute;
+	text-align:center;
+	max-width:400px;
+	transform:translate(-50%, -50%);
+	-webkit-transform:translate(-50%, -50%);
+	-moz-transform:translate(-50%, -50%);
+	-ms-transform:translate(-50%, -50%);
+}
+
+.aiBattleGameOverTitle {
+	text-align:center;
+	font-size:2.5em;
+	font-weight:bold;
+	margin-bottom:20px;
+}
+
+.aiBattleGameOverScore {
+	font-size:1.8em;
+	margin-bottom:30px;
+}
+
+#aiPauseMenu {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    text-align: center;
+}
+
+#aiPauseMenu .menuBtn {
+    display: block;
+    width: 100%;
+    padding: 15px 20px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+    background: #3498db;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#aiPauseMenu .menuBtn:hover {
+    background: #2980b9;
+}
+
+#aiPauseMenu .menuBtn:active {
+    background: #1f618d;
 }
 
 #androidBadge {

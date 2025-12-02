@@ -62,8 +62,23 @@
 		<canvas id="canvas"></canvas>
 		<div id="overlay" class="faded overlay"></div>
 		<div id='startBtn' ></div>
+		<div id='aiBattleBtn' style='display: none;'></div>
 		<div id="helpScreen" class='unselectable'>
 			<div id='inst_main_body'></div>
+		</div>
+
+		<div id="aiPauseMenu" style="display: none;">
+			<button id="resumeAIBattleBtn" class="menuBtn">继续游戏</button>
+			<button id="restartAIBattleBtn" class="menuBtn">重新开始</button>
+			<button id="backToMainMenuBtn" class="menuBtn">返回主菜单</button>
+		</div>
+		<div id="aiDifficultyScreen" class='unselectable faded overlay' style='display: none;'>
+			<div id='aiDifficultyContainer'>
+				<div class='aiDifficultyTitle'>选择AI难度</div>
+				<div class='aiDifficultyButton' id='easyAI'>简单</div>
+				<div class='aiDifficultyButton' id='mediumAI'>中等</div>
+				<div class='aiDifficultyButton' id='hardAI'>困难</div>
+			</div>
 		</div>
 		<img id="openSideBar" class='helpText' src="./images/btn_help.svg"/>
 		<div class="faded overlay"></div>
@@ -102,9 +117,23 @@
 								</g>
 							</g>
 						</g>
-					</svg>
-				</div>
-				<div id='buttonCont'>
+				</svg>
+			</div>
+		</div>
+		<div id="aiBattleGameOver" class='unselectable faded overlay' style='display: none;'>
+			<div id='aiBattleGameOverContainer'>
+				<div class='aiBattleGameOverTitle' id='aiBattleResultTitle'></div>
+				<div class='aiBattleGameOverScore' id='aiBattleScoreText'></div>
+				<img id='restartAI' src='./images/btn_restart.svg' height='57px' style='cursor:pointer; margin-right:10px;'>
+				<img id='backToMainMenuAI' src='./images/btn_back.svg' height='57px' style='cursor:pointer; display:none;'>
+			</div>
+		</div>
+		<div class='scoreComparison' id='scoreComparison' style='display: none;'>
+			<span class='playerScore'>玩家: <span id='playerScoreText'>0</span></span>
+			<span class='vsText'>VS</span>
+			<span class='aiScore'>AI: <span id='aiScoreText'>0</span></span>
+		</div>
+		<div id='buttonCont'>
 					<ul class="rrssb-buttons">
 						<li class="rrssb-facebook">
 							<a href='http://www.facebook.com/sharer.php?s=100
