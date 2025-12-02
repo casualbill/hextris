@@ -130,12 +130,46 @@ button:focus {
 }
 #startBtn {
 	position:absolute;
-	left:40%;
+	left:30%;
 	top:38%;
 	height:25%;
 	width:25%;
 	z-index:99999999;
 	cursor:pointer;
+	background: rgba(52, 152, 219, 0.8);
+	border: 3px solid white;
+	border-radius: 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-family: 'Exo 2', sans-serif;
+	font-size: 24px;
+	font-weight: bold;
+	color: white;
+	text-transform: uppercase;
+	text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+#aiBattleBtn {
+	position:absolute;
+	left:55%;
+	top:38%;
+	height:25%;
+	width:25%;
+	z-index:99999999;
+	cursor:pointer;
+	background: rgba(52, 152, 219, 0.8);
+	border: 3px solid white;
+	border-radius: 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-family: 'Exo 2', sans-serif;
+	font-size: 24px;
+	font-weight: bold;
+	color: white;
+	text-transform: uppercase;
+	text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
 #helpScreen {
