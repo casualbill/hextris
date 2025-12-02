@@ -112,14 +112,21 @@ function waveGen(hex) {
 		if (this.dt - this.lastGen > (this.nextGen + 500) / 2) {
 			var numColors = randInt(1, 3);
 			var c = colors[randInt(0, colors.length)];
-			var colorList = [c, c, c];
+			var halfSides = Math.floor(MainHex.sides / 2);
+			var colorList = [];
+			for (var i = 0; i < halfSides; i++) {
+				colorList.push(c);
+			}
 			if (numColors == 2) {
-				colorList = [c, colors[randInt(0, colors.length)], c];
+				var alternateColor = colors[randInt(0, colors.length)];
+				for (var i = 0; i < halfSides; i++) {
+					colorList[i] = (i % 2 == 0) ? c : alternateColor;
+				}
 			}
 
-			var d = randInt(0, 6);
-			for (var i = 0; i < 3; i++) {
-				addNewBlock((d + i) % 6, colorList[i], 1.5 + (this.difficulty / 15) * 3);
+			var d = randInt(0, MainHex.sides);
+			for (var i = 0; i < halfSides; i++) {
+				addNewBlock((d + i) % MainHex.sides, colorList[i], 1.5 + (this.difficulty / 15) * 3);
 			}
 
 			this.ct += 8;
