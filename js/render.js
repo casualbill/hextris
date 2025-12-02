@@ -1,4 +1,9 @@
 function render() {
+	// 如果是3D渲染模式，只渲染2D文本界面
+	if (is3DRender) {
+		render2DUI();
+		return;
+	}
 	var grey = '#bdc3c7';
 	if (gameState === 0) {
 		grey = "rgb(220, 223, 225)";
@@ -86,7 +91,7 @@ function renderBeginningText() {
 	renderText((trueCanvas.width)/2 + 2 * settings.scale,upperheight-0*settings.scale, fontSize, '#2c3e50', input_text);
 	renderText((trueCanvas.width)/2 + 2 * settings.scale,upperheight+33*settings.scale, fontSize, '#2c3e50', action_text);
     if (!mob) {
-	    drawKey("",(trueCanvas.width)/2 + 2 * settings.scale-2.5,upperheight+38*settings.scale);
+		drawKey("",(trueCanvas.width)/2 + 2 * settings.scale-2.5,upperheight+38*settings.scale);
     }
 
 	renderText((trueCanvas.width)/2 + 2 * settings.scale,lowerheight,fontSize, '#2c3e50', score_text);
@@ -114,4 +119,43 @@ function drawKey(key, x, y) {
 			drawKey("right", x + 5, y);
 	}
 	ctx.restore();
+}
+
+// 渲染2D文本界面（在3D模式下使用）
+function render2DUI() {
+	ctx.clearRect(0, 0, trueCanvas.width, trueCanvas.height);
+	
+	// 渲染分数板
+	drawScoreboard();
+	
+	// 渲染开始文本
+	if ((MainHex.ct < 650 && (gameState !== 0) && !MainHex.playThrough)) {
+		if (MainHex.ct > (650 - 50)) {
+			ctx.globalAlpha = (50 - (MainHex.ct - (650 - 50)))/50;
+		}
+
+		if (MainHex.ct < 50) {
+			ctx.globalAlpha = (MainHex.ct)/50;
+		}
+
+		renderBeginningText();
+		ctx.globalAlpha = 1;
+	}
+	
+	// 渲染游戏结束界面
+	if (gameState == -1) {
+		ctx.globalAlpha = 0.9;
+		ctx.fillStyle = 'rgb(236,240,241)';
+		ctx.fillRect(0, 0, trueCanvas.width, trueCanvas.height);
+		ctx.globalAlpha = 1;
+	}
+	
+	// 渲染文本效果
+	for (var i = 0; i < MainHex.texts.length; i++) {
+		var alive = MainHex.texts[i].draw();
+		if(!alive){
+			MainHex.texts.splice(i,1);
+			i--;
+		}
+	}
 }
