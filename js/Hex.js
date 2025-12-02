@@ -50,7 +50,7 @@ function Hex(sideLength) {
 		this.shakes.push({lane:block.fallingLane, magnitude:4.5 * (window.devicePixelRatio ? window.devicePixelRatio : 1) * (settings.scale)});
 		lane += this.position;
 		lane = (lane + this.sides) % this.sides;
-		block.distFromHex = MainHex.sideLength / 2 * Math.sqrt(3) + block.height * this.blocks[lane].length;
+		block.distFromHex = this.sideLength / 2 * Math.sqrt(3) + block.height * this.blocks[lane].length;
 		this.blocks[lane].push(block);
 		block.attachedLane = lane;
 		block.checked = 1;
@@ -61,6 +61,9 @@ function Hex(sideLength) {
 			return;
 		}
 
+		// 确定当前游戏使用的wavegen对象
+		var currentWavegen = (this === MainHex) ? waveone : player2.wavegen;
+
 		if (position !== undefined) {
 			arr = tArr;
 			if (position <= 0) {
@@ -70,7 +73,7 @@ function Hex(sideLength) {
 					block.checked = 1;
 				} else {
 					block.settled = 0;
-					block.iter = 1.5 + (waveone.difficulty/15) * 3;
+					block.iter = 1.5 + (currentWavegen.difficulty/15) * 3;
 				}
 			} else {
 				if (arr[position - 1].settled && block.distFromHex - block.iter * this.dt * settings.scale - arr[position - 1].distFromHex - arr[position - 1].height <= 0) {
@@ -80,7 +83,7 @@ function Hex(sideLength) {
 				}
 				else {
 					block.settled = 0;
-					block.iter = 1.5 + (waveone.difficulty/15) * 3;
+					block.iter = 1.5 + (currentWavegen.difficulty/15) * 3;
 				}
 			}
 		} else {

@@ -24,21 +24,10 @@ function drawScoreboard() {
 	}
 	ctx.globalAlpha = textOpacity;
 	var scoreSize = 50;
-	var scoreString = String(score);
-	if (scoreString.length == 6) {
-		scoreSize = 43;
-	} else if (scoreString.length == 7) {
-		scoreSize = 35;
-	} else if (scoreString.length == 8) {
-		scoreSize = 31;
-	} else if (scoreString.length == 9) {
-		scoreSize = 27;
-	}
-	//if (rush ==1){
-		var color = "rgb(236, 240, 241)";
-	//}
+	var color = "rgb(236, 240, 241)";
     var fontSize = settings.platform == 'mobile' ? 35 : 30;
     var h = trueCanvas.height / 2 + gdy + 100 * settings.scale;
+	
 	if (gameState === 0) {
 		renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2 + gdy, 60, "rgb(236, 240, 241)", String.fromCharCode("0xf04b"), 'px FontAwesome');
 		renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2.1 + gdy - 155 * settings.scale, 150, "#2c3e50", "Hextris");
@@ -49,10 +38,68 @@ function drawScoreboard() {
 		renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2 + gdy - 155 * settings.scale, 150, "#2c3e50", "Hextris");
 		renderText(trueCanvas.width / 2 + gdx + 5 * settings.scale, h, fontSize, "rgb(44,62,80)", 'Play!');
 		ctx.globalAlpha = scoreOpacity;
-		renderText(trueCanvas.width / 2 + gdx, trueCanvas.height / 2 + gdy, scoreSize, color, score);
+		
+		// 根据游戏模式显示分数
+		if (currentGameMode === GameMode.TWO_PLAYER) {
+			// 显示玩家1分数
+			var score1String = String(score);
+			var score1Size = 50;
+			if (score1String.length == 6) score1Size = 43;
+			else if (score1String.length == 7) score1Size = 35;
+			else if (score1String.length == 8) score1Size = 31;
+			else if (score1String.length == 9) score1Size = 27;
+			renderText(trueCanvas.width / 2 + gdx, trueCanvas.height / 4 + gdy, score1Size, color, score);
+			
+			// 显示玩家2分数
+			var score2String = String(player2.score);
+			var score2Size = 50;
+			if (score2String.length == 6) score2Size = 43;
+			else if (score2String.length == 7) score2Size = 35;
+			else if (score2String.length == 8) score2Size = 31;
+			else if (score2String.length == 9) score2Size = 27;
+			renderText(trueCanvas.width / 2 + gdx, trueCanvas.height * 3 / 4 + gdy, score2Size, color, player2.score);
+		} else {
+			// 显示单个玩家分数
+			var scoreString = String(score);
+			var scoreSize = 50;
+			if (scoreString.length == 6) scoreSize = 43;
+			else if (scoreString.length == 7) scoreSize = 35;
+			else if (scoreString.length == 8) scoreSize = 31;
+			else if (scoreString.length == 9) scoreSize = 27;
+			renderText(trueCanvas.width / 2 + gdx, trueCanvas.height / 2 + gdy, scoreSize, color, score);
+		}
 	} else {
 		ctx.globalAlpha = scoreOpacity;
-		renderText(trueCanvas.width / 2 + gdx, trueCanvas.height / 2 + gdy, scoreSize, color, score);
+		
+		// 根据游戏模式显示分数
+		if (currentGameMode === GameMode.TWO_PLAYER) {
+			// 显示玩家1分数
+			var score1String = String(score);
+			var score1Size = 50;
+			if (score1String.length == 6) score1Size = 43;
+			else if (score1String.length == 7) score1Size = 35;
+			else if (score1String.length == 8) score1Size = 31;
+			else if (score1String.length == 9) score1Size = 27;
+			renderText(trueCanvas.width / 2 + gdx, trueCanvas.height / 4 + gdy, score1Size, color, score);
+			
+			// 显示玩家2分数
+			var score2String = String(player2.score);
+			var score2Size = 50;
+			if (score2String.length == 6) score2Size = 43;
+			else if (score2String.length == 7) score2Size = 35;
+			else if (score2String.length == 8) score2Size = 31;
+			else if (score2String.length == 9) score2Size = 27;
+			renderText(trueCanvas.width / 2 + gdx, trueCanvas.height * 3 / 4 + gdy, score2Size, color, player2.score);
+		} else {
+			// 显示单个玩家分数
+			var scoreString = String(score);
+			var scoreSize = 50;
+			if (scoreString.length == 6) scoreSize = 43;
+			else if (scoreString.length == 7) scoreSize = 35;
+			else if (scoreString.length == 8) scoreSize = 31;
+			else if (scoreString.length == 9) scoreSize = 27;
+			renderText(trueCanvas.width / 2 + gdx, trueCanvas.height / 2 + gdy, scoreSize, color, score);
+		}
 	}
 
 	ctx.globalAlpha = 1;
