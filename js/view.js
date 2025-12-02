@@ -191,6 +191,9 @@ function pause(o) {
 		if ($('#helpScreen').is(':visible')) {
 			$('#helpScreen').fadeOut(300, "linear");
 		}
+		if ($('#aiPauseMenu').is(':visible')) {
+			$('#aiPauseMenu').fadeOut(300, "linear");
+		}
 
 		$("#pauseBtn").attr("src", "./images/btn_pause.svg");
 		$('.helpText').fadeOut(300, 'linear');
@@ -201,19 +204,37 @@ function pause(o) {
 			pausable =true;
 		}, 400);
 	} else if (gameState != -2 && gameState !== 0 && gameState !== 2) {
-		$('#restartBtn').fadeIn(300, "linear");
-		$('#buttonCont').fadeIn(300, "linear");
-		$('.helpText').fadeIn(300, 'linear');
-		if (message == 'paused') {
-			showText(message);
-		}
-		$('#fork-ribbon').fadeIn(300, 'linear');
-		$("#pauseBtn").attr("src","./images/btn_resume.svg");
-		$('#overlay').fadeIn(300, 'linear');
-		prevGameState = gameState;
-		setTimeout(function() {
+		// 检查是否在AI对战模式中
+		if (window.aiBattleMode) {
+			// AI对战模式暂停
+			$('#restartBtn').hide();
+			$('#buttonCont').hide();
+			$('.helpText').hide();
+			$('#fork-ribbon').hide();
+			$("#pauseBtn").attr("src","./images/btn_resume.svg");
+			$('#overlay').fadeIn(300, 'linear');
+			$('#aiPauseMenu').fadeIn(300, 'linear');
+			prevGameState = gameState;
+			setTimeout(function() {
 		    pausable = true;
 		}, 400);
-		gameState = -1;
+			gameState = -1;
+		} else {
+			// 普通模式暂停
+			$('#restartBtn').fadeIn(300, "linear");
+			$('#buttonCont').fadeIn(300, "linear");
+			$('.helpText').fadeIn(300, 'linear');
+			if (message == 'paused') {
+				showText(message);
+			}
+			$('#fork-ribbon').fadeIn(300, 'linear');
+			$("#pauseBtn").attr("src","./images/btn_resume.svg");
+			$('#overlay').fadeIn(300, 'linear');
+			prevGameState = gameState;
+			setTimeout(function() {
+		    pausable = true;
+		}, 400);
+			gameState = -1;
+		}
 	}
 }

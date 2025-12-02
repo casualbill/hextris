@@ -11,7 +11,17 @@ function render() {
 			op += 0.01;
 		}
 		ctx.globalAlpha = op;
-		drawPolygon(trueCanvas.width / 2 , trueCanvas.height / 2 , 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false,6);
+		
+		// 渲染玩家和AI的六边形
+		if (window.aiBattleMode) {
+			// AI对战模式：分屏显示
+			drawPolygon(trueCanvas.width * 0.25, trueCanvas.height / 2, 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false,6);
+			drawPolygon(trueCanvas.width * 0.75, trueCanvas.height / 2, 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, '#95a5a6', false,6);
+		} else {
+			// 普通模式：单个六边形
+			drawPolygon(trueCanvas.width / 2 , trueCanvas.height / 2 , 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false,6);
+		}
+		
 		drawTimer();
 		ctx.globalAlpha = 1;
 	}
@@ -28,6 +38,12 @@ function render() {
 	}
 
 	MainHex.draw();
+	
+	// 渲染AI六边形
+	if (window.aiBattleMode && window.aiHex) {
+		window.aiHex.draw();
+	}
+	
 	if (gameState ==1 || gameState ==-1 || gameState === 0) {
 		drawScoreboard();
 	}

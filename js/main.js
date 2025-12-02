@@ -211,7 +211,6 @@ function exportHistory() {
 }
 
 function setStartScreen() {
-	$('#startBtn').show();
 	init();
 	if (isStateSaved()) {
 		importing = 0;
@@ -219,15 +218,27 @@ function setStartScreen() {
 		importing = 1;
 	}
 
+	$('#overlay').show();
 	$('#pauseBtn').hide();
 	$('#restartBtn').hide();
 	$('#startBtn').show();
+	$('#gameoverscreen').hide();
+	$('#aiBattleBtn').show(); // 显示AI对战按钮
 
 	gameState = 0;
 	requestAnimFrame(animLoop);
 }
 
 var spd = 1;
+// AI对战相关变量
+var aiBattleMode = false;
+var aiDifficulty = '';
+var aiHex = null;
+var aiScore = 0;
+var playerScore = 0;
+var aiTimer = null;
+var aiDelay = 0;
+var battleStats = { easy: { wins: 0, losses: 0 }, medium: { wins: 0, losses: 0 }, hard: { wins: 0, losses: 0 } };
 
 function animLoop() {
 	switch (gameState) {
@@ -373,6 +384,271 @@ function showHelp() {
 
 	$("#openSideBar").fadeIn(150,"linear");
 	$('#helpScreen').fadeToggle(150, "linear");
+}
+
+$(document).ready(function() {
+	initialize();
+	// 加载AI对战统计数据
+	loadBattleStats();
+	
+	// 添加AI对战按钮事件监听器
+	$('#aiBattleBtn').click(showAIDifficultyScreen);
+	$('#easyAI').click(function() { startAIBattle('easy'); });
+	$('#mediumAI').click(function() { startAIBattle('medium'); });
+	$('#hardAI').click(function() { startAIBattle('hard'); });
+	$('#restartAI').click(restartAIBattle);
+	$('#backToMainMenuAI').click(backToMainMenuFromAIBattle);
+	
+	// 添加AI暂停菜单按钮事件监听器
+	$('#resumeAIBattleBtn').click(pause);
+	$('#restartAIBattleBtn').click(restartAIBattle);
+	$('#backToMainMenuBtn').click(backToMainMenuFromAIBattle);
+});
+
+// 加载AI对战统计数据
+function loadBattleStats() {
+	var saved = localStorage.getItem('battleStats');
+	if (saved) {
+		battleStats = JSON.parse(saved);
+	}
+}
+
+// 保存AI对战统计数据
+function saveBattleStats() {
+	localStorage.setItem('battleStats', JSON.stringify(battleStats));
+}
+
+// 显示AI难度选择界面
+function showAIDifficultyScreen() {
+	$('#startBtn').hide();
+	$('#aiBattleBtn').hide();
+	$('#aiDifficultyScreen').show();
+}
+
+// 开始AI对战
+function startAIBattle(difficulty) {
+	aiDifficulty = difficulty;
+	aiBattleMode = true;
+	playerScore = 0;
+	aiScore = 0;
+	
+	// 设置AI延迟
+	switch(difficulty) {
+		case 'easy':
+			aiDelay = 300;
+			break;
+		case 'medium':
+			aiDelay = 150;
+			break;
+		case 'hard':
+			aiDelay = 50;
+			break;
+	}
+	
+	$('#aiDifficultyScreen').hide();
+	$('#scoreComparison').show();
+	updateScoreDisplay();
+	
+	// 初始化AI六边形
+	aiHex = new Hex(settings.hexWidth);
+	aiHex.x = trueCanvas.width * 0.75;
+	aiHex.y = trueCanvas.height / 2;
+	
+	// 初始化玩家六边形
+	init(1);
+	MainHex.x = trueCanvas.width * 0.25;
+	MainHex.y = trueCanvas.height / 2;
+	
+	// 启动AI定时器
+	startAITimer();
+}
+
+// 启动AI定时器
+function startAITimer() {
+	aiTimer = setInterval(function() {
+		if (gameState === 1 && aiBattleMode) {
+			makeAIDecision();
+		}
+	}, aiDelay);
+}
+
+// AI决策逻辑
+function makeAIDecision() {
+	if (!aiHex) return;
+	
+	// 简单难度：随机旋转
+	if (aiDifficulty === 'easy') {
+		if (Math.random() > 0.5) {
+			aiHex.rotate(1);
+		} else {
+			aiHex.rotate(-1);
+		}
+	} else if (aiDifficulty === 'medium') {
+		// 中等难度：优先匹配同色
+		var bestRotation = findBestRotation(aiHex);
+		if (bestRotation !== null && Math.random() > 0.3) {
+			aiHex.rotate(bestRotation);
+		} else {
+			if (Math.random() > 0.5) {
+				aiHex.rotate(1);
+			} else {
+				aiHex.rotate(-1);
+			}
+		}
+	} else if (aiDifficulty === 'hard') {
+		// 困难难度：最优策略
+		var bestRotation = findBestRotation(aiHex);
+		if (bestRotation !== null) {
+			aiHex.rotate(bestRotation);
+		} else {
+			// 如果没有明显优势，随机选择但偏向减少威胁
+			if (Math.random() > 0.6) {
+				aiHex.rotate(1);
+			} else {
+				aiHex.rotate(-1);
+			}
+		}
+	}
+}
+
+// 寻找最佳旋转方向
+function findBestRotation(hex) {
+	// 检查每个旋转方向的潜在收益
+	var leftScore = evaluateRotation(hex, 1);
+	var rightScore = evaluateRotation(hex, -1);
+	
+	if (leftScore > rightScore + 0.5) {
+		return 1;
+	} else if (rightScore > leftScore + 0.5) {
+		return -1;
+	} else {
+		return null;
+	}
+}
+
+// 评估旋转方向的价值
+function evaluateRotation(hex, direction) {
+	var score = 0;
+	var tempHex = JSON.parse(JSON.stringify(hex));
+	
+	// 模拟旋转
+	tempHex.rotate(direction);
+	
+	// 检查是否有可以消除的块
+	for (var i = 0; i < tempHex.blocks.length; i++) {
+		for (var j = 0; j < tempHex.blocks[i].length; j++) {
+			var block = tempHex.blocks[i][j];
+			if (!block.deleted) {
+				// 检查相邻块是否有同色
+				var adjacent = getAdjacentBlocks(tempHex, i, j);
+				var sameColorCount = adjacent.filter(function(adjBlock) {
+					return adjBlock && adjBlock.color === block.color && !adjBlock.deleted;
+				}).length;
+				
+				score += sameColorCount * 2;
+				
+				// 检查是否可以形成消除
+				if (sameColorCount >= 2) {
+					score += 10;
+				}
+			}
+		}
+	}
+	
+	// 优先消除高堆
+	for (var i = 0; i < tempHex.blocks.length; i++) {
+		var blockCount = tempHex.blocks[i].filter(function(block) { return !block.deleted; }).length;
+		score -= blockCount;
+	}
+	
+	return score;
+}
+
+// 获取相邻块
+function getAdjacentBlocks(hex, lane, index) {
+	var adjacent = [];
+	var sides = hex.blocks.length;
+	
+	// 同列上下
+	if (index > 0) {
+		adjacent.push(hex.blocks[lane][index - 1]);
+	}
+	if (index < hex.blocks[lane].length - 1) {
+		adjacent.push(hex.blocks[lane][index + 1]);
+	}
+	
+	// 左右列
+	var leftLane = lane - 1;
+	var rightLane = lane + 1;
+	
+	if (leftLane < 0) leftLane = sides - 1;
+	if (rightLane >= sides) rightLane = 0;
+	
+	adjacent.push(hex.blocks[leftLane][index]);
+	adjacent.push(hex.blocks[rightLane][index]);
+	
+	return adjacent;
+}
+
+// 更新分数显示
+function updateScoreDisplay() {
+	$('#playerScoreText').text(playerScore);
+	$('#aiScoreText').text(aiScore);
+}
+
+// 检查AI对战游戏结束
+function checkAIBattleGameOver() {
+	var playerLost = isInfringing(MainHex);
+	var aiLost = isInfringing(aiHex);
+	
+	if (playerLost || aiLost) {
+		var result = '';
+		if (playerLost && aiLost) {
+			result = '平局';
+		} else if (playerLost) {
+			result = 'AI获胜';
+			battleStats[aiDifficulty].losses++;
+		} else {
+			result = '你赢了！';
+			battleStats[aiDifficulty].wins++;
+		}
+		
+		saveBattleStats();
+		showAIBattleResult(result);
+		return true;
+	}
+	
+	return false;
+}
+
+// 显示AI对战结果
+function showAIBattleResult(result) {
+	clearInterval(aiTimer);
+	gameState = 2;
+	$('#aiBattleResultTitle').text(result);
+	$('#aiBattleScoreText').text('玩家: ' + playerScore + ' vs AI: ' + aiScore);
+	$('#aiBattleGameOver').show();
+}
+
+// 重新开始AI对战
+function restartAIBattle() {
+	$('#aiBattleGameOver').hide();
+	clearInterval(aiTimer);
+	aiBattleMode = false;
+	aiHex = null;
+	startAIBattle(aiDifficulty);
+}
+
+// 返回主菜单
+function backToMainMenuFromAIBattle() {
+	$('#aiBattleGameOver').hide();
+	clearInterval(aiTimer);
+	aiBattleMode = false;
+	aiHex = null;
+	playerScore = 0;
+	aiScore = 0;
+	$('#scoreComparison').hide();
+	setStartScreen();
 }
 
 (function(){
