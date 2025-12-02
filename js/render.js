@@ -1,38 +1,17 @@
 function render() {
-	var grey = '#bdc3c7';
-	if (gameState === 0) {
-		grey = "rgb(220, 223, 225)";
-	}
-	
+	// 清除2D Canvas（只清除需要显示文字的部分）
 	ctx.clearRect(0, 0, trueCanvas.width, trueCanvas.height);
-	clearGameBoard();
+	
+	// 只在2D Canvas上渲染文字UI元素
 	if (gameState === 1 || gameState === 2 || gameState === -1 || gameState === 0) {
-		if (op < 1) {
-			op += 0.01;
-		}
-		ctx.globalAlpha = op;
-		drawPolygon(trueCanvas.width / 2 , trueCanvas.height / 2 , 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false,6);
 		drawTimer();
-		ctx.globalAlpha = 1;
 	}
 
-	var i;
-	for (i = 0; i < MainHex.blocks.length; i++) {
-		for (var j = 0; j < MainHex.blocks[i].length; j++) {
-			var block = MainHex.blocks[i][j];
-			block.draw(true, j);
-		}
-	}
-	for (i = 0; i < blocks.length; i++) {
-		blocks[i].draw();
-	}
-
-	MainHex.draw();
-	if (gameState ==1 || gameState ==-1 || gameState === 0) {
+	if (gameState == 1 || gameState == -1 || gameState === 0) {
 		drawScoreboard();
 	}
 
-	for (i = 0; i < MainHex.texts.length; i++) {
+	for (var i = 0; i < MainHex.texts.length; i++) {
 		var alive = MainHex.texts[i].draw();
 		if(!alive){
 			MainHex.texts.splice(i,1);
@@ -59,6 +38,9 @@ function render() {
 		ctx.fillRect(0, 0, trueCanvas.width, trueCanvas.height);
 		ctx.globalAlpha = 1;
 	}
+
+	// 更新Three.js 3D场景
+	updateThreeJSBlocks();
 
 	settings.prevScale = settings.scale;
 	settings.hexWidth = settings.baseHexWidth * settings.scale;

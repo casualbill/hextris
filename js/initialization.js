@@ -98,6 +98,11 @@ function initialize(a) {
 	}
 
 	window.canvas = document.getElementById('canvas');
+	
+	// 初始化Three.js 3D渲染系统
+	setTimeout(function() {
+		initThreeJS();
+	}, 100);
 	window.ctx = canvas.getContext('2d');
 	window.trueCanvas = {
 		width: canvas.width,
