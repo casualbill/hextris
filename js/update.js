@@ -7,6 +7,11 @@ function update(dt) {
 		if (MainHex.ct - waveone.prevTimeScored > 1000) {
 			waveone.prevTimeScored = MainHex.ct;
 		}
+		
+		// 检查是否在关卡模式下达到了目标分数
+		if (levelMode.active) {
+			checkLevelComplete();
+		}
 	}
 	var lowestDeletedIndex = 99;
 	var i;
