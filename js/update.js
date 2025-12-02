@@ -70,4 +70,9 @@ function update(dt) {
 	}
 
 	MainHex.ct += dt;
+	
+	// 更新道具系统
+	if (powerups) {
+		powerups.updateCooldowns(dt);
+	}
 }

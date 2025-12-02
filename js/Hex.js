@@ -54,6 +54,11 @@ function Hex(sideLength) {
 		this.blocks[lane].push(block);
 		block.attachedLane = lane;
 		block.checked = 1;
+		
+		// 检查是否是道具方块，如果是则获得道具
+		if (block.isPowerup && block.powerupType && powerups) {
+			powerups.gain(block.powerupType);
+		}
 	};
 
 	this.doesBlockCollide = function(block, position, tArr) {
