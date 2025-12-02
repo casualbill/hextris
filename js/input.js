@@ -2,8 +2,10 @@ function addKeyListeners() {
 	keypress.register_combo({
 		keys: "left",
 		on_keydown: function() {
-			if (MainHex && gameState !== 0) {
-				MainHex.rotate(1);
+			if (window.aiMode && window.playerHex && gameState !== 0) {
+				window.playerHex.rotate(-1);
+			} else if (MainHex && gameState !== 0) {
+				MainHex.rotate(-1);
 			}
 		}
 	});
@@ -11,8 +13,10 @@ function addKeyListeners() {
 	keypress.register_combo({
 		keys: "right",
 		on_keydown: function() {
-			if (MainHex && gameState !== 0){
-				MainHex.rotate(-1);
+			if (window.aiMode && window.playerHex && gameState !== 0) {
+				window.playerHex.rotate(1);
+			} else if (MainHex && gameState !== 0){
+				MainHex.rotate(1);
 			}
 		}
 	});
@@ -42,8 +46,10 @@ function addKeyListeners() {
 	keypress.register_combo({
 		keys: "a",
 		on_keydown: function() {
-			if (MainHex && gameState !== 0) {
-				MainHex.rotate(1);
+			if (window.aiMode && window.playerHex && gameState !== 0) {
+				window.playerHex.rotate(-1);
+			} else if (MainHex && gameState !== 0) {
+				MainHex.rotate(-1);
 			}
 		}
 	});
@@ -51,8 +57,10 @@ function addKeyListeners() {
 	keypress.register_combo({
 		keys: "d",
 		on_keydown: function() {
-			if (MainHex && gameState !== 0){
-				MainHex.rotate(-1);
+			if (window.aiMode && window.playerHex && gameState !== 0) {
+				window.playerHex.rotate(1);
+			} else if (MainHex && gameState !== 0){
+				MainHex.rotate(1);
 			}
 		}
 	});
@@ -121,6 +129,14 @@ function addKeyListeners() {
 			$('#helpScreen').fadeOut(150, "linear");
 		}
 		pause();
+		return false;
+	});
+
+	// AI对战按钮点击事件
+	$("#aiBtn").on('touchstart mousedown', function() {
+		if (gameState == 0) {
+			showDifficultySelection();
+		}
 		return false;
 	});
 
@@ -209,6 +225,32 @@ function handleClickTap(x,y) {
 		showHelp();
 		return;
 	}
+	
+	// 处理AI对战模式的点击
+	if (window.aiMode && window.playerHex && gameState === 1) {
+		var radius = settings.hexWidth ;
+		var halfRadius = radius/2;
+		var triHeight = radius *(Math.sqrt(3)/2);
+		var Vertexes =[
+			[radius,0],
+			[halfRadius,-triHeight],
+			[-halfRadius,-triHeight],
+			[-radius,0],
+			[-halfRadius,triHeight],
+			[halfRadius,triHeight]];
+		Vertexes = Vertexes.map(function(coord){ 
+			return [coord[0] + window.playerHex.x, coord[1] + window.playerHex.y]});
+		
+		if (x < window.innerWidth/2) {
+			window.playerHex.rotate(1);
+		}
+		if (x > window.innerWidth/2) {
+			window.playerHex.rotate(-1);
+		}
+		return;
+	}
+	
+	// 普通模式的点击处理
 	var radius = settings.hexWidth ;
 	var halfRadius = radius/2;
 	var triHeight = radius *(Math.sqrt(3)/2);

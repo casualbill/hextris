@@ -1,68 +1,95 @@
 function render() {
-	var grey = '#bdc3c7';
-	if (gameState === 0) {
-		grey = "rgb(220, 223, 225)";
-	}
-	
-	ctx.clearRect(0, 0, trueCanvas.width, trueCanvas.height);
-	clearGameBoard();
-	if (gameState === 1 || gameState === 2 || gameState === -1 || gameState === 0) {
-		if (op < 1) {
-			op += 0.01;
+	if (gameState == 0) {
+		// 渲染主菜单
+		// 主菜单已经通过HTML/CSS显示，不需要额外渲染
+	} else if (gameState == 1) {
+		if (window.aiMode) {
+			// AI对战模式渲染
+			renderAIGame();
+		} else {
+			// 普通模式渲染
+			renderNormalGame();
 		}
-		ctx.globalAlpha = op;
-		drawPolygon(trueCanvas.width / 2 , trueCanvas.height / 2 , 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false,6);
-		drawTimer();
-		ctx.globalAlpha = 1;
 	}
+}
 
-	var i;
-	for (i = 0; i < MainHex.blocks.length; i++) {
-		for (var j = 0; j < MainHex.blocks[i].length; j++) {
-			var block = MainHex.blocks[i][j];
-			block.draw(true, j);
-		}
-	}
-	for (i = 0; i < blocks.length; i++) {
+function renderNormalGame() {
+	// 渲染普通游戏模式
+	// 渲染主六边形
+	MainHex.draw();
+	
+	// 渲染所有方块
+	for (var i = 0; i < blocks.length; i++) {
 		blocks[i].draw();
 	}
+	
+	// 渲染分数
+	renderScore();
+}
 
-	MainHex.draw();
-	if (gameState ==1 || gameState ==-1 || gameState === 0) {
-		drawScoreboard();
+function renderAIGame() {
+	// 渲染AI对战模式
+	// 清除画布
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	
+	// 渲染玩家区域
+	renderPlayerArea();
+	
+	// 渲染AI区域
+	renderAIArea();
+	
+	// 渲染分数对比
+	renderScoreComparison();
+}
+
+function renderScoreComparison() {
+	// 渲染分数对比板
+	ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+	ctx.fillRect(canvas.width / 2 - 150, 20, 300, 60);
+	
+	ctx.fillStyle = 'white';
+	ctx.font = 'bold 24px Arial';
+	ctx.textAlign = 'center';
+	ctx.fillText('分数对比', canvas.width / 2, 45);
+	ctx.fillText(window.playerScore + ' : ' + window.aiScore, canvas.width / 2, 70);
+}
+
+function renderPlayerArea() {
+	// 渲染玩家六边形
+	if (window.playerHex) {
+		window.playerHex.render();
 	}
+	
+	// 渲染玩家分数
+	ctx.fillStyle = 'white';
+	ctx.font = 'bold 36px Arial';
+	ctx.textAlign = 'center';
+	ctx.fillText('玩家: ' + window.playerScore, canvas.width / 4, 50);
+}
 
-	for (i = 0; i < MainHex.texts.length; i++) {
-		var alive = MainHex.texts[i].draw();
-		if(!alive){
-			MainHex.texts.splice(i,1);
-			i--;
-		}
+function renderAIArea() {
+	// 渲染AI六边形
+	if (window.aiHex) {
+		window.aiHex.render();
 	}
+	
+	// 渲染AI分数
+	ctx.fillStyle = 'white';
+	ctx.font = 'bold 36px Arial';
+	ctx.textAlign = 'center';
+	ctx.fillText('AI: ' + window.aiScore, canvas.width * 3 / 4, 50);
+}
 
-	if ((MainHex.ct < 650 && (gameState !== 0) && !MainHex.playThrough)) {
-		if (MainHex.ct > (650 - 50)) {
-			ctx.globalAlpha = (50 - (MainHex.ct - (650 - 50)))/50;
-		}
-
-		if (MainHex.ct < 50) {
-			ctx.globalAlpha = (MainHex.ct)/50;
-		}
-
-		renderBeginningText();
-		ctx.globalAlpha = 1;
-	}
-
-	if (gameState == -1) {
-		ctx.globalAlpha = 0.9;
-		ctx.fillStyle = 'rgb(236,240,241)';
-		ctx.fillRect(0, 0, trueCanvas.width, trueCanvas.height);
-		ctx.globalAlpha = 1;
-	}
-
-	settings.prevScale = settings.scale;
-	settings.hexWidth = settings.baseHexWidth * settings.scale;
-	settings.blockHeight = settings.baseBlockHeight * settings.scale;
+function renderScoreComparison() {
+	// 渲染分数对比板
+	ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+	ctx.fillRect(canvas.width / 2 - 150, 20, 300, 60);
+	
+	ctx.fillStyle = 'white';
+	ctx.font = 'bold 24px Arial';
+	ctx.textAlign = 'center';
+	ctx.fillText('分数对比', canvas.width / 2, 45);
+	ctx.fillText(window.playerScore + ' : ' + window.aiScore, canvas.width / 2, 70);
 }
 
 function renderBeginningText() {
