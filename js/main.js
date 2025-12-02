@@ -87,10 +87,18 @@ function hideUIElements() {
 	$('#startBtn').hide();
 }
 
+// 录制功能变量
+let isRecording = false;
+let mediaRecorder = null;
+let recordedChunks = [];
+let videoFormat = 'video/webm';
+const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
+
 function init(b) {
 	if(settings.ending_block && b == 1){return;}
 	if (b) {
 		$("#pauseBtn").attr('src',"./images/btn_pause.svg");
+		$("#recordBtn").show();
 		if ($('#helpScreen').is(":visible")) {
 			$('#helpScreen').fadeOut(150, "linear");
 		}
@@ -177,7 +185,17 @@ function init(b) {
 	MainHex.y = -100;
 
 	startTime = Date.now();
-	waveone = saveState.wavegen || new waveGen(MainHex);
+	if (saveState.wavegen) {
+		waveone = new waveGen(MainHex);
+		// 复制保存的属性到新实例
+		for (var prop in saveState.wavegen) {
+			if (saveState.wavegen.hasOwnProperty(prop)) {
+				waveone[prop] = saveState.wavegen[prop];
+			}
+		}
+	} else {
+		waveone = new waveGen(MainHex);
+	}
 
 	MainHex.texts = []; //clear texts
 	MainHex.delay = 15;
@@ -372,7 +390,151 @@ function showHelp() {
 	}
 
 	$("#openSideBar").fadeIn(150,"linear");
+}
+
+// 录制功能实现
+$(document).ready(function() {
+	// 录制按钮点击事件
+	$("#recordBtn").click(function() {
+		if (!isRecording) {
+			// 显示格式选择对话框
+			swal({
+				title: "选择视频格式",
+				text: "请选择录制的视频格式:",
+				type: "input",
+				showCancelButton: true,
+				closeOnConfirm: false,
+				animation: "slide-from-top",
+				inputPlaceholder: "输入 mp4 或 webm",
+				showLoaderOnConfirm: true
+			}, function(inputValue) {
+				if (inputValue === false) return false;
+				
+				if (inputValue.trim().toLowerCase() === "mp4") {
+					videoFormat = 'video/mp4';
+				} else if (inputValue.trim().toLowerCase() === "webm") {
+					videoFormat = 'video/webm';
+				} else {
+					swal.showInputError("请输入有效的格式: mp4 或 webm");
+					return false;
+				}
+				
+				startRecording();
+			});
+		} else {
+			stopRecording();
+		}
+	});
+});
+
+function startRecording() {
+	// 获取Canvas流
+	const canvas = document.getElementById('canvas');
+	const stream = canvas.captureStream(60); // 60FPS
+	
+	// 配置MediaRecorder
+	const options = {
+		mimeType: videoFormat,
+		videoBitsPerSecond: 5000000 // 高质量视频
+	};
+	
+	try {
+		mediaRecorder = new MediaRecorder(stream, options);
+		
+		// 处理录制数据
+		mediaRecorder.ondataavailable = function(event) {
+			if (event.data.size > 0) {
+				recordedChunks.push(event.data);
+				
+				// 检查文件大小
+				const totalSize = recordedChunks.reduce((sum, chunk) => sum + chunk.size, 0);
+				if (totalSize >= MAX_FILE_SIZE) {
+					stopRecording();
+					swal("录制停止", "录制文件过大，已自动停止", "warning");
+				}
+			}
+		};
+		
+		mediaRecorder.onstop = handleRecordingStop;
+		
+		// 开始录制
+		mediaRecorder.start();
+		isRecording = true;
+		
+		// 更新UI
+		$("#recordBtn").addClass("recording").text("停止");
+		$("#recordingIndicator").show();
+		
+	} catch (error) {
+		swal("错误", "无法开始录制: " + error.message, "error");
+	}
+}
+
+function stopRecording() {
+	if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+		mediaRecorder.stop();
+		isRecording = false;
+		
+		// 更新UI
+		$("#recordBtn").removeClass("recording").text("录制");
+		$("#recordingIndicator").hide();
+	}
+}
+
+function handleRecordingStop() {
+	if (recordedChunks.length === 0) {
+		swal("提示", "没有录制到任何视频数据", "info");
+		return;
+	}
+	
+	// 创建视频Blob
+	const blob = new Blob(recordedChunks, {
+		type: videoFormat
+	});
+	
+	// 计算文件大小(MB)
+	const fileSizeMB = (blob.size / (1024 * 1024)).toFixed(2);
+	
+	// 创建下载链接
+	const url = URL.createObjectURL(blob);
+	const a = document.createElement('a');
+	a.style.display = 'none';
+	a.href = url;
+	
+	// 设置文件名
+	const format = videoFormat === 'video/mp4' ? 'mp4' : 'webm';
+	a.download = `hextris-recording-${new Date().toISOString().slice(0, 19)}.${format}`;
+	
+	// 显示下载对话框
+	swal({
+		title: "录制完成",
+		text: `文件大小: ${fileSizeMB} MB，格式: ${format.toUpperCase()}`,
+		type: "success",
+		showCancelButton: true,
+		confirmButtonText: "下载",
+		cancelButtonText: "取消",
+		closeOnConfirm: false
+	}, function(isConfirm) {
+		if (isConfirm) {
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+		}
+		
+		// 清理资源
+		URL.revokeObjectURL(url);
+		recordedChunks = [];
+	});
+}
+
+// 帮助屏幕切换函数
+$('#openSideBar').click(function() {
 	$('#helpScreen').fadeToggle(150, "linear");
+});
+
+// 修复toggleDevTools未定义错误
+function toggleDevTools() {
+	// 空实现，避免报错
 }
 
 (function(){
