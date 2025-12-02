@@ -178,6 +178,9 @@ function init(b) {
 
 	startTime = Date.now();
 	waveone = saveState.wavegen || new waveGen(MainHex);
+	
+	// 触发游戏开始事件，开始记录回放
+	$(document).trigger('gameStart');
 
 	MainHex.texts = []; //clear texts
 	MainHex.delay = 15;
@@ -343,6 +346,10 @@ function checkGameOver() {
 			}
 			writeHighScores();
 			gameOverDisplay();
+			
+			// 触发游戏结束事件，保存回放
+			$(document).trigger('gameOver');
+			
 			return true;
 		}
 	}

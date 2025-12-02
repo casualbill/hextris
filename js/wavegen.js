@@ -195,6 +195,11 @@ function waveGen(hex) {
 		return 0;
 	};
 
+	// 手动生成方块函数（用于回放）
+	this.generateBlock = function(lane, color) {
+		addNewBlock(lane, color, 1.6 + (this.difficulty / 15) * 3);
+	};
+
 	// rest of generation functions
 
 	this.currentFunction = this.randomGeneration;
