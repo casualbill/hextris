@@ -525,3 +525,243 @@ body {
 	-moz-transform:translate(-50%, 0%);
 	-ms-transform:translate(-50%, 0%);
 }
+
+.popup {
+	cursor: pointer;
+}
+
+/* Theme Settings Styles */
+#themeBtn {
+	position:fixed;
+	margin-top:6px;
+	width:72px;
+	height:72px;
+	margin-right:11px;
+	z-index:3003;
+	color:#232323;
+	cursor:pointer;
+	top:0;
+	right:0;
+}
+
+#themeScreen {
+	height:100%;
+	width:100%;
+	z-index:3001;
+	position:fixed;
+	top:0;
+	margin:0;
+	font-size:15px;
+	text-align:center;
+	color:#232323;
+	background-color:rgba(236,240,241,0.95);
+	display: none;
+	pointer-events: auto;
+}
+
+#theme_main_body {
+	padding:20px;
+	left:50%;
+	top:50%;
+	position: absolute;
+	text-align:center;
+	max-width:600px;
+	transform:translate(-50%, -50%);
+	-webkit-transform:translate(-50%, -50%);
+	-moz-transform:translate(-50%, -50%);
+	-ms-transform:translate(-50%, -50%);
+}
+
+#theme_head {
+	font-size:2.5em;
+	margin-bottom:30px;
+	font-family:Exo;
+	font-weight:bold;
+}
+
+#theme_list {
+	display:flex;
+	flex-wrap:wrap;
+	justify-content:center;
+	gap:20px;
+}
+
+.theme-item {
+	width:150px;
+	padding:15px;
+	background-color:white;
+	border-radius:10px;
+	box-shadow:0 2px 10px rgba(0,0,0,0.1);
+	cursor:pointer;
+	transition:transform 0.2s;
+	position:relative;
+}
+
+.theme-item:hover {
+	transform:translateY(-5px);
+}
+
+.theme-preview {
+	width:100px;
+	height:100px;
+	margin:0 auto 10px;
+	border-radius:10px;
+	border:2px solid #ddd;
+	position:relative;
+}
+
+.theme-name {
+	font-family:Exo;
+	font-size:1.1em;
+	margin-bottom:5px;
+}
+
+.theme-active {
+	position:absolute;
+	top:10px;
+	right:10px;
+	font-size:1.5em;
+	color:#2ecc71;
+	display:none;
+}
+
+.theme-item.active .theme-active {
+	display:block;
+}
+
+/* Custom Theme Styles */
+#customThemeScreen {
+	height:100%;
+	width:100%;
+	z-index:3002;
+	position:fixed;
+	top:0;
+	left:0;
+	margin:0;
+	font-size:15px;
+	text-align:center;
+	color:#232323;
+	background-color:rgba(236,240,241,0.95);
+	display: none;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+	pointer-events: auto;
+	padding: 20px 0;
+	box-sizing: border-box;
+}
+
+#custom_theme_main_body {
+	padding:20px;
+	left:50%;
+	top:0;
+	position: relative;
+	text-align:center;
+	max-width:800px;
+	width:90%;
+	transform:translate(-50%, 0%);
+	-webkit-transform:translate(-50%, 0%);
+	-moz-transform:translate(-50%, 0%);
+	-ms-transform:translate(-50%, 0%);
+	max-height: calc(100vh - 40px);
+	overflow-y: auto;
+	box-sizing: border-box;
+	background: rgba(255,255,255,0.95);
+	border-radius:10px;
+}
+
+/* Custom scrollbar styling */
+#custom_theme_main_body::-webkit-scrollbar {
+    width: 8px;
+}
+
+#custom_theme_main_body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+#custom_theme_main_body::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+#custom_theme_main_body::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+#custom_theme_head {
+	font-size:2.5em;
+	margin-bottom:20px;
+	font-family:Exo;
+	font-weight:bold;
+}
+
+#custom_theme_preview {
+	width:200px;
+	height:200px;
+	margin:0 auto 20px;
+	border-radius:10px;
+	border:2px solid #ddd;
+	position:relative;
+	background-color:#ecf0f1;
+}
+
+#custom_theme_settings {
+	display:grid;
+	grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+	gap:15px;
+	margin-bottom:20px;
+}
+
+.color-setting {
+	display:flex;
+	align-items:center;
+	justify-content:space-between;
+	gap:10px;
+	flex-wrap: wrap;
+	padding:10px;
+	background-color:white;
+	border-radius:5px;
+	box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+.color-setting label {
+	font-family:Exo;
+	font-size:1.1em;
+}
+
+.color-picker {
+	width:50px;
+	height:50px;
+	border:none;
+	border-radius:5px;
+	cursor:pointer;
+}
+
+#custom_theme_buttons {
+	display:flex;
+	gap:20px;
+	justify-content:center;
+}
+
+#custom_theme_buttons button {
+	padding:10px 20px;
+	font-size:1.2em;
+	background-color:#3498db;
+	color:white;
+	border-radius:5px;
+	cursor:pointer;
+	transition:background-color 0.2s;
+}
+
+#custom_theme_buttons button:hover {
+	background-color:#2980b9;
+}
+
+#resetThemeBtn {
+	background-color:#e74c3c !important;
+}
+
+#resetThemeBtn:hover {
+	background-color:#c0392b !important;
+}

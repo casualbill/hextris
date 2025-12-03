@@ -53,6 +53,7 @@
 		<script type='text/javascript' src='js/render.js'></script>
 		<script type='text/javascript' src="js/input.js"></script>
 		<script type='text/javascript' src="js/main.js"></script>
+		<script type='text/javascript' src="js/themes.js"></script>
 		<script type='text/javascript' src="js/initialization.js"></script>
 		<script type='text/javascript' async src="https://hextris.io/scripts/a.js"></script>
 		<script src="vendor/sweet-alert.min.js"></script>
@@ -66,6 +67,7 @@
 			<div id='inst_main_body'></div>
 		</div>
 		<img id="openSideBar" class='helpText' src="./images/btn_help.svg"/>
+		<img id="themeBtn" class='helpText' src="./images/btn_settings.svg" style="right: 80px;"/>
 		<div class="faded overlay"></div>
 		<img id="pauseBtn" src="./images/btn_pause.svg"/>
 		<img id='restartBtn' src="./images/btn_restart.svg"/>
@@ -148,5 +150,93 @@
 					}})()
 			</script>
 		<script type="text/javascript" src='vendor/rrssb.min.js'></script>
+
+		<!-- Theme Settings UI -->
+		<div id="themeScreen" class='unselectable' style="display: none;">
+			<div id='theme_main_body'>
+				<div id='theme_head'>主题设置</div>
+				<div id='theme_list'>
+					<div class='theme-item' data-theme='classic'>
+						<div class='theme-preview'></div>
+						<div class='theme-name'>经典主题</div>
+						<div class='theme-active'>✓</div>
+					</div>
+					<div class='theme-item' data-theme='dark'>
+						<div class='theme-preview'></div>
+						<div class='theme-name'>深色主题</div>
+						<div class='theme-active'>✓</div>
+					</div>
+					<div class='theme-item' data-theme='light'>
+						<div class='theme-preview'></div>
+						<div class='theme-name'>明亮主题</div>
+						<div class='theme-active'>✓</div>
+					</div>
+					<div class='theme-item' data-theme='warm'>
+						<div class='theme-preview'></div>
+						<div class='theme-name'>暖色主题</div>
+						<div class='theme-active'>✓</div>
+					</div>
+					<div class='theme-item' data-theme='cool'>
+						<div class='theme-preview'></div>
+						<div class='theme-name'>冷色主题</div>
+						<div class='theme-active'>✓</div>
+					</div>
+					<div class='theme-item custom-theme'>
+						<div class='theme-preview'></div>
+						<div class='theme-name'>自定义主题</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Custom Theme UI -->
+		<div id="customThemeScreen" class='unselectable' style="display: none;">
+			<div id='custom_theme_main_body'>
+				<div id='custom_theme_head'>自定义主题</div>
+				<div id='custom_theme_preview'></div>
+				<div id='custom_theme_settings'>
+					<div class='color-setting'>
+						<label>颜色块 1:</label>
+						<input type='color' class='color-picker' data-index='0' value='#e74c3c'>
+					</div>
+					<div class='color-setting'>
+						<label>颜色块 2:</label>
+						<input type='color' class='color-picker' data-index='1' value='#f1c40f'>
+					</div>
+					<div class='color-setting'>
+						<label>颜色块 3:</label>
+						<input type='color' class='color-picker' data-index='2' value='#3498db'>
+					</div>
+					<div class='color-setting'>
+						<label>颜色块 4:</label>
+						<input type='color' class='color-picker' data-index='3' value='#2ecc71'>
+					</div>
+					<div class='color-setting'>
+						<label>颜色块 5:</label>
+						<input type='color' class='color-picker' data-index='4' value='#8e44ad'>
+					</div>
+					<div class='color-setting'>
+						<label>颜色块 6:</label>
+						<input type='color' class='color-picker' data-index='5' value='#d35400'>
+					</div>
+					<div class='color-setting'>
+						<label>背景色:</label>
+						<input type='color' class='color-picker' data-type='background' value='#ecf0f1'>
+					</div>
+					<div class='color-setting'>
+						<label>中心六边形:</label>
+						<input type='color' class='color-picker' data-type='center' value='#2c3e50'>
+					</div>
+					<div class='color-setting'>
+						<label>边界颜色:</label>
+						<input type='color' class='color-picker' data-type='border' value='#000000'>
+					</div>
+				</div>
+				<div id='custom_theme_buttons'>
+					<button id='resetThemeBtn'>重置为默认</button>
+					<button id='saveThemeBtn'>保存主题</button>
+				</div>
+			</div>
+		</div>
 	</body>
 </html>
