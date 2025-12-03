@@ -54,6 +54,10 @@ function update(dt) {
 	for (i = 0; i < MainHex.blocks.length; i++) {
 		for (j = 0; j < MainHex.blocks[i].length; j++) {
 			block = MainHex.blocks[i][j];
+			
+			// 更新特殊块状态（主要是爆炸块的延迟爆炸）
+			block.update(dt, MainHex);
+			
 			MainHex.doesBlockCollide(block, j, MainHex.blocks[i]);
 
 			if (!MainHex.blocks[i][j].settled) {

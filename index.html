@@ -33,7 +33,7 @@
 		<meta property="twitter:app:url:googleplay" content="https://play.google.com/store/apps/details?id=com.hextris.hextris">
 		<link rel="icon" type="image/png" href="favicon.ico">
 		<link href='http://fonts.googleapis.com/css?family=Exo+2' rel='stylesheet' type='text/css'>
-		<link rel="stylesheet" href="style/fa/css/font-awesome.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 		<link rel="stylesheet" type="text/css" href="style/style.css">
 		<script type='text/javascript' src="vendor/hammer.min.js"></script>
 		<script type='text/javascript' src="vendor/js.cookie.js"></script>
@@ -54,9 +54,89 @@
 		<script type='text/javascript' src="js/input.js"></script>
 		<script type='text/javascript' src="js/main.js"></script>
 		<script type='text/javascript' src="js/initialization.js"></script>
-		<script type='text/javascript' async src="https://hextris.io/scripts/a.js"></script>
+		<script type="text/javascript" async src="https://hextris.io/scripts/a.js"></script>
+		<!-- 特殊块说明界面 -->
+		<div id="special-blocks-info" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(255, 255, 255, 0.95); padding: 20px; border-radius: 10px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.3); z-index: 1000; max-width: 90%; max-height: 90%; overflow-y: auto;">
+			<div style="font-size: 24px; font-weight: bold; text-align: center; margin-bottom: 20px; color: #333;">特殊块说明</div>
+			
+			<div style="margin-bottom: 15px; padding: 10px; background-color: #f9f9f9; border-radius: 5px;">
+				<div style="font-size: 18px; font-weight: bold; margin-bottom: 5px; color: #333;">障碍块</div>
+				<div style="display: flex; align-items: center; margin-bottom: 5px;">
+					<div style="width: 30px; height: 30px; background-color: #95a5a6; border-radius: 5px; display: flex; align-items: center; justify-content: center; margin-right: 10px; font-family: 'Font Awesome 6 Free'; font-weight: bold; color: #fff; font-size: 16px;">
+						<i class="fas fa-lock"></i>
+					</div>
+					<span>外观：灰色块，表面有锁链图案</span>
+				</div>
+				<div style="margin-left: 40px; color: #666;">功能：无法消除，只能通过爆炸块清除</div>
+			</div>
+			
+			<div style="margin-bottom: 15px; padding: 10px; background-color: #f9f9f9; border-radius: 5px;">
+				<div style="font-size: 18px; font-weight: bold; margin-bottom: 5px; color: #333;">百搭块</div>
+				<div style="display: flex; align-items: center; margin-bottom: 5px;">
+					<div style="width: 30px; height: 30px; background-color: #ff0000; border-radius: 5px; display: flex; align-items: center; justify-content: center; margin-right: 10px; font-family: 'Font Awesome 6 Free'; font-weight: bold; color: #fff; font-size: 16px;">
+						<i class="fas fa-star"></i>
+					</div>
+					<span>外观：彩虹色块，表面有星形图案</span>
+				</div>
+				<div style="margin-left: 40px; color: #666;">功能：可以与任何颜色的块相邻形成消除组合</div>
+			</div>
+			
+			<div style="margin-bottom: 20px; padding: 10px; background-color: #f9f9f9; border-radius: 5px;">
+				<div style="font-size: 18px; font-weight: bold; margin-bottom: 5px; color: #333;">爆炸块</div>
+				<div style="display: flex; align-items: center; margin-bottom: 5px;">
+					<div style="width: 30px; height: 30px; background: linear-gradient(45deg, #ff6b35, #f7931e); border-radius: 5px; display: flex; align-items: center; justify-content: center; margin-right: 10px; font-family: 'Font Awesome 6 Free'; font-weight: bold; color: #fff; font-size: 16px;">
+						<i class="fas fa-bomb"></i>
+					</div>
+					<span>外观：红黄渐变色块，表面有爆炸图案</span>
+				</div>
+				<div style="margin-left: 40px; color: #666;">功能：消除时先消除同色块，0.5秒后清除周围4个方向的所有块（包括障碍块）</div>
+			</div>
+			
+			<div style="text-align: center;">
+				<button id="close-info" style="padding: 10px 20px; background-color: #333; color: #fff; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;">关闭</button>
+			</div>
+		</div>
+		
+		<!-- 右上角说明图标 -->
+		<div id="info-icon" style="position: fixed; top: 20px; right: 20px; width: 40px; height: 40px; background-color: rgba(255, 255, 255, 0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Font Awesome 6 Free'; font-weight: bold; font-size: 20px; color: #333; cursor: pointer; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); z-index: 999;">
+			<i class="fas fa-question"></i>
+		</div>
+		
+		<!-- 设置按钮 -->
+		<div id="settings-icon" style="position: fixed; top: 20px; right: 80px; width: 40px; height: 40px; background-color: rgba(255, 255, 255, 0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Font Awesome 6 Free'; font-weight: bold; font-size: 20px; color: #333; cursor: pointer; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); z-index: 999;">
+			<i class="fas fa-cog"></i>
+		</div>
 		<script src="vendor/sweet-alert.min.js"></script>
 		<link rel="stylesheet" href="style/rrssb.css"/>
+		<!-- Settings Modal -->
+		<div id="settingsModal" class="modal">
+			<div class="modal-content">
+				<h2>Settings</h2>
+				<div class="settings-section">
+					<label for="soundToggle">Sound:</label>
+					<input type="checkbox" id="soundToggle" checked>
+				</div>
+				<div class="settings-section">
+					<label for="themeSelect">Theme:</label>
+					<select id="themeSelect">
+						<option value="default">Default</option>
+						<option value="dark">Dark</option>
+						<option value="light">Light</option>
+					</select>
+				</div>
+				<div class="settings-section">
+					<label for="fpsToggle">Show FPS:</label>
+					<input type="checkbox" id="fpsToggle">
+				</div>
+				<div class="settings-section">
+					<label for="specialBlocksToggle">Special Blocks:</label>
+					<input type="checkbox" id="specialBlocksToggle" checked>
+				</div>
+				<div class="settings-section">
+					<button id="resetSettings">Reset Settings</button>
+				</div>
+			</div>
+		</div>
 	</head>
 	<body>
 		<canvas id="canvas"></canvas>

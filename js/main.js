@@ -184,7 +184,7 @@ function init(b) {
 	hideText();
 }
 
-function addNewBlock(blocklane, color, iter, distFromHex, settled) { //last two are optional parameters
+function addNewBlock(blocklane, color, iter, distFromHex, settled, blockType) { //last two are optional parameters
 	iter *= settings.speedModifier;
 	if (!history[MainHex.ct]) {
 		history[MainHex.ct] = {};
@@ -202,7 +202,40 @@ function addNewBlock(blocklane, color, iter, distFromHex, settled) { //last two 
 	if (settled) {
 		blockHist[MainHex.ct].settled = settled;
 	}
-	blocks.push(new Block(blocklane, color, iter, distFromHex, settled));
+	if (blockType) {
+		history[MainHex.ct].blockType = blockType;
+	}
+	blocks.push(new Block(blocklane, color, iter, distFromHex, settled, blockType));
+}
+
+// 检查是否应该生成特殊块
+function shouldGenerateSpecialBlock() {
+	if (!settings.specialBlocksEnabled) {
+		regularBlockCounter++;
+		return null;
+	}
+	
+	// 检查是否达到特殊块生成概率
+	var random = Math.random();
+	var specialBlock = null;
+	
+	// 增加普通块计数器
+	regularBlockCounter++;
+	
+	// 检查障碍块概率 (1/20)
+	if (random < SPECIAL_BLOCK_RATES.OBSTACLE) {
+		specialBlock = SPECIAL_BLOCKS.OBSTACLE;
+	} 
+	// 检查百搭块概率 (1/15)
+	else if (random < SPECIAL_BLOCK_RATES.OBSTACLE + SPECIAL_BLOCK_RATES.JOKER) {
+		specialBlock = SPECIAL_BLOCKS.JOKER;
+	} 
+	// 检查爆炸块概率 (1/25)
+	else if (random < SPECIAL_BLOCK_RATES.OBSTACLE + SPECIAL_BLOCK_RATES.JOKER + SPECIAL_BLOCK_RATES.EXPLOSIVE) {
+		specialBlock = SPECIAL_BLOCKS.EXPLOSIVE;
+	}
+	
+	return specialBlock;
 }
 
 function exportHistory() {
