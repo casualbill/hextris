@@ -159,6 +159,11 @@ function gameOverDisplay() {
 	$("#socialShare").fadeIn();
 	$("#restart").fadeIn();
     set_score_pos();
+    
+    // 上传分数到排行榜
+    if (typeof Leaderboard !== 'undefined') {
+        Leaderboard.uploadScore(score);
+    }
 }
 
 function updateHighScores (){
