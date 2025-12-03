@@ -14,6 +14,20 @@ function render() {
 		drawPolygon(trueCanvas.width / 2 , trueCanvas.height / 2 , 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false,6);
 		drawTimer();
 		ctx.globalAlpha = 1;
+
+		// 渲染能量条
+		if (settings.energyEnabled && (gameState === 1 || gameState === 0)) {
+			drawEnergyBar();
+		}
+
+		// 渲染能量不足提示
+		if (settings.showEnergyWarning) {
+			drawEnergyWarning();
+			// 检查提示是否需要隐藏
+			if (Date.now() - settings.energyWarningTime >= 1000) {
+				settings.showEnergyWarning = false;
+			}
+		}
 	}
 
 	var i;
@@ -114,4 +128,54 @@ function drawKey(key, x, y) {
 			drawKey("right", x + 5, y);
 	}
 	ctx.restore();
+}
+
+// 绘制能量条
+function drawEnergyBar() {
+	var barWidth = 200 * settings.scale;
+	var barHeight = 20 * settings.scale;
+	var x = 20 * settings.scale;
+	var y = 20 * settings.scale;
+
+	// 绘制背景
+	ctx.fillStyle = '#bdc3c7';
+	ctx.fillRect(x, y, barWidth, barHeight);
+
+	// 确定能量条颜色
+	var energyPercentage = settings.energy / settings.energyMax;
+	var barColor;
+	if (energyPercentage >= 0.5) {
+		barColor = '#2ecc71'; // 绿色
+	} else if (energyPercentage >= 0.1) {
+		barColor = '#f1c40f'; // 黄色
+	} else {
+		barColor = '#e74c3c'; // 红色
+	}
+
+	// 绘制能量条
+	var energyWidth = barWidth * energyPercentage;
+	ctx.fillStyle = barColor;
+	ctx.fillRect(x, y, energyWidth, barHeight);
+
+	// 绘制边框
+	ctx.strokeStyle = '#34495e';
+	ctx.lineWidth = 2 * settings.scale;
+	ctx.strokeRect(x, y, barWidth, barHeight);
+
+	// 绘制能量值文本
+	ctx.fillStyle = '#34495e';
+	ctx.font = 'bold ' + (12 * settings.scale) + 'px QuattrocentoSans-Regular';
+	ctx.textAlign = 'left';
+	ctx.fillText(settings.energy + '/' + settings.energyMax, x + 5 * settings.scale, y + 15 * settings.scale);
+}
+
+// 绘制能量不足提示
+function drawEnergyWarning() {
+	var x = trueCanvas.width / 2;
+	var y = trueCanvas.height / 2 - 100 * settings.scale;
+
+	ctx.fillStyle = '#e74c3c';
+	ctx.font = 'bold ' + (24 * settings.scale) + 'px QuattrocentoSans-Regular';
+	ctx.textAlign = 'center';
+	ctx.fillText('能量不足', x, y);
 }

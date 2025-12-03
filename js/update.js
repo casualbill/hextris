@@ -7,6 +7,19 @@ function update(dt) {
 		if (MainHex.ct - waveone.prevTimeScored > 1000) {
 			waveone.prevTimeScored = MainHex.ct;
 		}
+
+		// 能量自动恢复（游戏未暂停时）
+		if (settings.energyEnabled && gameState === 1) {
+			var currentTime = Date.now();
+			if (currentTime - settings.lastEnergyRegen >= settings.energyRegenInterval) {
+				settings.energy += settings.energyRegenRate;
+				// 确保能量不超过上限
+				if (settings.energy > settings.energyMax) {
+					settings.energy = settings.energyMax;
+				}
+				settings.lastEnergyRegen = currentTime;
+			}
+		}
 	}
 	var lowestDeletedIndex = 99;
 	var i;
