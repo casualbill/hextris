@@ -32,6 +32,11 @@ function render() {
 		drawScoreboard();
 	}
 
+	// 更新AI演示统计信息
+	if (AIDemo && AIDemo.isActive()) {
+		AIDemo.updateAIStats();
+	}
+
 	for (i = 0; i < MainHex.texts.length; i++) {
 		var alive = MainHex.texts[i].draw();
 		if(!alive){

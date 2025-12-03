@@ -2,7 +2,7 @@ function addKeyListeners() {
 	keypress.register_combo({
 		keys: "left",
 		on_keydown: function() {
-			if (MainHex && gameState !== 0) {
+			if (MainHex && gameState !== 0 && (!AIDemo || !AIDemo.isActive())) {
 				MainHex.rotate(1);
 			}
 		}
@@ -11,7 +11,7 @@ function addKeyListeners() {
 	keypress.register_combo({
 		keys: "right",
 		on_keydown: function() {
-			if (MainHex && gameState !== 0){
+			if (MainHex && gameState !== 0 && (!AIDemo || !AIDemo.isActive())){
 				MainHex.rotate(-1);
 			}
 		}
@@ -42,7 +42,7 @@ function addKeyListeners() {
 	keypress.register_combo({
 		keys: "a",
 		on_keydown: function() {
-			if (MainHex && gameState !== 0) {
+			if (MainHex && gameState !== 0 && (!AIDemo || !AIDemo.isActive())) {
 				MainHex.rotate(1);
 			}
 		}
@@ -51,7 +51,7 @@ function addKeyListeners() {
 	keypress.register_combo({
 		keys: "d",
 		on_keydown: function() {
-			if (MainHex && gameState !== 0){
+			if (MainHex && gameState !== 0 && (!AIDemo || !AIDemo.isActive())){
 				MainHex.rotate(-1);
 			}
 		}

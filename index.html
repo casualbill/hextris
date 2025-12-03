@@ -35,11 +35,11 @@
 		<link href='http://fonts.googleapis.com/css?family=Exo+2' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" href="style/fa/css/font-awesome.min.css">
 		<link rel="stylesheet" type="text/css" href="style/style.css">
+		<script type='text/javascript' src="vendor/jquery.js"></script>
 		<script type='text/javascript' src="vendor/hammer.min.js"></script>
 		<script type='text/javascript' src="vendor/js.cookie.js"></script>
 		<script type='text/javascript' src="vendor/jsonfn.min.js"></script>
 		<script type='text/javascript' src="vendor/keypress.min.js"></script>
-		<script type='text/javascript' src="vendor/jquery.js"></script>
 		<script type='text/javascript' src="js/save-state.js"></script>
 		<script type='text/javascript' src="js/view.js"></script>
 		<script type='text/javascript' src="js/wavegen.js"></script>
@@ -52,6 +52,7 @@
 		<script type='text/javascript' src='js/update.js'></script>
 		<script type='text/javascript' src='js/render.js'></script>
 		<script type='text/javascript' src="js/input.js"></script>
+		<script type='text/javascript' src="js/ai-demo.js"></script>
 		<script type='text/javascript' src="js/main.js"></script>
 		<script type='text/javascript' src="js/initialization.js"></script>
 		<script type='text/javascript' async src="https://hextris.io/scripts/a.js"></script>
@@ -61,7 +62,36 @@
 	<body>
 		<canvas id="canvas"></canvas>
 		<div id="overlay" class="faded overlay"></div>
-		<div id='startBtn' ></div>
+		<div id="startBtn"></div>
+		<div id="aiDemoBtn" class="ai-demo-button">AI智能演示</div>
+		<div id="aiModelSelection" class="ai-model-selection hidden">
+			<div class="ai-model-header">选择WebLLM模型</div>
+			<div class="ai-model-list">
+				<div class="ai-model-item" data-model="model1">
+					<div class="model-name">通用模型</div>
+					<div class="model-size">7B 参数</div>
+				</div>
+				<div class="ai-model-item" data-model="model2">
+					<div class="model-name">轻量化模型</div>
+					<div class="model-size">3B 参数</div>
+				</div>
+				<div class="ai-model-item" data-model="model3">
+					<div class="model-name">高性能模型</div>
+					<div class="model-size">13B 参数</div>
+				</div>
+			</div>
+		</div>
+		<div id="aiLoadingScreen" class="ai-loading-screen hidden">
+			<div class="ai-loading-text">正在加载模型...</div>
+			<div class="ai-loading-progress-bar">
+				<div class="ai-loading-progress"></div>
+			</div>
+			<div class="ai-loading-percentage">0%</div>
+		</div>
+		<div id="aiStopBtn" class="ai-stop-button hidden">停止演示</div>
+		<div id="aiModelName" class="ai-model-name hidden"></div>
+		<div id="aiStats" class="ai-stats hidden"></div>
+		<div id="aiDecisionText" class="ai-decision-text hidden"></div>
 		<div id="helpScreen" class='unselectable'>
 			<div id='inst_main_body'></div>
 		</div>
