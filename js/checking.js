@@ -79,6 +79,15 @@ function consolidateBlocks(hex,side,index){
 	}
 	var adder = deleting.length * deleting.length * hex.comboMultiplier;
 	hex.texts.push(new Text(hex.x,hex.y,"+ "+adder.toString(),"bold Q ",deletedBlocks[0].color,fadeUpAndOut));
-		hex.lastColorScored = deletedBlocks[0].color;
+	hex.lastColorScored = deletedBlocks[0].color;
 	score += adder;
+	
+	// 添加能量奖励
+	if (energySystemEnabled) {
+		var energyGained = deleting.length * energyGainPerBlock;
+		energy += energyGained;
+		if (energy > maxEnergy) energy = maxEnergy;
+		hex.texts.push(new Text(hex.x, hex.y + 30 * settings.scale, "+", "bold Q ", "#2ecc71", fadeUpAndOut));
+	hex.texts.push(new Text(hex.x, hex.y + 30 * settings.scale, energyGained + " 能量", "bold Q ", "#2ecc71", fadeUpAndOut));
+	}
 }

@@ -234,3 +234,26 @@ function handleClickTap(x,y) {
 	}
 }
 
+// Attach energy toggle event listener
+function attachEnergyToggleListener() {
+	var toggle = document.getElementById('energyToggle');
+	// Click event for desktop
+	toggle.addEventListener('click', function() {
+		toggle.classList.toggle('on');
+		window.energySystemEnabled = !window.energySystemEnabled;
+	});
+	// Touch event for mobile
+	toggle.addEventListener('touchstart', function(event) {
+		toggle.classList.toggle('on');
+		window.energySystemEnabled = !window.energySystemEnabled;
+		event.preventDefault();
+	});
+}
+
+// Attach the listener once the page is loaded
+if (document.readyState === 'complete') {
+	attachEnergyToggleListener();
+} else {
+	window.addEventListener('load', attachEnergyToggleListener);
+}
+
