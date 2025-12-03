@@ -212,6 +212,7 @@ function exportHistory() {
 
 function setStartScreen() {
 	$('#startBtn').show();
+	$('#aiDemoBtn').show();
 	init();
 	if (isStateSaved()) {
 		importing = 0;
@@ -222,6 +223,7 @@ function setStartScreen() {
 	$('#pauseBtn').hide();
 	$('#restartBtn').hide();
 	$('#startBtn').show();
+	$('#aiDemoBtn').show();
 
 	gameState = 0;
 	requestAnimFrame(animLoop);
