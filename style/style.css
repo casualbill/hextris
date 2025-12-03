@@ -198,6 +198,240 @@ button:focus {
 
 #instructions_head {
 	text-align:center;
+}
+
+/* 日常任务系统样式 */
+.main-menu-btn {
+	position: fixed;
+	top: 10px;
+	right: 10px;
+	padding: 10px 20px;
+	background-color: #3498db;
+	color: white;
+	border: none;
+	border-radius: 5px;
+	font-family: 'Exo', sans-serif;
+	font-size: 16px;
+	cursor: pointer;
+	z-index: 3004;
+	transition: background-color 0.3s ease;
+}
+
+.main-menu-btn:hover {
+	background-color: #2980b9;
+}
+
+.task-stats {
+	position: fixed;
+	top: 50px;
+	right: 10px;
+	padding: 10px 15px;
+	background-color: rgba(236, 240, 241, 0.9);
+	color: #232323;
+	border-radius: 5px;
+	font-family: 'Exo', sans-serif;
+	font-size: 14px;
+	z-index: 3003;
+}
+
+.task-list-screen {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.7);
+	z-index: 4000;
+	display: none;
+}
+
+.task-list-screen.show {
+	display: block;
+}
+
+.task-list-container {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color: #ecf0f1;
+	border-radius: 10px;
+	padding: 20px;
+	max-width: 400px;
+	width: 90%;
+	max-height: 80%;
+	overflow-y: auto;
+}
+
+.task-list-header {
+	font-family: 'Exo', sans-serif;
+	font-size: 24px;
+	font-weight: bold;
+	text-align: center;
+	margin-bottom: 20px;
+	color: #232323;
+}
+
+.task-stats-header {
+	text-align: center;
+	margin-bottom: 20px;
+	padding: 10px;
+	background-color: #3498db;
+	color: white;
+	border-radius: 5px;
+}
+
+.task-completed-count {
+	font-size: 18px;
+	font-weight: bold;
+}
+
+.all-completed {
+	margin-top: 5px;
+	font-size: 16px;
+	color: #2ecc71;
+	font-weight: bold;
+}
+
+.task-item {
+	background-color: white;
+	border-radius: 5px;
+	padding: 15px;
+	margin-bottom: 15px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.task-item.completed {
+	background-color: #e8f5e9;
+}
+
+.task-name {
+	font-family: 'Exo', sans-serif;
+	font-size: 18px;
+	font-weight: bold;
+	color: #232323;
+	margin-bottom: 5px;
+}
+
+.task-description {
+	font-family: 'Exo', sans-serif;
+	font-size: 14px;
+	color: #7f8c8d;
+	margin-bottom: 10px;
+}
+
+.task-progress {
+	margin-bottom: 10px;
+}
+
+.progress-bar {
+	width: 100%;
+	height: 10px;
+	background-color: #ecf0f1;
+	border-radius: 5px;
+	overflow: hidden;
+}
+
+.progress-fill {
+	height: 100%;
+	background-color: #2ecc71;
+	transition: width 0.3s ease;
+}
+
+.progress-text {
+	font-family: 'Exo', sans-serif;
+	font-size: 12px;
+	color: #7f8c8d;
+	text-align: right;
+	margin-top: 5px;
+}
+
+.task-reward {
+	font-family: 'Exo', sans-serif;
+	font-size: 14px;
+	color: #f39c12;
+	font-weight: bold;
+}
+
+.task-status {
+	font-family: 'Exo', sans-serif;
+	font-size: 14px;
+	color: #2ecc71;
+	font-weight: bold;
+	margin-top: 5px;
+}
+
+.task-actions {
+	margin-top: 20px;
+	text-align: center;
+}
+
+.task-btn {
+	padding: 10px 20px;
+	background-color: #3498db;
+	color: white;
+	border: none;
+	border-radius: 5px;
+	font-family: 'Exo', sans-serif;
+	font-size: 14px;
+	cursor: pointer;
+	margin: 0 5px;
+	transition: background-color 0.3s ease;
+}
+
+.task-btn:hover {
+	background-color: #2980b9;
+}
+
+.task-btn.disabled {
+	background-color: #bdc3c7;
+	cursor: not-allowed;
+}
+
+.task-reset-info {
+	margin-top: 20px;
+	text-align: center;
+	font-family: 'Exo', sans-serif;
+	font-size: 12px;
+	color: #7f8c8d;
+}
+
+.task-completion {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%) scale(0);
+	background-color: rgba(46, 204, 113, 0.95);
+	color: white;
+	border-radius: 10px;
+	padding: 30px;
+	text-align: center;
+	z-index: 5000;
+	transition: transform 0.3s ease;
+}
+
+.task-completion.show {
+	transform: translate(-50%, -50%) scale(1);
+}
+
+.task-completion-header {
+	font-family: 'Exo', sans-serif;
+	font-size: 24px;
+	font-weight: bold;
+	margin-bottom: 15px;
+}
+
+.task-completion-name {
+	font-family: 'Exo', sans-serif;
+	font-size: 18px;
+	margin-bottom: 10px;
+}
+
+.task-completion-reward {
+	font-family: 'Exo', sans-serif;
+	font-size: 16px;
+	font-weight: bold;
+}
 	font-size:1.5em;
 	padding-bottom:4px;
 }

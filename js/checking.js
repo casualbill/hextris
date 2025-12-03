@@ -81,4 +81,10 @@ function consolidateBlocks(hex,side,index){
 	hex.texts.push(new Text(hex.x,hex.y,"+ "+adder.toString(),"bold Q ",deletedBlocks[0].color,fadeUpAndOut));
 		hex.lastColorScored = deletedBlocks[0].color;
 	score += adder;
+	// 得分更新时调用任务系统
+	window.DailyTasks.onScoreUpdate(score);
+	// 方块消除时调用任务系统
+	window.DailyTasks.onBlocksDestroyed(deleting.length);
+	// 连击更新时调用任务系统
+	window.DailyTasks.onComboUpdate(hex.comboMultiplier);
 }

@@ -97,7 +97,7 @@ function init(b) {
 
 		setTimeout(function() {
             if (gameState == 1) {
-			    $('#openSideBar').fadeOut(150, "linear");
+				$('#openSideBar').fadeOut(150, "linear");
             }
 			infobuttonfading = false;
 		}, 7000);
@@ -182,6 +182,10 @@ function init(b) {
 	MainHex.texts = []; //clear texts
 	MainHex.delay = 15;
 	hideText();
+	// 游戏开始时调用任务系统
+	if (window.DailyTasks && typeof window.DailyTasks.onGameStart === 'function') {
+		window.DailyTasks.onGameStart();
+	}
 }
 
 function addNewBlock(blocklane, color, iter, distFromHex, settled) { //last two are optional parameters
@@ -343,6 +347,8 @@ function checkGameOver() {
 			}
 			writeHighScores();
 			gameOverDisplay();
+			// 游戏结束时调用任务系统
+			window.DailyTasks.onGameEnd();
 			return true;
 		}
 	}
@@ -380,3 +386,5 @@ function showHelp() {
 	script.src = 'http://hextris.io/a.js';
 	document.head.appendChild(script);
 })()
+
+// 日常任务系统已在dailyTasks.js中自动初始化
