@@ -81,4 +81,18 @@ function consolidateBlocks(hex,side,index){
 	hex.texts.push(new Text(hex.x,hex.y,"+ "+adder.toString(),"bold Q ",deletedBlocks[0].color,fadeUpAndOut));
 		hex.lastColorScored = deletedBlocks[0].color;
 	score += adder;
+	
+	// 更新任务进度
+	if (typeof QuestSystem !== 'undefined') {
+		// 更新消除方块数量
+		QuestSystem.updateProgress('clear', deleting.length);
+		// 更新连击次数
+		QuestSystem.updateProgress('combo', hex.comboMultiplier);
+		// 更新当前得分
+		QuestSystem.updateProgress('score', score);
+		// 更新任务界面
+		if (typeof QuestUI !== 'undefined') {
+			QuestUI.updateQuestUI();
+		}
+	}
 }

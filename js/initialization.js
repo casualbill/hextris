@@ -132,7 +132,7 @@ function initialize(a) {
 	window.importing = 0;
 	window.importedHistory = undefined;
 	window.startTime = undefined;
-	window.gameState;
+	window.gameState = 0;
 	setStartScreen();
 	if (a != 1) {
 		window.canRestart = 1;
