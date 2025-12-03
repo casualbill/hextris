@@ -3,7 +3,9 @@ function addKeyListeners() {
 		keys: "left",
 		on_keydown: function() {
 			if (MainHex && gameState !== 0) {
-				MainHex.rotate(1);
+				// 根据控制方向调整旋转方向
+				var direction = (settings.controlDirection || 1) * 1;
+				MainHex.rotate(direction);
 			}
 		}
 	});
@@ -12,7 +14,9 @@ function addKeyListeners() {
 		keys: "right",
 		on_keydown: function() {
 			if (MainHex && gameState !== 0){
-				MainHex.rotate(-1);
+				// 根据控制方向调整旋转方向
+				var direction = (settings.controlDirection || 1) * (-1);
+				MainHex.rotate(direction);
 			}
 		}
 	});
@@ -43,7 +47,9 @@ function addKeyListeners() {
 		keys: "a",
 		on_keydown: function() {
 			if (MainHex && gameState !== 0) {
-				MainHex.rotate(1);
+				// 根据控制方向调整旋转方向
+				var direction = (settings.controlDirection || 1) * 1;
+				MainHex.rotate(direction);
 			}
 		}
 	});
@@ -52,7 +58,9 @@ function addKeyListeners() {
 		keys: "d",
 		on_keydown: function() {
 			if (MainHex && gameState !== 0){
-				MainHex.rotate(-1);
+				// 根据控制方向调整旋转方向
+				var direction = (settings.controlDirection || 1) * (-1);
+				MainHex.rotate(direction);
 			}
 		}
 	});
