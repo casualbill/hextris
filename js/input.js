@@ -3,7 +3,9 @@ function addKeyListeners() {
 		keys: "left",
 		on_keydown: function() {
 			if (MainHex && gameState !== 0) {
-				MainHex.rotate(1);
+				// Check if controls are reversed
+				const direction = settings.controlReversed ? -1 : 1;
+				MainHex.rotate(direction);
 			}
 		}
 	});
@@ -12,7 +14,9 @@ function addKeyListeners() {
 		keys: "right",
 		on_keydown: function() {
 			if (MainHex && gameState !== 0){
-				MainHex.rotate(-1);
+				// Check if controls are reversed
+				const direction = settings.controlReversed ? 1 : -1;
+				MainHex.rotate(direction);
 			}
 		}
 	});
@@ -43,7 +47,9 @@ function addKeyListeners() {
 		keys: "a",
 		on_keydown: function() {
 			if (MainHex && gameState !== 0) {
-				MainHex.rotate(1);
+				// Check if controls are reversed
+				const direction = settings.controlReversed ? -1 : 1;
+				MainHex.rotate(direction);
 			}
 		}
 	});
@@ -52,7 +58,9 @@ function addKeyListeners() {
 		keys: "d",
 		on_keydown: function() {
 			if (MainHex && gameState !== 0){
-				MainHex.rotate(-1);
+				// Check if controls are reversed
+				const direction = settings.controlReversed ? 1 : -1;
+				MainHex.rotate(direction);
 			}
 		}
 	});
@@ -227,10 +235,14 @@ function handleClickTap(x,y) {
 	}
 
 	if (x < window.innerWidth/2) {
-		MainHex.rotate(1);
+		// Check if controls are reversed
+		const direction = settings.controlReversed ? -1 : 1;
+		MainHex.rotate(direction);
 	}
 	if (x > window.innerWidth/2) {
-		MainHex.rotate(-1);
+		// Check if controls are reversed
+		const direction = settings.controlReversed ? 1 : -1;
+		MainHex.rotate(direction);
 	}
 }
 
