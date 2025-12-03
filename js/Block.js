@@ -1,4 +1,4 @@
-function Block(fallingLane, color, iter, distFromHex, settled) {
+function Block(fallingLane, color, iter, distFromHex, settled, blockType) {
 	// whether or not a block is rested on the center hex or another block
 	this.settled = (settled === undefined) ? 0 : 1;
 	this.height = settings.blockHeight;
@@ -12,6 +12,8 @@ function Block(fallingLane, color, iter, distFromHex, settled) {
 	this.angularVelocity = 0;
 	this.targetAngle = this.angle;
 	this.color = color;
+	// 特殊颜色块类型
+	this.blockType = blockType || 'normal';
 	//blocks that are slated to be deleted after a valid score has happened
 	this.deleted = 0;
 	//blocks slated to be removed from falling and added to the hex
@@ -144,6 +146,29 @@ function Block(fallingLane, color, iter, distFromHex, settled) {
 		//ctx.lineTo(baseX + p1.x, baseY + p1.y);
 		ctx.closePath();
 		ctx.fill();
+
+		// 绘制特殊颜色块的标识
+		if (this.blockType !== 'normal' && !this.deleted) {
+			ctx.globalAlpha = 1;
+			ctx.font = 'bold ' + (12 * settings.scale) + 'px Arial';
+			ctx.textAlign = 'center';
+			ctx.textBaseline = 'middle';
+			
+			var icon = '';
+			switch(this.blockType) {
+				case 'obstacle':
+					icon = '🔒';
+					break;
+				case 'wildcard':
+					icon = '⭐';
+					break;
+				case 'explosive':
+					icon = '💥';
+					break;
+			}
+			
+			ctx.fillText(icon, baseX, baseY);
+		}
 
 		if (this.tint) {
 			if (this.opacity < 1) {

@@ -40,7 +40,43 @@ function waveGen(hex) {
 			this.ct++;
 			this.lastGen = this.dt;
 			var fv = randInt(0, MainHex.sides);
-			addNewBlock(fv, colors[randInt(0, colors.length)], 1.6 + (this.difficulty / 15) * 3);
+			
+			// 检查是否需要生成特殊颜色块
+			var blockColor, blockType;
+			if (specialBlocksEnabled) {
+				// 增加计数器
+				specialBlockCounters.obstacle++;
+				specialBlockCounters.wildcard++;
+				specialBlockCounters.explosive++;
+				
+				// 检查是否满足生成条件
+				if (specialBlockCounters.obstacle >= 20) {
+					// 生成障碍块
+					blockColor = specialBlocks.obstacle.color;
+					blockType = specialBlocks.obstacle.type;
+					specialBlockCounters.obstacle = 0;
+				} else if (specialBlockCounters.wildcard >= 15) {
+					// 生成百搭块
+					blockColor = specialBlocks.wildcard.color;
+					blockType = specialBlocks.wildcard.type;
+					specialBlockCounters.wildcard = 0;
+				} else if (specialBlockCounters.explosive >= 25) {
+					// 生成爆炸块
+					blockColor = specialBlocks.explosive.color;
+					blockType = specialBlocks.explosive.type;
+					specialBlockCounters.explosive = 0;
+				} else {
+					// 生成普通块
+					blockColor = colors[randInt(0, colors.length)];
+					blockType = 'normal';
+				}
+			} else {
+				// 特殊块已禁用，只生成普通块
+				blockColor = colors[randInt(0, colors.length)];
+				blockType = 'normal';
+			}
+			
+			addNewBlock(fv, blockColor, 1.6 + (this.difficulty / 15) * 3, undefined, undefined, blockType);
 			var lim = 5;
 			if (this.ct > lim) {
 				var nextPattern = randInt(0, 3 + 21);
