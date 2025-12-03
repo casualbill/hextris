@@ -1,3 +1,5 @@
+var replayMode = false;
+
 function scaleCanvas() {
 	canvas.width = $(window).width();
 	canvas.height = $(window).height();
@@ -88,6 +90,7 @@ function hideUIElements() {
 }
 
 function init(b) {
+	var replayMode = false;
 	if(settings.ending_block && b == 1){return;}
 	if (b) {
 		$("#pauseBtn").attr('src',"./images/btn_pause.svg");

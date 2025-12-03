@@ -54,6 +54,7 @@
 		<script type='text/javascript' src="js/input.js"></script>
 		<script type='text/javascript' src="js/main.js"></script>
 		<script type='text/javascript' src="js/initialization.js"></script>
+		<script type='text/javascript' src="js/achievements.js"></script>
 		<script type='text/javascript' async src="https://hextris.io/scripts/a.js"></script>
 		<script src="vendor/sweet-alert.min.js"></script>
 		<link rel="stylesheet" href="style/rrssb.css"/>
@@ -148,5 +149,30 @@
 					}})()
 			</script>
 		<script type="text/javascript" src='vendor/rrssb.min.js'></script>
+	
+	<!-- 成就系统DOM元素 -->
+	<div id="achievementsScreen">
+		<div class="achievementsContent">
+			<h1>成就列表</h1>
+			<div class="filterContainer">
+				<button class="filterBtn active" data-filter="all">全部</button>
+				<button class="filterBtn" data-filter="unlocked">已解锁</button>
+				<button class="filterBtn" data-filter="locked">未解锁</button>
+			</div>
+			<div class="achievementsList" id="achievementsList"></div>
+			<button id="backToMenuBtn" class="menuBtn">返回主菜单</button>
+		</div>
+	</div>
+	
+	<div id="achievementNotification">
+		<div class="achievementNotificationItem">
+			<div class="notificationIcon"></div>
+			<div class="notificationContent">
+				<div class="notificationTitle">成就解锁！</div>
+				<div class="notificationName" id="notificationAchievementName"></div>
+			</div>
+		</div>
+	</div>
+	
 	</body>
 </html>
