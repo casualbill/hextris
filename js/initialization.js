@@ -66,7 +66,16 @@ function initialize(a) {
 			speedModifier: 0.73,
 			speedUpKeyHeld: false,
 			creationSpeedModifier: 0.73,
-			comboTime: 310
+			comboTime: 310,
+			energyEnabled: true,
+			energy: 100,
+			energyMax: 100,
+			energyRegenRate: 2,
+			energyRegenInterval: 1000,
+			lastEnergyRegen: Date.now(),
+			energyCost: 5,
+			showEnergyWarning: false,
+			energyWarningTime: 0
 		};
 	} else {
 		settings = {
@@ -85,7 +94,16 @@ function initialize(a) {
 			speedModifier: 0.65,
 			speedUpKeyHeld: false,
 			creationSpeedModifier: 0.65,
-			comboTime: 310
+			comboTime: 310,
+			energyEnabled: true,
+			energy: 100,
+			energyMax: 100,
+			energyRegenRate: 2,
+			energyRegenInterval: 1000,
+			lastEnergyRegen: Date.now(),
+			energyCost: 5,
+			showEnergyWarning: false,
+			energyWarningTime: 0
 		};
 
 	}
@@ -111,6 +129,7 @@ function initialize(a) {
 	window.scoreAdditionCoeff = 1;
 	window.prevScore = 0;
 	window.numHighScores = 3;
+	window.energyEnabled = true;
 
 	highscores = [];
 	if (localStorage.getItem('highscores')) {

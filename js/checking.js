@@ -81,4 +81,14 @@ function consolidateBlocks(hex,side,index){
 	hex.texts.push(new Text(hex.x,hex.y,"+ "+adder.toString(),"bold Q ",deletedBlocks[0].color,fadeUpAndOut));
 		hex.lastColorScored = deletedBlocks[0].color;
 	score += adder;
+
+	// 消除方块时增加能量
+	if (settings.energyEnabled) {
+		var energyGain = deleting.length * 5;
+		settings.energy += energyGain;
+		// 确保能量不超过上限
+		if (settings.energy > settings.energyMax) {
+			settings.energy = settings.energyMax;
+		}
+	}
 }

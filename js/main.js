@@ -130,6 +130,10 @@ function init(b) {
 	$("#pauseBtn").show();
 	if (saveState.hex !== undefined) gameState = 1;
 
+	// 初始化能量值为满值
+	settings.energy = settings.energyMax;
+	settings.lastEnergyRegen = Date.now();
+
 	settings.blockHeight = settings.baseBlockHeight * settings.scale;
 	settings.hexWidth = settings.baseHexWidth * settings.scale;
 	MainHex = saveState.hex || new Hex(settings.hexWidth);
