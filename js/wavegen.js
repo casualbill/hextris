@@ -24,6 +24,8 @@ function waveGen(hex) {
 	this.hex = hex;
 	this.difficulty = 1;
 	this.dt = 0;
+	// 初始化currentFunction为randomGeneration
+	this.currentFunction = this.randomGeneration;
 	this.update = function() {
 		this.currentFunction();
 		this.dt = (settings.platform == 'mobile' ? 14 : 16.6667) * MainHex.ct;

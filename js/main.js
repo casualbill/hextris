@@ -1,3 +1,5 @@
+
+
 function scaleCanvas() {
 	canvas.width = $(window).width();
 	canvas.height = $(window).height();
@@ -126,6 +128,12 @@ function init(b) {
 	tweetblock=false;
 	scoreOpacity = 0;
 	gameState = 1;
+	
+	// 重置能量系统
+	energy = maxEnergy;
+	lastEnergyRecoveryTime = Date.now();
+	energyWarningDisplayed = false;
+	clearTimeout(energyWarningTimeout);
 	$("#restartBtn").hide();
 	$("#pauseBtn").show();
 	if (saveState.hex !== undefined) gameState = 1;
@@ -225,6 +233,7 @@ function setStartScreen() {
 
 	gameState = 0;
 	requestAnimFrame(animLoop);
+	showEnergyToggle();
 }
 
 var spd = 1;
@@ -238,6 +247,16 @@ function animLoop() {
 		var dt = (now - lastTime)/16.666 * rush;
 		if (spd > 1) {
 			dt *= spd;
+		}
+
+		// 能量自动恢复逻辑
+		if (energySystemEnabled && gameState == 1) {
+			var timeSinceLastRecovery = now - lastEnergyRecoveryTime;
+			if (timeSinceLastRecovery >= energyRecoveryInterval && energy < maxEnergy) {
+				energy += energyRecoveryRate;
+				if (energy > maxEnergy) energy = maxEnergy;
+				lastEnergyRecoveryTime = now;
+			}
 		}
 
 		if(gameState == 1 ){
@@ -318,6 +337,18 @@ function animLoop() {
 
 function enableRestart() {
 	canRestart = 1;
+}
+
+function showEnergyToggle() {
+	document.getElementById('energyToggle').style.display = 'block';
+	document.getElementById('energyToggleLabel').style.display = 'block';
+	// Set initial toggle state based on energySystemEnabled
+	var toggle = document.getElementById('energyToggle');
+	if (window.energySystemEnabled) {
+		toggle.classList.add('on');
+	} else {
+		toggle.classList.remove('on');
+	}
 }
 
 function isInfringing(hex) {

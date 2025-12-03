@@ -128,6 +128,50 @@ button:focus {
 	bottom:0;
 	z-index:99;
 }
+
+#energyToggle {
+	display:none;
+	position:fixed;
+	bottom:70px;
+	right:20px;
+	width:60px;
+	height:34px;
+	background-color: #ccc;
+	border-radius: 17px;
+	cursor: pointer;
+	z-index: 100;
+}
+
+#energyToggle.on {
+	background-color: #2ecc71;
+}
+
+#energyToggle .toggle-slider {
+	position: absolute;
+	content: "";
+	height: 26px;
+	width: 26px;
+	left: 4px;
+	bottom: 4px;
+	background-color: white;
+	border-radius: 50%;
+	transition: 0.4s;
+}
+
+#energyToggle.on .toggle-slider {
+	transform: translateX(26px);
+}
+
+#energyToggleLabel {
+	display:none;
+	position:fixed;
+	bottom:76px;
+	right:90px;
+	color: #2c3e50;
+	font-size: 16px;
+	font-weight: bold;
+	z-index: 100;
+}
 #startBtn {
 	position:absolute;
 	left:40%;

@@ -105,8 +105,27 @@ function Hex(sideLength) {
 	};
 
 	this.rotate = function(steps) {
-				if(Date.now()-this.lastRotate<75 && !(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) ) return;
+		if(Date.now()-this.lastRotate<75 && !(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) ) return;
 		if (!(gameState === 1 || gameState === 0)) return;
+		
+		// 检查能量系统是否启用
+		if (energySystemEnabled) {
+			// 检查能量是否足够
+			if (energy < energyCost) {
+				// 显示能量不足警告
+				energyWarningDisplayed = true;
+				clearTimeout(energyWarningTimeout);
+				energyWarningTimeout = setTimeout(function() {
+					energyWarningDisplayed = false;
+				}, 1000);
+				return; // 能量不足，不执行旋转
+			}
+			
+			// 扣除能量
+			energy -= energyCost;
+			if (energy < 0) energy = 0;
+		}
+		
 		this.position += steps;
 		if (!history[this.ct]) {
 			history[this.ct] = {};
@@ -131,7 +150,7 @@ function Hex(sideLength) {
 		});
 
 		this.targetAngle = this.targetAngle - steps * 60;
-				this.lastRotate = Date.now();
+		this.lastRotate = Date.now();
 	};
 
 	this.draw = function() {

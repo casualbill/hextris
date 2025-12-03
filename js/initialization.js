@@ -46,6 +46,19 @@ function initialize(a) {
 			window.setTimeout(callback, 1000 / framerate);
 		};
 	})();
+	
+	// 能量系统初始化
+	window.energy = 100;
+	window.maxEnergy = 100;
+	window.energyCost = 5;
+	window.energyGainPerBlock = 5;
+	window.energyRecoveryRate = 2;
+	window.energyRecoveryInterval = 1000;
+	window.energySystemEnabled = true;
+	window.lastEnergyRecoveryTime = Date.now();
+	window.energyWarningDisplayed = false;
+	window.energyWarningTimeout = null;
+
 	$('#clickToExit').bind('click', toggleDevTools);
 	window.settings;
 	if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {

@@ -16,6 +16,11 @@ function render() {
 		ctx.globalAlpha = 1;
 	}
 
+	// 绘制能量条
+	if (energySystemEnabled && (gameState === 1 || gameState === -1)) {
+		drawEnergyBar();
+	}
+
 	var i;
 	for (i = 0; i < MainHex.blocks.length; i++) {
 		for (var j = 0; j < MainHex.blocks[i].length; j++) {
@@ -63,6 +68,53 @@ function render() {
 	settings.prevScale = settings.scale;
 	settings.hexWidth = settings.baseHexWidth * settings.scale;
 	settings.blockHeight = settings.baseBlockHeight * settings.scale;
+}
+
+// 绘制能量条函数
+function drawEnergyBar() {
+	var energyBarWidth = 200 * settings.scale;
+	var energyBarHeight = 20 * settings.scale;
+	var x = 20 * settings.scale;
+	var y = 20 * settings.scale;
+	var fontSize = 16 * settings.scale;
+
+	// 计算能量条颜色
+	var energyColor;
+	if (energy >= 50) {
+		energyColor = '#2ecc71'; // 绿色
+	} else if (energy >= 10) {
+		energyColor = '#f1c40f'; // 黄色
+	} else {
+		energyColor = '#e74c3c'; // 红色
+	}
+
+	// 绘制能量条背景
+	ctx.fillStyle = '#34495e';
+	ctx.fillRect(x, y, energyBarWidth, energyBarHeight);
+
+	// 绘制能量条填充
+	var energyFillWidth = (energy / maxEnergy) * energyBarWidth;
+	ctx.fillStyle = energyColor;
+	ctx.fillRect(x, y, energyFillWidth, energyBarHeight);
+
+	// 绘制能量条边框
+	ctx.strokeStyle = '#2c3e50';
+	ctx.lineWidth = 2 * settings.scale;
+	ctx.strokeRect(x, y, energyBarWidth, energyBarHeight);
+
+	// 绘制能量数值
+	ctx.fillStyle = '#2c3e50';
+	ctx.font = 'bold ' + fontSize + 'px Arial';
+	ctx.textAlign = 'center';
+	ctx.fillText(energy + '/' + maxEnergy, x + energyBarWidth / 2, y + energyBarHeight / 2 + fontSize / 3);
+
+	// 绘制能量警告
+	if (energyWarningDisplayed) {
+		ctx.fillStyle = '#e74c3c';
+		ctx.font = 'bold ' + (20 * settings.scale) + 'px Arial';
+		ctx.textAlign = 'center';
+		ctx.fillText('能量不足', trueCanvas.width / 2, trueCanvas.height / 2);
+	}
 }
 
 function renderBeginningText() {
