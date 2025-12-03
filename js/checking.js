@@ -71,6 +71,11 @@ function consolidateBlocks(hex,side,index){
 		hex.lastCombo = now;
 		var coords = findCenterOfBlocks(deletedBlocks);
 		hex.texts.push(new Text(coords['x'],coords['y'],"x "+hex.comboMultiplier.toString(),"bold Q","#fff",fadeUpAndOut));
+		
+		// 更新连击任务进度
+		if (window.dailyTaskManager) {
+			window.dailyTaskManager.updateTaskProgress('combo', hex.comboMultiplier);
+		}
 	}
 	else{
 		settings.comboTime = 240;

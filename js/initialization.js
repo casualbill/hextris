@@ -148,6 +148,13 @@ function initialize(a) {
 			$('#startBtn').on('mousedown', startBtnHandler);
 		}
 
+		$('#dailyTasksBtn').off();
+		if (settings.platform == 'mobile') {
+			$('#dailyTasksBtn').on('touchstart', dailyTasksBtnHandler);
+		} else {
+			$('#dailyTasksBtn').on('mousedown', dailyTasksBtnHandler);
+		}
+
 		document.addEventListener('touchmove', function(e) {
 			e.preventDefault();
 		}, false);
@@ -210,6 +217,11 @@ function initialize(a) {
 	}
 }
 
+function dailyTasksBtnHandler() {
+	// 显示日常任务列表界面
+	window.dailyTaskManager.showTaskList();
+}
+
 function startBtnHandler() {
 	setTimeout(function() {
 		if (settings.platform == "mobile") {
@@ -245,6 +257,7 @@ function startBtnHandler() {
 
 	if (!canRestart) return false;
 
+	$('#dailyTasksBtn').hide();
 	if ($('#openSideBar').is(':visible')) {
 		$('#openSideBar').fadeOut(150, "linear");
 	}

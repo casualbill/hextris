@@ -12,6 +12,11 @@ function blockDestroyed() {
 	} else {
 		waveone.difficulty = 35;
 	}
+
+	// 更新消除方块任务进度
+	if (window.dailyTaskManager) {
+		window.dailyTaskManager.updateTaskProgress('clear', 1);
+	}
 }
 
 function waveGen(hex) {
