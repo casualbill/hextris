@@ -64,6 +64,8 @@ function resumeGame() {
 	$('#restartBtn').hide();
 	importing = 0;
 	startTime = Date.now();
+	// 恢复能量恢复
+	startEnergyRecovery();
 	setTimeout(function() {
 		if ((gameState == 1 || gameState == 2) && !$('#helpScreen').is(':visible')) {
 			$('#openSideBar').fadeOut(150, "linear");
@@ -129,6 +131,11 @@ function init(b) {
 	$("#restartBtn").hide();
 	$("#pauseBtn").show();
 	if (saveState.hex !== undefined) gameState = 1;
+	
+	// 重置能量系统
+	window.energy = window.maxEnergy;
+	updateEnergyBar();
+	startEnergyRecovery();
 
 	settings.blockHeight = settings.baseBlockHeight * settings.scale;
 	settings.hexWidth = settings.baseHexWidth * settings.scale;
@@ -182,6 +189,73 @@ function init(b) {
 	MainHex.texts = []; //clear texts
 	MainHex.delay = 15;
 	hideText();
+}
+
+function hideText() {
+	textOpacity = 0;
+	textShown = false;
+}
+
+// 更新能量条UI
+function updateEnergyBar() {
+	if (!window.energyEnabled) {
+		$('#energy-container').hide();
+		return;
+	}
+	
+	$('#energy-container').show();
+	var percentage = (window.energy / window.maxEnergy) * 100;
+	$('#energy-bar-fill').css('width', percentage + '%');
+	
+	// 更新能量条颜色
+	var color;
+	if (window.energy >= 50) {
+		color = '#2ecc71'; // 绿色
+	} else if (window.energy >= 10) {
+		color = '#f1c40f'; // 黄色
+	} else {
+		color = '#e74c3c'; // 红色
+	}
+	$('#energy-bar-fill').css('background-color', color);
+	
+	// 更新文字显示
+	$('#energy-text').text(window.energy + '/' + window.maxEnergy);
+}
+
+// 启动能量恢复定时器
+function startEnergyRecovery() {
+	if (!window.energyEnabled || window.energyTimer) return;
+	
+	window.energyTimer = setInterval(function() {
+		if (gameState !== 1 || window.energy >= window.maxEnergy) return;
+		
+		window.energy = Math.min(window.energy + 2, window.maxEnergy);
+		updateEnergyBar();
+	}, 1000);
+}
+
+// 停止能量恢复定时器
+function stopEnergyRecovery() {
+	if (window.energyTimer) {
+		clearInterval(window.energyTimer);
+		window.energyTimer = null;
+	}
+}
+
+// 显示能量不足提示
+function showEnergyWarning() {
+	$('#energy-warning').css('opacity', '1');
+	setTimeout(function() {
+		$('#energy-warning').css('opacity', '0');
+	}, 1000);
+}
+
+// 获取能量
+function gainEnergy(amount) {
+	if (!window.energyEnabled) return;
+	
+	window.energy = Math.min(window.energy + amount, window.maxEnergy);
+	updateEnergyBar();
 }
 
 function addNewBlock(blocklane, color, iter, distFromHex, settled) { //last two are optional parameters
@@ -362,7 +436,18 @@ function showHelp() {
 		}
 	}
 
-	$("#inst_main_body").html("<div id = 'instructions_head'>HOW TO PLAY</div><p>The goal of Hextris is to stop blocks from leaving the inside of the outer gray hexagon.</p><p>" + (settings.platform != 'mobile' ? 'Press the right and left arrow keys' : 'Tap the left and right sides of the screen') + " to rotate the Hexagon." + (settings.platform != 'mobile' ? ' Press the down arrow to speed up the block falling': '') + " </p><p>Clear blocks and get points by making 3 or more blocks of the same color touch.</p><p>Time left before your combo streak disappears is indicated by <span style='color:#f1c40f;'>the</span> <span style='color:#e74c3c'>colored</span> <span style='color:#3498db'>lines</span> <span style='color:#2ecc71'>on</span> the outer hexagon</p> <hr> <p id = 'afterhr'></p> By <a href='http://loganengstrom.com' target='_blank'>Logan Engstrom</a> & <a href='http://github.com/garrettdreyfus' target='_blank'>Garrett Finucane</a><br>Find Hextris on <a href = 'https://itunes.apple.com/us/app/id903769553?mt=8' target='_blank'>iOS</a> & <a href ='https://play.google.com/store/apps/details?id=com.hextris.hextris' target='_blank'>Android</a><br>More @ the <a href ='http://hextris.github.io/' target='_blank'>Hextris Website</a>");
+	$("#inst_main_body").html("<div id = 'instructions_head'>HOW TO PLAY</div><p>The goal of Hextris is to stop blocks from leaving the inside of the outer gray hexagon.</p><p>" + (settings.platform != 'mobile' ? 'Press the right and left arrow keys' : 'Tap the left and right sides of the screen') + " to rotate the Hexagon." + (settings.platform != 'mobile' ? ' Press the down arrow to speed up the block falling': '') + " </p><p>Clear blocks and get points by making 3 or more blocks of the same color touch.</p><p>Time left before your combo streak disappears is indicated by <span style='color:#f1c40f;'>the</span> <span style='color:#e74c3c'>colored</span> <span style='color:#3498db'>lines</span> <span style='color:#2ecc71'>on</span> the outer hexagon</p><hr><div id='settings-section'><h3>SETTINGS</h3><div id='energy-toggle-container'><label for='energy-toggle'>Energy System:</label><label class='toggle-switch'><input type='checkbox' id='energy-toggle' checked><span class='slider round'></span></label></div></div><hr> <p id = 'afterhr'></p> By <a href='http://loganengstrom.com' target='_blank'>Logan Engstrom</a> & <a href='http://github.com/garrettdreyfus' target='_blank'>Garrett Finucane</a><br>Find Hextris on <a href = 'https://itunes.apple.com/us/app/id903769553?mt=8' target='_blank'>iOS</a> & <a href ='https://play.google.com/store/apps/details?id=com.hextris.hextris' target='_blank'>Android</a><br>More @ the <a href ='http://hextris.github.io/' target='_blank'>Hextris Website</a>");
+	// 添加能量系统开关事件监听
+	$('#energy-toggle').change(function() {
+		window.energyEnabled = $(this).is(':checked');
+		updateEnergyBar();
+		// 如果重新开启能量系统，启动能量恢复
+		if (window.energyEnabled && gameState === 1) {
+			startEnergyRecovery();
+		} else {
+			stopEnergyRecovery();
+		}
+	});
 	if (gameState == 1) {
 		pause();
 	}
