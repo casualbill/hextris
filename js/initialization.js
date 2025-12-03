@@ -27,6 +27,64 @@ function initialize(a) {
 		"rgb(46,204,113)": "rgb(150,227,183)"
 	};
 
+	// 特殊颜色块类型
+	window.SPECIAL_BLOCKS = {
+		OBSTACLE: 'obstacle',       // 障碍块 - 灰色带锁链
+		JOKER: 'joker',             // 百搭块 - 彩虹色带星形
+		EXPLOSIVE: 'explosive',     // 爆炸块 - 红黄渐变色带爆炸图案
+		REGULAR: 'regular'          // 普通块
+	};
+
+	// 特殊块生成概率
+	window.SPECIAL_BLOCK_RATES = {
+		OBSTACLE: 1/20,     // 每20个普通块出现1个
+		JOKER: 1/15,        // 每15个普通块出现1个
+		EXPLOSIVE: 1/25     // 每25个普通块出现1个
+	};
+
+	// 特殊块状态
+	window.settings = window.settings || {}; // 确保settings对象存在
+	window.settings.specialBlocksEnabled = true; // 默认开启特殊块
+	window.regularBlockCounter = 0; // 普通块计数器，用于控制特殊块生成
+
+	// Special blocks info icon event listener
+		var infoIcon = document.getElementById('info-icon');
+		var specialBlocksInfo = document.getElementById('special-blocks-info');
+		var closeInfoBtn = document.getElementById('close-info');
+		
+		infoIcon.addEventListener('click', function() {
+			specialBlocksInfo.style.display = 'block';
+		});
+		
+		closeInfoBtn.addEventListener('click', function() {
+			specialBlocksInfo.style.display = 'none';
+		});
+		
+		// Settings modal event listeners
+		var settingsModal = document.getElementById('settingsModal');
+		var settingsIcon = document.getElementById('settings-icon');
+		var specialBlocksToggle = document.getElementById('specialBlocksToggle');
+		
+		// Initialize toggle state
+		specialBlocksToggle.checked = window.settings.specialBlocksEnabled;
+		
+		// Handle settings icon click
+		settingsIcon.addEventListener('click', function() {
+			settingsModal.style.display = 'block';
+		});
+		
+		// Handle special blocks toggle change
+		specialBlocksToggle.addEventListener('change', function() {
+			window.settings.specialBlocksEnabled = this.checked;
+		});
+		
+		// Close modal when clicking outside
+		window.addEventListener('click', function(event) {
+			if (event.target === settingsModal) {
+				settingsModal.style.display = 'none';
+			}
+		});
+
 	window.hexagonBackgroundColor = 'rgb(236, 240, 241)';
 	window.hexagonBackgroundColorClear = 'rgba(236, 240, 241, 0.5)';
 	window.centerBlue = 'rgb(44,62,80)';
