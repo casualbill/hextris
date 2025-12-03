@@ -87,6 +87,227 @@ function hideUIElements() {
 	$('#startBtn').hide();
 }
 
+// 自动记录游戏状态
+function recordGameState() {
+	if (!rewindEnabled) return;
+
+	// 记录当前游戏状态
+	var state = {
+		time: Date.now(),
+		hex: $.extend(true, {}, MainHex),
+		blocks: $.extend(true, [], blocks),
+		score: score,
+		wavegen: waveone,
+		gdx: gdx,
+		gdy: gdy,
+		comboTime: settings.comboTime
+	};
+
+	// 清理状态数据，移除循环引用
+	state.hex.blocks.map(function(a) {
+		for (var i = 0; i < a.length; i++) {
+			a[i] = $.extend(true, {}, a[i]);
+		}
+		a.map(descaleBlock);
+	});
+
+	for (var i = 0; i < state.blocks.length; i++) {
+		state.blocks[i] = $.extend(true, {}, state.blocks[i]);
+	}
+	state.blocks.map(descaleBlock);
+
+	// 添加到状态数组
+	rewindStates.push(state);
+
+	// 最多保存30秒的数据（每1秒记录一次，最多30条）
+	if (rewindStates.length > 30) {
+		rewindStates.shift();
+	}
+}
+
+// 恢复到指定时间的游戏状态
+function restoreGameState(targetTime) {
+	// 找到最接近目标时间的状态
+	var targetState = null;
+	for (var i = 0; i < rewindStates.length; i++) {
+		if (rewindStates[i].time <= targetTime) {
+			targetState = rewindStates[i];
+		} else {
+			break;
+		}
+	}
+
+	if (!targetState) return false;
+
+	// 恢复游戏状态
+	score = targetState.score || 0;
+	gdx = targetState.gdx || 0;
+	gdy = targetState.gdy || 0;
+	comboTime = targetState.comboTime || 0;
+
+	// 恢复中心六边形
+	MainHex = targetState.hex || new Hex(settings.hexWidth);
+	MainHex.sideLength = settings.hexWidth;
+
+	// 恢复六边形上的方块
+	for (var i = 0; i < MainHex.blocks.length; i++) {
+		for (var j = 0; j < MainHex.blocks[i].length; j++) {
+			MainHex.blocks[i][j].height = settings.blockHeight;
+			MainHex.blocks[i][j].settled = 0;
+		}
+	}
+
+	MainHex.blocks.map(function(i) {
+		i.map(function(o) {
+			if (rgbToHex[o.color]) {
+				o.color = rgbToHex[o.color];
+			}
+		});
+	});
+
+	// 恢复下落的方块
+	blocks = [];
+	if (targetState.blocks) {
+		targetState.blocks.map(function(o) {
+			if (rgbToHex[o.color]) {
+				o.color = rgbToHex[o.color];
+			}
+		});
+
+		for (var i = 0; i < targetState.blocks.length; i++) {
+			var block = targetState.blocks[i];
+			blocks.push(block);
+		}
+	}
+
+	// 恢复wavegen
+	waveone = targetState.wavegen || new waveGen(MainHex);
+
+	MainHex.texts = []; // 清除文本
+	MainHex.delay = 15;
+	hideText();
+
+	return true;
+}
+
+// 回溯按钮点击事件处理
+function handleRewindClick() {
+	// 检查是否可以回溯
+	if (!rewindEnabled || rewindCount <= 0 || rewindCooldown > 0) {
+		return;
+	}
+
+	// 尝试回溯到5秒前的状态
+	var targetTime = Date.now() - 5000;
+	var restored = restoreGameState(targetTime);
+
+	if (restored) {
+		// 减少回溯次数
+		rewindCount--;
+		updateRewindUI();
+
+		// 开始冷却时间
+		startRewindCooldown();
+
+		// 显示回溯动画（这里简化处理，实际可以添加更复杂的动画）
+		showRewindAnimation();
+	}
+}
+
+// 更新回溯功能的UI
+function updateRewindUI() {
+	// 更新回溯次数显示
+	$('#rewindCount').text(rewindCount + '/3');
+
+	// 更新回溯按钮状态
+	var rewindBtn = $('#rewindBtn');
+	if (rewindCount <= 0 || rewindCooldown > 0) {
+		rewindBtn.addClass('disabled');
+	} else {
+		rewindBtn.removeClass('disabled');
+	}
+
+	// 更新冷却时间显示
+	var cooldownDiv = $('#rewindCooldown');
+	if (rewindCooldown > 0) {
+		cooldownDiv.text(rewindCooldown);
+		cooldownDiv.show();
+	} else {
+		cooldownDiv.hide();
+	}
+}
+
+// 开始回溯冷却时间
+function startRewindCooldown() {
+	rewindCooldown = 10;
+	updateRewindUI();
+
+	// 清除之前的冷却间隔
+	if (rewindCooldownInterval) {
+		clearInterval(rewindCooldownInterval);
+	}
+
+	// 开始冷却倒计时
+	rewindCooldownInterval = setInterval(function() {
+		rewindCooldown--;
+		updateRewindUI();
+
+		if (rewindCooldown <= 0) {
+			clearInterval(rewindCooldownInterval);
+			rewindCooldownInterval = null;
+		}
+	}, 1000);
+}
+
+// 显示回溯动画
+function showRewindAnimation() {
+	// 这里简化处理，实际可以添加更复杂的动画效果
+	// 比如：方块向上移动、消除效果反向播放等
+
+	// 暂停游戏更新一小段时间，模拟动画效果
+	var originalGameState = gameState;
+	gameState = -1; // 暂停游戏状态
+
+	setTimeout(function() {
+		gameState = originalGameState; // 恢复游戏状态
+	}, 1000); // 动画持续1秒
+}
+
+// 启动自动记录游戏状态
+function startAutoRecord() {
+	// 清除之前的间隔
+	if (rewindInterval) {
+		clearInterval(rewindInterval);
+	}
+
+	// 每1秒记录一次游戏状态
+	rewindInterval = setInterval(recordGameState, 1000);
+}
+
+// 停止自动记录游戏状态
+function stopAutoRecord() {
+	if (rewindInterval) {
+		clearInterval(rewindInterval);
+		rewindInterval = null;
+	}
+
+	// 清除冷却间隔
+	if (rewindCooldownInterval) {
+		clearInterval(rewindCooldownInterval);
+		rewindCooldownInterval = null;
+	}
+
+	// 清空状态数组
+	rewindStates = [];
+	// 重置回溯次数
+	rewindCount = 3;
+	// 重置冷却时间
+	rewindCooldown = 0;
+
+	// 更新UI
+	updateRewindUI();
+}
+
 function init(b) {
 	if(settings.ending_block && b == 1){return;}
 	if (b) {
@@ -129,6 +350,15 @@ function init(b) {
 	$("#restartBtn").hide();
 	$("#pauseBtn").show();
 	if (saveState.hex !== undefined) gameState = 1;
+
+	// 启动自动记录游戏状态
+	startAutoRecord();
+
+	// 为回溯按钮添加点击事件监听器
+	$('#rewindBtn').click(handleRewindClick);
+
+	// 更新回溯UI
+	updateRewindUI();
 
 	settings.blockHeight = settings.baseBlockHeight * settings.scale;
 	settings.hexWidth = settings.baseHexWidth * settings.scale;
@@ -343,6 +573,10 @@ function checkGameOver() {
 			}
 			writeHighScores();
 			gameOverDisplay();
+
+			// 游戏结束时停止自动记录
+			stopAutoRecord();
+
 			return true;
 		}
 	}

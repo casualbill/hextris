@@ -48,6 +48,14 @@ function initialize(a) {
 	})();
 	$('#clickToExit').bind('click', toggleDevTools);
 	window.settings;
+	// 回溯功能相关变量
+	window.rewindEnabled = true; // 回溯功能是否启用
+	window.rewindStates = []; // 存储游戏状态的数组
+	window.rewindInterval = null; // 自动记录游戏状态的间隔
+	window.rewindCount = 3; // 剩余回溯次数
+	window.rewindCooldown = 0; // 回溯冷却时间（秒）
+	window.rewindCooldownInterval = null; // 冷却时间倒计时间隔
+
 	if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
         $('.rrssb-email').remove();
 		settings = {
