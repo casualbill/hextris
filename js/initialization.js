@@ -159,6 +159,8 @@ function initialize(a) {
 		});
 
 		addKeyListeners();
+		// 初始化AI演示模块
+		AIDemo.init();
 		(function(i, s, o, g, r, a, m) {
 			i['GoogleAnalyticsObject'] = r;
 			i[r] = i[r] || function() {

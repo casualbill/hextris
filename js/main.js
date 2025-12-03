@@ -222,6 +222,9 @@ function setStartScreen() {
 	$('#pauseBtn').hide();
 	$('#restartBtn').hide();
 	$('#startBtn').show();
+	$('.ai-demo-button').show();
+	$('#aiModelSelection').addClass('hidden');
+	$('#aiLoadingScreen').addClass('hidden');
 
 	gameState = 0;
 	requestAnimFrame(animLoop);
