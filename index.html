@@ -54,6 +54,7 @@
 		<script type='text/javascript' src="js/input.js"></script>
 		<script type='text/javascript' src="js/main.js"></script>
 		<script type='text/javascript' src="js/initialization.js"></script>
+			<script type='text/javascript' src="js/live.js"></script>
 		<script type='text/javascript' async src="https://hextris.io/scripts/a.js"></script>
 		<script src="vendor/sweet-alert.min.js"></script>
 		<link rel="stylesheet" href="style/rrssb.css"/>
@@ -74,6 +75,42 @@
 		</script>
 		<div id='highScoreInGameText'>
 			<div id='highScoreInGameTextHeader'>HIGH SCORE</div><div id='currentHighScore'>10292</div>
+		</div>
+		<!-- 直播功能UI -->
+		<div id='liveStreamBtn' class='live-btn'>开始直播</div>
+		<div id='roomInfo' class='room-info'>房间号: <span id='roomNumber'></span></div>
+		<div id='watchLiveBtn' class='watch-live-btn'>观看直播</div>
+		
+		<!-- 直播大厅界面 -->
+		<div id='liveHall' class='live-hall hidden'>
+			<div class='live-hall-header'>
+				<h2>直播大厅</h2>
+				<button id='backToMenuBtn' class='back-btn'>返回主菜单</button>
+			</div>
+			<div id='roomList' class='room-list'></div>
+		</div>
+		
+		<!-- 观看直播界面 -->
+		<div id='watchLive' class='watch-live hidden'>
+			<div class='watch-header'>
+				<div class='stream-info'>
+					<div class='host-info'>
+						<span id='hostNickname'>主播昵称</span>
+						<span id='currentScore'>0 分</span>
+						<span id='gameTime'>00:00</span>
+						<span id='viewerCount'>0 观众</span>
+					</div>
+				</div>
+				<button id='backToHallBtn' class='back-btn'>返回大厅</button>
+			</div>
+			<div class='watch-content'>
+				<div id='streamCanvas' class='stream-canvas'></div>
+				<div id='danmakuContainer' class='danmaku-container'></div>
+			</div>
+			<div class='danmaku-input'>
+				<input type='text' id='danmakuInput' placeholder='发送弹幕...' maxlength='50'>
+				<button id='sendDanmakuBtn'>发送</button>
+			</div>
 		</div>
 		<div id="gameoverscreen">
 			<div id='container'>
