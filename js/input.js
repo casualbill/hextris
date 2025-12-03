@@ -1,4 +1,77 @@
 function addKeyListeners() {
+	// 主题设置按钮点击事件
+	$('#themeBtn').on('touchstart mousedown', function() {
+		showThemeScreen();
+		// 更新主题选择界面中的当前主题标识
+		updateCurrentThemeMarker();
+		// 更新主题预览
+		updateThemePreviews();
+		return false;
+	});
+
+	// 主题选择界面中的各个主题点击事件
+	$('.themeItem[data-theme]').on('touchstart mousedown', function() {
+		var themeName = $(this).data('theme');
+		// 应用选择的主题
+		applyTheme(themeName);
+		// 保存主题设置
+		saveThemeSettings();
+		// 更新当前主题标识
+		updateCurrentThemeMarker();
+		return false;
+	});
+
+	// 自定义主题按钮点击事件
+	$('#customThemeBtn').on('touchstart mousedown', function() {
+		showCustomThemeScreen();
+		// 初始化自定义主题界面中的颜色选择器
+		initCustomColorPickers();
+		// 更新自定义主题预览
+		updateCustomThemePreview();
+		return false;
+	});
+
+	// 主题设置界面中的返回按钮点击事件
+	$('#backToMenuBtn').on('touchstart mousedown', function() {
+		hideThemeScreen();
+		return false;
+	});
+
+	// 自定义主题界面中的保存按钮点击事件
+	$('#saveCustomThemeBtn').on('touchstart mousedown', function() {
+		// 保存自定义主题
+		saveCustomTheme();
+		// 应用自定义主题
+		applyTheme('custom');
+		// 返回主题选择界面
+		hideCustomThemeScreen();
+		// 更新当前主题标识
+		updateCurrentThemeMarker();
+		return false;
+	});
+
+	// 自定义主题界面中的重置按钮点击事件
+	$('#resetCustomThemeBtn').on('touchstart mousedown', function() {
+		// 重置自定义主题为经典主题
+		resetCustomTheme();
+		// 重新初始化颜色选择器
+		initCustomColorPickers();
+		// 更新自定义主题预览
+		updateCustomThemePreview();
+		return false;
+	});
+
+	// 自定义主题界面中的返回按钮点击事件
+	$('#backToThemeBtn').on('touchstart mousedown', function() {
+		hideCustomThemeScreen();
+		return false;
+	});
+
+	// 自定义主题界面中的颜色选择器变化事件
+	$('#customColorControls input[type="color"]').on('change', function() {
+		// 更新自定义主题预览
+		updateCustomThemePreview();
+	});
 	keypress.register_combo({
 		keys: "left",
 		on_keydown: function() {

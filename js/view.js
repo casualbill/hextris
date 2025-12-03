@@ -128,11 +128,42 @@ function setMainMenu() {
 		canRestart = 's';
 	}, 500);
 	$('#restartBtn').hide();
+	// 显示主题设置按钮
+	$('#themeBtn').show();
 	if ($("#pauseBtn").replace(/^.*[\\\/]/, '') == "btn_pause.svg") {
 		$("#pauseBtn").attr("src","./images/btn_resume.svg");
 	} else {
 		$("#pauseBtn").attr("src","./images/btn_pause.svg");
 	}
+}
+
+// 显示主题设置界面
+function showThemeScreen() {
+	$('#themeScreen').fadeIn();
+	// 隐藏其他界面元素
+	$('#startBtn').hide();
+	$('#themeBtn').hide();
+}
+
+// 隐藏主题设置界面
+function hideThemeScreen() {
+	$('#themeScreen').fadeOut();
+	// 显示主菜单按钮
+	$('#themeBtn').show();
+}
+
+// 显示自定义主题界面
+function showCustomThemeScreen() {
+	$('#customThemeScreen').fadeIn();
+	// 隐藏主题选择界面
+	$('#themeScreen').fadeOut();
+}
+
+// 隐藏自定义主题界面
+function hideCustomThemeScreen() {
+	$('#customThemeScreen').fadeOut();
+	// 显示主题选择界面
+	$('#themeScreen').fadeIn();
 }
 
 function hideText() {
