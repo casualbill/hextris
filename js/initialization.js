@@ -5,12 +5,49 @@ function initialize(a) {
 	window.rush = 1;
 	window.lastTime = Date.now();
 	window.iframHasLoaded = false;
+	// 普通颜色块
 	window.colors = ["#e74c3c", "#f1c40f", "#3498db", "#2ecc71"];
+	
+	// 特殊颜色块定义
+	window.specialBlocks = {
+		obstacle: {
+			color: "#7f8c8d", // 灰色
+			type: "obstacle",
+			icon: "🔒",
+			description: "障碍颜色块，无法消除，只能通过爆炸颜色块清除"
+		},
+		wildcard: {
+			color: "#ff69b4", // 彩虹色（粉色代替）
+			type: "wildcard",
+			icon: "⭐",
+			description: "百搭颜色块，可以与任何颜色的颜色块相邻形成消除组合"
+		},
+		explosive: {
+			color: "#ff4500", // 红黄渐变色（橙色代替）
+			type: "explosive",
+			icon: "💥",
+			description: "爆炸颜色块，消除时清除周围4个方向相邻的所有颜色块"
+		}
+	};
+	
+	// 特殊颜色块生成计数器
+	window.specialBlockCounters = {
+		obstacle: 0,
+		wildcard: 0,
+		explosive: 0
+	};
+	
+	// 特殊颜色块设置开关
+	window.specialBlocksEnabled = true;
+	
 	window.hexColorsToTintedColors = {
 		"#e74c3c": "rgb(241,163,155)",
 		"#f1c40f": "rgb(246,223,133)",
 		"#3498db": "rgb(151,201,235)",
-		"#2ecc71": "rgb(150,227,183)"
+		"#2ecc71": "rgb(150,227,183)",
+		"#7f8c8d": "rgb(160,170,175)", // 障碍块 tint
+		"#ff69b4": "rgb(255,180,220)", // 百搭块 tint
+		"#ff4500": "rgb(255,120,80)"   // 爆炸块 tint
 	};
 
 	window.rgbToHex = {

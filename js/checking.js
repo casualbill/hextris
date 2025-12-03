@@ -11,8 +11,9 @@ function search(twoD,oneD){
 function floodFill(hex, side, index, deleting) {
 	if (hex.blocks[side] === undefined || hex.blocks[side][index] === undefined) return;
 
-	//store the color
+	//store the color and block type
 	var color = hex.blocks[side][index].color;
+	var blockType = hex.blocks[side][index].blockType;
 	//nested for loops for navigating the blocks
 	for(var x =-1;x<2;x++){
 		for(var y =-1;y<2;y++){
@@ -25,8 +26,15 @@ function floodFill(hex, side, index, deleting) {
 			//making sure the block exists at this side and index
 			if(hex.blocks[curSide] === undefined){continue;}
 			if(hex.blocks[curSide][curIndex] !== undefined){
-				// checking equivalency of color, if its already been explored, and if it isn't already deleted
-				if(hex.blocks[curSide][curIndex].color == color && search(deleting,[curSide,curIndex]) === false && hex.blocks[curSide][curIndex].deleted === 0 ) {
+				// 检查是否匹配：
+				// 1. 颜色相同，或者
+				// 2. 当前块是百搭块，或者
+				// 3. 相邻块是百搭块
+				var isMatch = (hex.blocks[curSide][curIndex].color == color) ||
+							   (blockType == 'wildcard') ||
+							   (hex.blocks[curSide][curIndex].blockType == 'wildcard');
+				
+				if(isMatch && search(deleting,[curSide,curIndex]) === false && hex.blocks[curSide][curIndex].deleted === 0 ) {
 					//add this to the array of already explored
 					deleting.push([curSide,curIndex]);
 					//recall with next block explored
@@ -61,6 +69,52 @@ function consolidateBlocks(hex,side,index){
 			hex.blocks[arr[0]][arr[1]].deleted = 1;
 			deletedBlocks.push(hex.blocks[arr[0]][arr[1]]);
 		}
+	}
+
+	// 检查是否有爆炸块被删除，如果有则触发爆炸效果
+	var hasExplosive = false;
+	for(i=0; i<deletedBlocks.length; i++) {
+		if(deletedBlocks[i].blockType == 'explosive') {
+			hasExplosive = true;
+			break;
+		}
+	}
+	
+	if(hasExplosive) {
+		// 0.5秒后清除爆炸块周围4个方向的所有颜色块
+		setTimeout(function() {
+			// 找到爆炸块的位置
+			var explosivePos = null;
+			for(i=0; i<deletedBlocks.length; i++) {
+				if(deletedBlocks[i].blockType == 'explosive') {
+					explosivePos = [deletedBlocks[i].attachedLane, deletedBlocks[i].getIndex()];
+					break;
+				}
+			}
+			
+			if(explosivePos) {
+				var exSide = explosivePos[0];
+				var exIndex = explosivePos[1];
+				
+				// 清除周围4个方向的所有颜色块（包括障碍块）
+				var directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+				for(var d=0; d<directions.length; d++) {
+					var dir = directions[d];
+					var curSide = (exSide + dir[0] + hex.sides) % hex.sides;
+					var curIndex = exIndex + dir[1];
+					
+					// 检查该位置是否有块
+					if(hex.blocks[curSide] !== undefined && hex.blocks[curSide][curIndex] !== undefined) {
+						// 标记为删除
+						hex.blocks[curSide][curIndex].deleted = 1;
+						// 添加到改变的边
+						if(sidesChanged.indexOf(curSide) == -1) {
+							sidesChanged.push(curSide);
+						}
+					}
+				}
+			}
+		}, 500); // 0.5秒延迟
 	}
 
 	// add scores
