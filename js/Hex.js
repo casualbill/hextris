@@ -107,6 +107,17 @@ function Hex(sideLength) {
 	this.rotate = function(steps) {
 				if(Date.now()-this.lastRotate<75 && !(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) ) return;
 		if (!(gameState === 1 || gameState === 0)) return;
+		
+		// 检查能量系统
+		if (window.energyEnabled) {
+			if (window.energy < 5) {
+				showEnergyWarning();
+				return;
+			}
+			// 扣除能量
+			window.energy -= 5;
+			updateEnergyBar();
+		}
 		this.position += steps;
 		if (!history[this.ct]) {
 			history[this.ct] = {};

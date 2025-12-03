@@ -111,6 +111,11 @@ function initialize(a) {
 	window.scoreAdditionCoeff = 1;
 	window.prevScore = 0;
 	window.numHighScores = 3;
+	// 能量系统初始化
+	window.energy = 100;
+	window.maxEnergy = 100;
+	window.energyEnabled = true; // 默认开启能量系统
+	window.energyTimer = null;
 
 	highscores = [];
 	if (localStorage.getItem('highscores')) {

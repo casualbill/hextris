@@ -214,6 +214,8 @@ function pause(o) {
 		setTimeout(function() {
 		    pausable = true;
 		}, 400);
+		// 暂停能量恢复
+		stopEnergyRecovery();
 		gameState = -1;
 	}
 }
