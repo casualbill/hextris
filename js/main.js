@@ -97,12 +97,14 @@ function init(b) {
 
 		setTimeout(function() {
             if (gameState == 1) {
-			    $('#openSideBar').fadeOut(150, "linear");
+				$('#openSideBar').fadeOut(150, "linear");
             }
 			infobuttonfading = false;
 		}, 7000);
 		clearSaveState();
 		checkVisualElements(1);
+		// 初始化单局统计
+		initSessionStats();
 	}
 	if (highscores.length === 0 ){
 		$("#currentHighScore").text(0);
@@ -243,6 +245,14 @@ function animLoop() {
 		if(gameState == 1 ){
 			if(!MainHex.delay) {
 				update(dt);
+				// 更新游戏时长
+				updateSessionDuration();
+				// 更新分数
+				updateSessionScore(score);
+				// 更新难度检测
+				if (waveone.nextGen >= 30) {
+					updateDifficultyReached30();
+				}
 			}
 			else{
 				MainHex.delay--;
@@ -255,6 +265,10 @@ function animLoop() {
 			var saveState = localStorage.getItem("saveState") || "{}";
 			saveState = JSONfn.parse(saveState);
 			gameState = 2;
+			
+			// 游戏结束，更新统计数据
+			onGameEnd();
+			showNewAchievements();
 
 			setTimeout(function() {
 				enableRestart();

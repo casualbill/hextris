@@ -77,8 +77,12 @@ function consolidateBlocks(hex,side,index){
 		hex.lastCombo = now;
 		hex.comboMultiplier = 1;
 	}
+	// 更新连击统计
+	updateCombo(hex.comboMultiplier);
 	var adder = deleting.length * deleting.length * hex.comboMultiplier;
 	hex.texts.push(new Text(hex.x,hex.y,"+ "+adder.toString(),"bold Q ",deletedBlocks[0].color,fadeUpAndOut));
 		hex.lastColorScored = deletedBlocks[0].color;
 	score += adder;
+	// 更新消除方块统计
+	updateBlocksDestroyed(deleting.length, deletedBlocks[0].color);
 }
