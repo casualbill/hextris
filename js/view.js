@@ -159,6 +159,17 @@ function gameOverDisplay() {
 	$("#socialShare").fadeIn();
 	$("#restart").fadeIn();
     set_score_pos();
+    
+    // 更新游戏局数任务进度
+    if (typeof QuestSystem !== 'undefined') {
+        QuestSystem.updateProgress('games', 1);
+        // 重置单局游戏相关的任务进度
+        QuestSystem.resetGameSession();
+        // 更新任务界面
+        if (typeof QuestUI !== 'undefined') {
+            QuestUI.updateQuestUI();
+        }
+    }
 }
 
 function updateHighScores (){

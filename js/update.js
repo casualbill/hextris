@@ -7,6 +7,15 @@ function update(dt) {
 		if (MainHex.ct - waveone.prevTimeScored > 1000) {
 			waveone.prevTimeScored = MainHex.ct;
 		}
+		
+		// 更新游戏时长任务进度（转换为秒）
+		if (typeof QuestSystem !== 'undefined') {
+			QuestSystem.updateProgress('duration', dt / 1000);
+			// 更新任务界面
+			if (typeof QuestUI !== 'undefined') {
+				QuestUI.updateQuestUI();
+			}
+		}
 	}
 	var lowestDeletedIndex = 99;
 	var i;

@@ -97,12 +97,17 @@ function init(b) {
 
 		setTimeout(function() {
             if (gameState == 1) {
-			    $('#openSideBar').fadeOut(150, "linear");
+			$('#openSideBar').fadeOut(150, "linear");
             }
 			infobuttonfading = false;
 		}, 7000);
 		clearSaveState();
 		checkVisualElements(1);
+	}
+	
+	// 触发游戏状态改变事件
+	if (typeof triggerGameStateChange !== 'undefined') {
+		triggerGameStateChange(gameState);
 	}
 	if (highscores.length === 0 ){
 		$("#currentHighScore").text(0);
@@ -212,7 +217,10 @@ function exportHistory() {
 
 function setStartScreen() {
 	$('#startBtn').show();
-	init();
+	
+	// 先设置游戏状态
+	gameState = 0;
+	
 	if (isStateSaved()) {
 		importing = 0;
 	} else {
@@ -223,7 +231,13 @@ function setStartScreen() {
 	$('#restartBtn').hide();
 	$('#startBtn').show();
 
-	gameState = 0;
+	// 再调用init函数，这样init中的事件触发会使用正确的gameState值
+	init();
+	
+	// 确保事件被触发
+	if (typeof triggerGameStateChange !== 'undefined') {
+		triggerGameStateChange(gameState);
+	}
 	requestAnimFrame(animLoop);
 }
 
