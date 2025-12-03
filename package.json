@@ -1,0 +1,12 @@
+{
+  "name": "hextris-game",
+  "version": "1.0.0",
+  "description": "A colorful hexagonal puzzle game",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 -m http.server 8000"
+  },
+  "keywords": ["hextris", "game", "puzzle"],
+  "author": "",
+  "license": "MIT"
+}

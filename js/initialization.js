@@ -1,6 +1,17 @@
 $(document).ready(function() {
 	initialize();
 });
+function toggleDevTools() {
+    // Toggle dev tools visibility
+    // Dev tools element not found, so this function is a placeholder
+    console.log("Dev tools toggle clicked");
+}
+
+function scaleCanvas() {
+    // Placeholder function for scaling canvas
+    console.log("Canvas scaled");
+}
+
 function initialize(a) {
 	window.rush = 1;
 	window.lastTime = Date.now();
@@ -133,6 +144,9 @@ function initialize(a) {
 	window.importedHistory = undefined;
 	window.startTime = undefined;
 	window.gameState;
+	// Initialize Event System
+	window.EventSystem = EventSystem;
+	EventSystem.init();
 	setStartScreen();
 	if (a != 1) {
 		window.canRestart = 1;

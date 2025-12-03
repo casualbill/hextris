@@ -3,7 +3,8 @@ function addKeyListeners() {
 		keys: "left",
 		on_keydown: function() {
 			if (MainHex && gameState !== 0) {
-				MainHex.rotate(1);
+				var steps = window.controlInverted ? -1 : 1;
+				MainHex.rotate(steps);
 			}
 		}
 	});
@@ -12,7 +13,8 @@ function addKeyListeners() {
 		keys: "right",
 		on_keydown: function() {
 			if (MainHex && gameState !== 0){
-				MainHex.rotate(-1);
+				var steps = window.controlInverted ? 1 : -1;
+				MainHex.rotate(steps);
 			}
 		}
 	});
@@ -43,7 +45,8 @@ function addKeyListeners() {
 		keys: "a",
 		on_keydown: function() {
 			if (MainHex && gameState !== 0) {
-				MainHex.rotate(1);
+				var steps = window.controlInverted ? -1 : 1;
+				MainHex.rotate(steps);
 			}
 		}
 	});
@@ -52,7 +55,8 @@ function addKeyListeners() {
 		keys: "d",
 		on_keydown: function() {
 			if (MainHex && gameState !== 0){
-				MainHex.rotate(-1);
+				var steps = window.controlInverted ? 1 : -1;
+				MainHex.rotate(steps);
 			}
 		}
 	});

@@ -40,6 +40,11 @@ function render() {
 		}
 	}
 
+	// Render event system effects
+	if (window.EventSystem) {
+		EventSystem.renderEffects();
+	}
+
 	if ((MainHex.ct < 650 && (gameState !== 0) && !MainHex.playThrough)) {
 		if (MainHex.ct > (650 - 50)) {
 			ctx.globalAlpha = (50 - (MainHex.ct - (650 - 50)))/50;

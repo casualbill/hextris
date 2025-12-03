@@ -17,7 +17,10 @@ function update(dt) {
 	for (i = 0; i < blocks.length; i++) {
 		MainHex.doesBlockCollide(blocks[i]);
 		if (!blocks[i].settled) {
-			if (!blocks[i].initializing) blocks[i].distFromHex -= blocks[i].iter * dt * settings.scale;
+			if (!blocks[i].initializing) {
+				var speedModifier = window.blockSpeedModifier || 1.0;
+				blocks[i].distFromHex -= blocks[i].iter * dt * settings.scale * speedModifier;
+			}
 		} else if (!blocks[i].removed) {
 			blocks[i].removed = 1;
 		}
@@ -57,7 +60,8 @@ function update(dt) {
 			MainHex.doesBlockCollide(block, j, MainHex.blocks[i]);
 
 			if (!MainHex.blocks[i][j].settled) {
-				MainHex.blocks[i][j].distFromHex -= block.iter * dt * settings.scale;
+				var speedModifier = window.blockSpeedModifier || 1.0;
+				MainHex.blocks[i][j].distFromHex -= block.iter * dt * settings.scale * speedModifier;
 			}
 		}
 	}
