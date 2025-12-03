@@ -52,11 +52,13 @@
 		<script type='text/javascript' src='js/update.js'></script>
 		<script type='text/javascript' src='js/render.js'></script>
 		<script type='text/javascript' src="js/input.js"></script>
+		<script type='text/javascript' src="js/events.js"></script>
 		<script type='text/javascript' src="js/main.js"></script>
 		<script type='text/javascript' src="js/initialization.js"></script>
 		<script type='text/javascript' async src="https://hextris.io/scripts/a.js"></script>
 		<script src="vendor/sweet-alert.min.js"></script>
 		<link rel="stylesheet" href="style/rrssb.css"/>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	</head>
 	<body>
 		<canvas id="canvas"></canvas>
@@ -75,6 +77,16 @@
 		<div id='highScoreInGameText'>
 			<div id='highScoreInGameTextHeader'>HIGH SCORE</div><div id='currentHighScore'>10292</div>
 		</div>
+		<div id='settingsContainer' class='settings-container'>
+			<div class='settings-item'>
+				<label for='eventsToggle'>随机事件系统</label>
+				<label class='toggle-switch'>
+					<input type='checkbox' id='eventsToggle' checked>
+					<span class='slider round'></span>
+				</label>
+			</div>
+		</div>
+
 		<div id="gameoverscreen">
 			<div id='container'>
 				<div id='gameOverBox' class='GOTitle'>GAME OVER</div>

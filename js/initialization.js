@@ -66,7 +66,8 @@ function initialize(a) {
 			speedModifier: 0.73,
 			speedUpKeyHeld: false,
 			creationSpeedModifier: 0.73,
-			comboTime: 310
+			comboTime: 310,
+			controlReversed: false
 		};
 	} else {
 		settings = {
@@ -85,7 +86,8 @@ function initialize(a) {
 			speedModifier: 0.65,
 			speedUpKeyHeld: false,
 			creationSpeedModifier: 0.65,
-			comboTime: 310
+			comboTime: 310,
+			controlReversed: false
 		};
 
 	}
@@ -159,6 +161,21 @@ function initialize(a) {
 		});
 
 		addKeyListeners();
+
+	// Initialize events system
+	setTimeout(function() {
+		EventsManager.init();
+		
+		// Setup settings toggle
+		const eventsToggle = document.getElementById('eventsToggle');
+		if (eventsToggle) {
+			eventsToggle.addEventListener('change', function() {
+				EventsManager.toggleEvents(this.checked);
+			});
+			// Set initial state
+			eventsToggle.checked = EventsManager.eventsEnabled;
+		}
+	}, 100);
 		(function(i, s, o, g, r, a, m) {
 			i['GoogleAnalyticsObject'] = r;
 			i[r] = i[r] || function() {

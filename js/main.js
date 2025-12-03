@@ -225,29 +225,43 @@ function setStartScreen() {
 
 	gameState = 0;
 	requestAnimFrame(animLoop);
+	
+	// Show settings panel on start screen
+	if (typeof EventsManager !== 'undefined') {
+		EventsManager.showSettingsPanel();
+	}
 }
 
 var spd = 1;
 
 function animLoop() {
 	switch (gameState) {
-	case 1:
-		requestAnimFrame(animLoop);
-		render();
-		var now = Date.now();
-		var dt = (now - lastTime)/16.666 * rush;
-		if (spd > 1) {
-			dt *= spd;
-		}
+		case 1:
+			requestAnimFrame(animLoop);
+			render();
+			var now = Date.now();
+			var dt = (now - lastTime)/16.666 * rush;
+			if (spd > 1) {
+				dt *= spd;
+			}
 
-		if(gameState == 1 ){
-			if(!MainHex.delay) {
-				update(dt);
+			// Hide settings panel when game starts
+			if (typeof EventsManager !== 'undefined') {
+				EventsManager.hideSettingsPanel();
 			}
-			else{
-				MainHex.delay--;
+
+			if(gameState == 1 ){
+				if(!MainHex.delay) {
+					update(dt);
+					// Update events manager
+					if (typeof EventsManager !== 'undefined' && EventsManager.eventsEnabled) {
+						EventsManager.update();
+					}
+				}
+				else{
+					MainHex.delay--;
+				}
 			}
-		}
 
 		lastTime = now;
 
@@ -255,6 +269,12 @@ function animLoop() {
 			var saveState = localStorage.getItem("saveState") || "{}";
 			saveState = JSONfn.parse(saveState);
 			gameState = 2;
+			
+			// Clear active events on game over
+			if (typeof EventsManager !== 'undefined') {
+				EventsManager.cancelAllEvents();
+				EventsManager.hideSettingsPanel();
+			}
 
 			setTimeout(function() {
 				enableRestart();
