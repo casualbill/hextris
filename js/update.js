@@ -8,6 +8,19 @@ function update(dt) {
 			waveone.prevTimeScored = MainHex.ct;
 		}
 	}
+
+	// 发送游戏状态更新到服务器（如果是直播主机）
+	if (isLiveHost && gameState == 1) {
+		// 收集游戏状态数据
+		const gameStateData = {
+			score: waveone.score,
+			board: MainHex.blocks,
+			currentBlock: blocks[blocks.length - 1] // 假设最后一个块是当前正在下落的块
+		};
+		
+		// 发送游戏状态更新
+		sendGameStateUpdate(gameStateData);
+	}
 	var lowestDeletedIndex = 99;
 	var i;
 	var j;

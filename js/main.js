@@ -1,3 +1,14 @@
+// 定义randomEvents变量
+global.randomEvents = function() {
+    // 这里可以添加随机事件的逻辑
+    console.log('Random event triggered');
+};
+
+// 确保在浏览器中也能访问
+if (typeof window !== 'undefined') {
+    window.randomEvents = global.randomEvents;
+}
+
 function scaleCanvas() {
 	canvas.width = $(window).width();
 	canvas.height = $(window).height();
@@ -88,6 +99,12 @@ function hideUIElements() {
 }
 
 function init(b) {
+	// 定义randomEvents变量
+	window.randomEvents = function() {
+	    // 这里可以添加随机事件的逻辑
+	    console.log('Random event triggered');
+	};
+
 	if(settings.ending_block && b == 1){return;}
 	if (b) {
 		$("#pauseBtn").attr('src',"./images/btn_pause.svg");
