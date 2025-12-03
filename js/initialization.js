@@ -1,5 +1,7 @@
 $(document).ready(function() {
-	initialize();
+	setTimeout(function() {
+		initialize();
+	}, 100);
 });
 function initialize(a) {
 	window.rush = 1;
@@ -129,8 +131,8 @@ function initialize(a) {
 	window.prevTimeScored = undefined;
 	window.nextGen = undefined;
 	window.spawnLane = 0;
-	window.importing = 0;
 	window.importedHistory = undefined;
+	window.importing = 0;
 	window.startTime = undefined;
 	window.gameState;
 	setStartScreen();
