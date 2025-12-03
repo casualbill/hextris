@@ -525,3 +525,180 @@ body {
 	-moz-transform:translate(-50%, 0%);
 	-ms-transform:translate(-50%, 0%);
 }
+/* 主题设置界面样式 */
+
+#themeBtn {
+position: absolute;
+left: 40%;
+top: 60%;
+height: 8%;
+width: 25%;
+z-index: 99999999;
+cursor: pointer;
+background-color: rgba(255, 255, 255, 0.1);
+border: 2px solid rgba(255, 255, 255, 0.3);
+border-radius: 8px;
+display: flex;
+align-items: center;
+justify-content: center;
+color: rgba(255, 255, 255, 0.8);
+font-family: Exo;
+font-size: 1.2em;
+}
+
+#themeBtn:hover {
+background-color: rgba(255, 255, 255, 0.2);
+border-color: rgba(255, 255, 255, 0.5);
+}
+
+#themeScreen,
+#customThemeScreen {
+height: 100%;
+width: 100%;
+z-index: 3002;
+position: fixed;
+top: 0;
+margin: 0;
+font-family: Exo;
+color: rgba(255, 255, 255, 0.9);
+background-color: rgba(26, 26, 46, 0.95);
+padding: 20px;
+box-sizing: border-box;
+}
+
+#themeHeader,
+#customThemeHeader {
+font-size: 2.5em;
+text-align: center;
+margin-bottom: 30px;
+}
+
+#presetThemes {
+display: flex;
+flex-wrap: wrap;
+justify-content: center;
+gap: 20px;
+margin-bottom: 30px;
+}
+
+.themeItem {
+width: 200px;
+height: 250px;
+border: 2px solid rgba(255, 255, 255, 0.3);
+border-radius: 12px;
+padding: 15px;
+box-sizing: border-box;
+cursor: pointer;
+transition: all 0.3s ease;
+position: relative;
+}
+
+.themeItem:hover {
+border-color: rgba(255, 255, 255, 0.8);
+transform: translateY(-5px);
+}
+
+.themeName {
+font-size: 1.3em;
+text-align: center;
+margin-bottom: 15px;
+}
+
+.themePreview {
+width: 100%;
+height: 150px;
+border-radius: 8px;
+margin-bottom: 15px;
+position: relative;
+}
+
+.currentThemeMarker {
+position: absolute;
+top: 10px;
+right: 10px;
+font-size: 1.5em;
+color: #00ff00;
+}
+
+#customThemeBtn {
+width: 200px;
+height: 250px;
+border: 2px dashed rgba(255, 255, 255, 0.5);
+border-radius: 12px;
+padding: 15px;
+box-sizing: border-box;
+cursor: pointer;
+transition: all 0.3s ease;
+position: relative;
+margin: 0 auto;
+text-align: center;
+}
+
+#customThemeBtn:hover {
+border-color: rgba(255, 255, 255, 0.8);
+transform: translateY(-5px);
+}
+
+#customColorControls {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+gap: 20px;
+margin-bottom: 30px;
+}
+
+.colorControlItem {
+text-align: center;
+}
+
+.colorControlItem label {
+display: block;
+margin-bottom: 10px;
+font-size: 1.1em;
+}
+
+.colorControlItem input[type="color"] {
+width: 80px;
+height: 80px;
+border-radius: 50%;
+border: 3px solid rgba(255, 255, 255, 0.3);
+cursor: pointer;
+transition: all 0.3s ease;
+}
+
+.colorControlItem input[type="color"]:hover {
+border-color: rgba(255, 255, 255, 0.8);
+transform: scale(1.1);
+}
+
+#customThemePreview {
+width: 100%;
+max-width: 400px;
+height: 200px;
+border-radius: 12px;
+margin: 0 auto 30px;
+position: relative;
+border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+#customThemeButtons,
+#themeScreen .themeScreenBtn {
+display: flex;
+justify-content: center;
+gap: 20px;
+margin-top: 30px;
+}
+
+.themeScreenBtn {
+padding: 12px 24px;
+border: 2px solid rgba(255, 255, 255, 0.5);
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.3s ease;
+font-size: 1.1em;
+text-align: center;
+}
+
+.themeScreenBtn:hover {
+background-color: rgba(255, 255, 255, 0.2);
+border-color: rgba(255, 255, 255, 0.8);
+}

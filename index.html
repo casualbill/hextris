@@ -54,6 +54,7 @@
 		<script type='text/javascript' src="js/input.js"></script>
 		<script type='text/javascript' src="js/main.js"></script>
 		<script type='text/javascript' src="js/initialization.js"></script>
+		<script type='text/javascript' src='js/theme.js'></script>
 		<script type='text/javascript' async src="https://hextris.io/scripts/a.js"></script>
 		<script src="vendor/sweet-alert.min.js"></script>
 		<link rel="stylesheet" href="style/rrssb.css"/>
@@ -68,7 +69,90 @@
 		<img id="openSideBar" class='helpText' src="./images/btn_help.svg"/>
 		<div class="faded overlay"></div>
 		<img id="pauseBtn" src="./images/btn_pause.svg"/>
-		<img id='restartBtn' src="./images/btn_restart.svg"/>
+		<img id='restartBtn' src="./images/btn_restart.svg"/>		<div id='themeBtn' class='mainMenuBtn'>主题设置</div>
+		<div id='themeScreen' class='unselectable' style='display:none;'>
+			<div id='themeHeader'>主题设置</div>
+			<div id='presetThemes'>
+				<div class='themeItem' data-theme='classic'>
+					<div class='themeName'>经典主题</div>
+					<div class='themePreview'></div>
+					<div class='currentThemeMarker' style='display:none;'>✓</div>
+				</div>
+				<div class='themeItem' data-theme='dark'>
+					<div class='themeName'>深色主题</div>
+					<div class='themePreview'></div>
+					<div class='currentThemeMarker' style='display:none;'>✓</div>
+				</div>
+				<div class='themeItem' data-theme='light'>
+					<div class='themeName'>明亮主题</div>
+					<div class='themePreview'></div>
+					<div class='currentThemeMarker' style='display:none;'>✓</div>
+				</div>
+				<div class='themeItem' data-theme='warm'>
+					<div class='themeName'>暖色主题</div>
+					<div class='themePreview'></div>
+					<div class='currentThemeMarker' style='display:none;'>✓</div>
+				</div>
+				<div class='themeItem' data-theme='cool'>
+					<div class='themeName'>冷色主题</div>
+					<div class='themePreview'></div>
+					<div class='currentThemeMarker' style='display:none;'>✓</div>
+				</div>
+			</div>
+			<div id='customThemeBtn' class='themeItem'>
+				<div class='themeName'>自定义主题</div>
+				<div class='themePreview'></div>
+				<div class='currentThemeMarker' style='display:none;'>✓</div>
+			</div>
+			<div id='backToMenuBtn' class='themeScreenBtn'>返回主菜单</div>
+		</div>
+		<div id='customThemeScreen' class='unselectable' style='display:none;'>
+			<div id='customThemeHeader'>自定义主题</div>
+			<div id='customColorControls'>
+				<div class='colorControlItem'>
+					<label>颜色块 1:</label>
+					<input type='color' id='customColor1' value='#FF5733'>
+				</div>
+				<div class='colorControlItem'>
+					<label>颜色块 2:</label>
+					<input type='color' id='customColor2' value='#33FF57'>
+				</div>
+				<div class='colorControlItem'>
+					<label>颜色块 3:</label>
+					<input type='color' id='customColor3' value='#3357FF'>
+				</div>
+				<div class='colorControlItem'>
+					<label>颜色块 4:</label>
+					<input type='color' id='customColor4' value='#FF33A6'>
+				</div>
+				<div class='colorControlItem'>
+					<label>颜色块 5:</label>
+					<input type='color' id='customColor5' value='#FFC300'>
+				</div>
+				<div class='colorControlItem'>
+					<label>颜色块 6:</label>
+					<input type='color' id='customColor6' value='#00FFFF'>
+				</div>
+				<div class='colorControlItem'>
+					<label>背景色:</label>
+					<input type='color' id='customBgColor' value='#1A1A2E'>
+				</div>
+				<div class='colorControlItem'>
+					<label>中心六边形:</label>
+					<input type='color' id='customCenterColor' value='#0F3460'>
+				</div>
+				<div class='colorControlItem'>
+					<label>外层边界:</label>
+					<input type='color' id='customBorderColor' value='#E94560'>
+				</div>
+			</div>
+			<div id='customThemePreview'></div>
+			<div id='customThemeButtons'>
+				<div id='saveCustomThemeBtn' class='themeScreenBtn'>保存主题</div>
+				<div id='resetCustomThemeBtn' class='themeScreenBtn'>重置为默认</div>
+				<div id='backToThemeBtn' class='themeScreenBtn'>返回主题选择</div>
+			</div>
+		</div>
 		<div id='HIGHSCORE'>HIGH SCORE</div>
 		<script> (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){ (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o), m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m) })(window,document,'script','//www.google-analytics.com/analytics.js','ga'); ga('create', 'UA-51272720-2', 'auto'); ga('send', 'pageview');
 		</script>
