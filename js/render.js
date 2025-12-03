@@ -4,14 +4,17 @@ function render() {
 		grey = "rgb(220, 223, 225)";
 	}
 	
-	ctx.clearRect(0, 0, trueCanvas.width, trueCanvas.height);
-	clearGameBoard();
+	// 设置主题背景色
+	ctx.fillStyle = window.colors ? window.colors.hexagonBackgroundColor : '#f0f0f0';
+	ctx.fillRect(0, 0, trueCanvas.width, trueCanvas.height);
+	
 	if (gameState === 1 || gameState === 2 || gameState === -1 || gameState === 0) {
 		if (op < 1) {
 			op += 0.01;
 		}
 		ctx.globalAlpha = op;
-		drawPolygon(trueCanvas.width / 2 , trueCanvas.height / 2 , 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false,6);
+		var outerBorderColor = window.colors ? window.colors.outerBorderColor : grey;
+		drawPolygon(trueCanvas.width / 2 , trueCanvas.height / 2 , 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, outerBorderColor, false,6);
 		drawTimer();
 		ctx.globalAlpha = 1;
 	}
@@ -55,7 +58,7 @@ function render() {
 
 	if (gameState == -1) {
 		ctx.globalAlpha = 0.9;
-		ctx.fillStyle = 'rgb(236,240,241)';
+		ctx.fillStyle = window.colors ? window.colors.hexagonBackgroundColor : 'rgb(236,240,241)';
 		ctx.fillRect(0, 0, trueCanvas.width, trueCanvas.height);
 		ctx.globalAlpha = 1;
 	}

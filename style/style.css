@@ -198,9 +198,199 @@ button:focus {
 
 #instructions_head {
 	text-align:center;
-	font-size:1.5em;
-	padding-bottom:4px;
 }
+
+/* 主题选择界面样式 */
+#themeSelectionOverlay, #customThemeOverlay {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.7);
+	z-index: 2000;
+}
+
+#themeSelectionOverlay > div, #customThemeOverlay > div {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color: #fff;
+	padding: 20px;
+	border-radius: 10px;
+	max-width: 80%;
+	max-height: 80%;
+	overflow: auto;
+}
+
+#themeSelectionOverlay h2, #customThemeOverlay h2 {
+	text-align: center;
+	margin-bottom: 20px;
+	color: #2c3e50;
+}
+
+#themeSelectionOverlay .theme-item {
+	padding: 15px;
+	border: 2px solid transparent;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: all 0.3s ease;
+}
+
+#themeSelectionOverlay .theme-item:hover {
+	border-color: #3498db;
+	box-shadow: 0 0 10px rgba(52, 152, 219, 0.2);
+}
+
+#themeSelectionOverlay .theme-item img {
+	width: 100%;
+	height: 80px;
+	margin-bottom: 10px;
+	border-radius: 5px;
+}
+
+#themeSelectionOverlay .theme-item div {
+	text-align: center;
+	font-size: 14px;
+	color: #34495e;
+	font-weight: bold;
+}
+
+#themeSelectionOverlay button, #customThemeOverlay button {
+	width: 100%;
+	padding: 10px;
+	margin-bottom: 10px;
+	background-color: #3498db;
+	color: #fff;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	font-size: 16px;
+	transition: background-color 0.3s ease;
+}
+
+#themeSelectionOverlay button:hover, #customThemeOverlay button:hover {
+	opacity: 0.9;
+}
+
+#themeSelectionOverlay button:nth-last-child(2) {
+	background-color: #e74c3c;
+}
+
+/* 自定义主题界面样式 */
+#customThemeOverlay form {
+	margin-bottom: 20px;
+}
+
+#customThemeOverlay h3 {
+	font-size: 16px;
+	margin-bottom: 10px;
+	color: #34495e;
+}
+
+#customThemeOverlay label {
+	width: 150px;
+	font-size: 14px;
+	margin-right: 10px;
+}
+
+#customThemeOverlay input[type="color"] {
+	width: 50px;
+	height: 30px;
+	margin-right: 10px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+#customThemeOverlay > div > form > div > div {
+	display: flex;
+	align-items: center;
+	margin-bottom: 5px;
+}
+
+#customThemeOverlay > div > form > div > div > div:nth-child(3) {
+	width: 30px;
+	height: 30px;
+	background-color: #ccc;
+	border-radius: 5px;
+	border: 1px solid #ccc;
+}
+
+#customThemeOverlay > div > form > div:nth-child(5) {
+	margin-top: 20px;
+	padding: 15px;
+	border: 2px solid #eee;
+	border-radius: 5px;
+	background-color: #f9f9f9;
+}
+
+#customThemeOverlay > div > form > div:nth-child(5) > h3 {
+	text-align: center;
+}
+
+#customThemeOverlay > div > form > div:nth-child(5) > canvas {
+	display: block;
+	margin: 0 auto;
+	border-radius: 5px;
+}
+
+#customThemeOverlay > div > form > div:nth-child(6) {
+	display: flex;
+	gap: 10px;
+	margin-top: 20px;
+}
+
+#customThemeOverlay > div > form > div:nth-child(6) > button:nth-child(1) {
+	background-color: #2ecc71;
+}
+
+#customThemeOverlay > div > form > div:nth-child(6) > button:nth-child(2) {
+	background-color: #f39c12;
+}
+
+#customThemeOverlay > div > form > div:nth-child(6) > button:nth-child(3) {
+	background-color: #e74c3c;
+}
+
+/* 主题按钮样式 */
+#themeBtn {
+	position: absolute;
+	top: 20px;
+	right: 20px;
+	width: 40px;
+	height: 40px;
+	cursor: pointer;
+	z-index: 1000;
+	background-color: #3498db !important;
+	color: #fff !important;
+	border: none;
+	border-radius: 50%;
+	font-size: 16px;
+	transition: all 0.3s ease;
+	background-image: none !important;
+	padding: 0;
+	margin: 0;
+	display: flex !important;
+	align-items: center;
+	justify-content: center;
+}
+
+#themeBtn:hover {
+	opacity: 0.9;
+	transform: scale(1.05);
+}
+
+#themeBtn i {
+	line-height: 40px;
+	width: 40px;
+	text-align: center;
+	font-size: 18px;
+}
+
+
 
 
 #highScoreInGameTextHeader {

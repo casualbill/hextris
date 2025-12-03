@@ -19,7 +19,8 @@ function waveGen(hex) {
 	this.last = 0;
 	this.nextGen = 2700;
 	this.start = 0;
-	this.colors = colors;
+	// 使用主题管理模块提供的颜色值
+	this.colors = window.colors ? window.colors.blockColors.slice() : colors.slice();
 	this.ct = 0;
 	this.hex = hex;
 	this.difficulty = 1;
