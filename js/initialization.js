@@ -206,6 +206,11 @@ function initialize(a) {
 
 				document.body.addEventListener('mousedown', handleClickBefore, false);
 			}
+
+			// 初始化成就系统
+			if (typeof initAchievements !== 'undefined') {
+				initAchievements();
+			}
 		}, 1);
 	}
 }

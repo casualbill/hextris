@@ -41,13 +41,17 @@ function drawScoreboard() {
     var h = trueCanvas.height / 2 + gdy + 100 * settings.scale;
 	if (gameState === 0) {
 		renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2 + gdy, 60, "rgb(236, 240, 241)", String.fromCharCode("0xf04b"), 'px FontAwesome');
-		renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2.1 + gdy - 155 * settings.scale, 150, "#2c3e50", "Hextris");
+		renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2 + gdy - 155 * settings.scale, 150, "#2c3e50", "Hextris");
 		renderText(trueCanvas.width / 2 + gdx + 5 * settings.scale, h + 10, fontSize, "rgb(44,62,80)", 'Play!');
+		// 渲染成就按钮
+		renderText(trueCanvas.width / 2 + gdx + 5 * settings.scale, h + 10 + fontSize * 1.5, fontSize, "rgb(44,62,80)", '成就');
 	} else if (gameState != 0 && textOpacity > 0) {
 		textOpacity -= 0.05;
 		renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2 + gdy, 60, "rgb(236, 240, 241)", String.fromCharCode("0xf04b"), 'px FontAwesome');
 		renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2 + gdy - 155 * settings.scale, 150, "#2c3e50", "Hextris");
 		renderText(trueCanvas.width / 2 + gdx + 5 * settings.scale, h, fontSize, "rgb(44,62,80)", 'Play!');
+		// 渲染成就按钮
+		renderText(trueCanvas.width / 2 + gdx + 5 * settings.scale, h + fontSize * 1.5, fontSize, "rgb(44,62,80)", '成就');
 		ctx.globalAlpha = scoreOpacity;
 		renderText(trueCanvas.width / 2 + gdx, trueCanvas.height / 2 + gdy, scoreSize, color, score);
 	} else {
@@ -153,6 +157,45 @@ function gameOverDisplay() {
 	else {
 		$("#currentHighScore").text(highscores[0])
 	}
+
+	// 游戏结束时更新成就系统数据
+	if (typeof achievements !== 'undefined') {
+		// 计算单局游戏时长（假设游戏开始时间存储在startTime变量中）
+		var gameDuration = 0;
+		if (typeof startTime !== 'undefined') {
+			gameDuration = Math.floor((Date.now() - startTime) / 1000); // 转换为秒
+		}
+
+		// 计算单局消除方块总数（假设消除方块总数存储在totalBlocksCleared变量中）
+		var blocksCleared = 0;
+		if (typeof totalBlocksCleared !== 'undefined') {
+			blocksCleared = totalBlocksCleared;
+		}
+
+		// 计算单局最高连击（假设最高连击存储在maxCombo变量中）
+		var maxCombo = 0;
+		if (typeof maxCombo !== 'undefined') {
+			maxCombo = maxCombo;
+		}
+
+		// 计算单局难度达到30时存活的时间（假设难度存储在difficulty变量中，游戏开始时间存储在startTime变量中）
+		var timeAtDifficulty30 = 0;
+		if (typeof difficulty !== 'undefined' && difficulty >= 30 && typeof startTime !== 'undefined') {
+			timeAtDifficulty30 = Math.floor((Date.now() - startTime) / 1000); // 转换为秒
+		}
+
+		// 更新玩家统计数据
+		achievements.updatePlayerStats(score, maxCombo, gameDuration, blocksCleared, timeAtDifficulty30);
+
+		// 检查成就解锁情况
+		var newlyUnlockedAchievements = achievements.checkAchievements();
+
+		// 显示新解锁的成就
+		if (newlyUnlockedAchievements.length > 0) {
+			achievements.showNewAchievements(newlyUnlockedAchievements);
+		}
+	}
+
 	$("#gameoverscreen").fadeIn();
 	$("#buttonCont").fadeIn();
 	$("#container").fadeIn();

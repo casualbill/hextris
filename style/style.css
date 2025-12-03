@@ -293,6 +293,203 @@ button:focus {
 	text-align:center;
 }
 
+/* 成就系统样式 */
+#achievementsScreen {
+	position:fixed;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	background-color:rgba(236,240,241,0.95);
+	z-index:3002;
+	display:none;
+	padding:20px;
+	box-sizing:border-box;
+}
+
+.achievementsContent {
+	max-width:800px;
+	margin:0 auto;
+	padding:20px;
+	background-color:#ffffff;
+	border-radius:10px;
+	box-shadow:0 0 20px rgba(0,0,0,0.1);
+	max-height:calc(100vh - 40px);
+	overflow-y:auto;
+}
+
+.filterContainer {
+	margin-bottom:20px;
+	test-align:center;
+}
+
+.filterBtn {
+	padding:10px 20px;
+	margin:0 5px;
+	background-color:#bdc3c7;
+	color:#2c3e50;
+	border-radius:5px;
+	cursor:pointer;
+	transition:background-color 0.3s ease;
+}
+
+.filterBtn.active {
+	background-color:#3498db;
+	color:#ffffff;
+}
+
+.achievementsList {
+	margin-bottom:20px;
+}
+
+.achievementItem {
+	display:flex;
+	align-items:center;
+	padding:15px;
+	margin-bottom:10px;
+	background-color:#f8f9fa;
+	border-radius:10px;
+	transition:background-color 0.3s ease;
+}
+
+.achievementItem:hover {
+	background-color:#e9ecef;
+}
+
+.achievementItem.unlocked {
+	background-color:#d4edda;
+	border:1px solid #c3e6cb;
+}
+
+.achievementItem.locked {
+	background-color:#f8d7da;
+	border:1px solid #f5c6cb;
+	opacity:0.7;
+}
+
+.achievementIcon {
+	width:60px;
+	height:60px;
+	margin-right:15px;
+	border-radius:50%;
+	background-color:#bdc3c7;
+	flex-shrink:0;
+}
+
+.achievementItem.unlocked .achievementIcon {
+	background-color:#28a745;
+}
+
+.achievementInfo {
+	flex:1;
+}
+
+.achievementName {
+	font-size:1.2em;
+	font-weight:bold;
+	color:#2c3e50;
+	margin-bottom:5px;
+}
+
+.achievementDescription {
+	font-size:0.9em;
+	color:#6c757d;
+	margin-bottom:10px;
+}
+
+.achievementProgress {
+	display:flex;
+	align-items:center;
+}
+
+.progressBar {
+	width:200px;
+	height:10px;
+	background-color:#bdc3c7;
+	border-radius:5px;
+	overflow:hidden;
+	margin-right:10px;
+}
+
+.progressFill {
+	height:100%;
+	background-color:#3498db;
+	transition:width 0.3s ease;
+}
+
+.progressText {
+	font-size:0.8em;
+	color:#6c757d;
+	min-width:50px;
+}
+
+.menuBtn {
+	padding:10px 20px;
+	background-color:#3498db;
+	color:#ffffff;
+	border-radius:5px;
+	cursor:pointer;
+	transition:background-color 0.3s ease;
+	margin:0 5px;
+}
+
+.menuBtn:hover {
+	background-color:#2980b9;
+}
+
+#backToMenuBtn {
+	display:block;
+	margin:0 auto;
+}
+
+/* 成就解锁通知样式 */
+#achievementNotification {
+	position:fixed;
+	top:50%;
+	left:50%;
+	transform:translate(-50%, -50%);
+	background-color:rgba(0,0,0,0.8);
+	color:#ffffff;
+	padding:20px;
+	border-radius:10px;
+	z-index:3003;
+	display:none;
+	max-width:400px;
+}
+
+.achievementNotificationItem {
+	display:flex;
+	align-items:center;
+	margin-bottom:15px;
+}
+
+.achievementNotificationItem:last-child {
+	margin-bottom:0;
+}
+
+.notificationIcon {
+	width:50px;
+	height:50px;
+	margin-right:15px;
+	border-radius:50%;
+	background-color:#28a745;
+	flex-shrink:0;
+}
+
+.notificationContent {
+	flex:1;
+}
+
+.notificationTitle {
+	font-size:1.1em;
+	font-weight:bold;
+	margin-bottom:5px;
+}
+
+.notificationName {
+	font-size:0.9em;
+}
+
 #buttonCont {
 	position:absolute; 
 	left:50%;

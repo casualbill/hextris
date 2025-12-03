@@ -185,6 +185,50 @@ function addKeyListeners() {
 	}
 
 }
+// 检测点击是否在成就按钮区域
+function isClickOnAchievementsButton(x, y) {
+	var fontSize = settings.platform == 'mobile' ? 35 : 30;
+	var h = trueCanvas.height / 2 + gdy + 100 * settings.scale;
+	var buttonX = trueCanvas.width / 2 + gdx + 5 * settings.scale;
+	var buttonY = h + 10 + fontSize * 1.5;
+	var buttonWidth = fontSize * 2; // 估算按钮宽度
+	var buttonHeight = fontSize; // 估算按钮高度
+
+	// 检查点击是否在按钮区域内
+	return (x >= buttonX - buttonWidth / 2 && x <= buttonX + buttonWidth / 2 && y >= buttonY - buttonHeight / 2 && y <= buttonY + buttonHeight / 2);
+}
+
+// 添加鼠标点击事件监听
+$(document).on('mousedown', function(e) {
+	if (gameState === 0) {
+		var rect = canvas.getBoundingClientRect();
+		var x = (e.clientX - rect.left) * (trueCanvas.width / rect.width);
+		var y = (e.clientY - rect.top) * (trueCanvas.height / rect.height);
+
+		// 检查是否点击了成就按钮
+		if (isClickOnAchievementsButton(x, y)) {
+			// 显示成就界面
+				showAchievementsScreen();
+		}
+	}
+});
+
+// 添加触摸事件监听
+$(document).on('touchstart', function(e) {
+	if (gameState === 0) {
+		var rect = canvas.getBoundingClientRect();
+		var touch = e.touches[0];
+		var x = (touch.clientX - rect.left) * (trueCanvas.width / rect.width);
+		var y = (touch.clientY - rect.top) * (trueCanvas.height / rect.height);
+
+		// 检查是否触摸了成就按钮
+		if (isClickOnAchievementsButton(x, y)) {
+			// 显示成就界面
+				showAchievementsScreen();
+		}
+	}
+});
+
 function inside (point, vs) {
 	// ray-casting algorithm based on
 	// http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
