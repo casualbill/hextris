@@ -97,7 +97,7 @@ function init(b) {
 
 		setTimeout(function() {
             if (gameState == 1) {
-			    $('#openSideBar').fadeOut(150, "linear");
+				$('#openSideBar').fadeOut(150, "linear");
             }
 			infobuttonfading = false;
 		}, 7000);
@@ -125,10 +125,8 @@ function init(b) {
 	op = 0;
 	tweetblock=false;
 	scoreOpacity = 0;
-	gameState = 1;
 	$("#restartBtn").hide();
 	$("#pauseBtn").show();
-	if (saveState.hex !== undefined) gameState = 1;
 
 	settings.blockHeight = settings.baseBlockHeight * settings.scale;
 	settings.hexWidth = settings.baseHexWidth * settings.scale;
@@ -182,6 +180,13 @@ function init(b) {
 	MainHex.texts = []; //clear texts
 	MainHex.delay = 15;
 	hideText();
+
+	gameState = 1;
+	if (saveState.hex !== undefined) gameState = 1;
+	
+	// 重置精彩瞬间事件数组
+	window.eliminationEvents = [];
+	window.gameEndTime = null;
 }
 
 function addNewBlock(blocklane, color, iter, distFromHex, settled) { //last two are optional parameters
@@ -342,6 +347,8 @@ function checkGameOver() {
 				highscores.push(score);
 			}
 			writeHighScores();
+			// 记录游戏结束时间
+			window.gameEndTime = Date.now();
 			gameOverDisplay();
 			return true;
 		}
