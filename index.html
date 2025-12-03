@@ -40,6 +40,7 @@
 		<script type='text/javascript' src="vendor/jsonfn.min.js"></script>
 		<script type='text/javascript' src="vendor/keypress.min.js"></script>
 		<script type='text/javascript' src="vendor/jquery.js"></script>
+		<script type="module" src="https://esm.run/@mlc-ai/web-llm" crossorigin="anonymous"></script>
 		<script type='text/javascript' src="js/save-state.js"></script>
 		<script type='text/javascript' src="js/view.js"></script>
 		<script type='text/javascript' src="js/wavegen.js"></script>
@@ -54,6 +55,7 @@
 		<script type='text/javascript' src="js/input.js"></script>
 		<script type='text/javascript' src="js/main.js"></script>
 		<script type='text/javascript' src="js/initialization.js"></script>
+		<script type='text/javascript' src="js/ai-demo.js"></script>
 		<script type='text/javascript' async src="https://hextris.io/scripts/a.js"></script>
 		<script src="vendor/sweet-alert.min.js"></script>
 		<link rel="stylesheet" href="style/rrssb.css"/>
@@ -62,9 +64,33 @@
 		<canvas id="canvas"></canvas>
 		<div id="overlay" class="faded overlay"></div>
 		<div id='startBtn' ></div>
+		<div id='aiDemoBtn' class='startBtn'>AI智能演示</div>
+		<div id="modelSelectionScreen" class='unselectable overlay'>
+			<div id='modelSelectionContainer'>
+				<h2>选择WebLLM模型</h2>
+				<div id='modelList'></div>
+			</div>
+		</div>
+		<div id="loadingScreen" class='unselectable overlay'>
+			<div id='loadingContainer'>
+				<h2>加载模型中...</h2>
+				<div id='loadingProgressBar'>
+					<div id='loadingProgressFill'></div>
+				</div>
+				<div id='loadingPercentage'>0%</div>
+			</div>
+		</div>
 		<div id="helpScreen" class='unselectable'>
 			<div id='inst_main_body'></div>
 		</div>
+		<div id='aiStats' class='ai-stats'>
+			<div>分数: <span id='aiScore'>0</span></div>
+			<div>时长: <span id='aiTime'>00:00</span></div>
+			<div>决策次数: <span id='aiDecisions'>0</span></div>
+		</div>
+		<div id='aiModelName' class='ai-model-name'>未选择模型</div>
+		<div id='aiDecisionPrompt' class='ai-decision-prompt'></div>
+		<button id='stopDemoBtn' class='stop-demo-btn'>停止演示</button>
 		<img id="openSideBar" class='helpText' src="./images/btn_help.svg"/>
 		<div class="faded overlay"></div>
 		<img id="pauseBtn" src="./images/btn_pause.svg"/>
