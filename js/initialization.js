@@ -48,6 +48,20 @@ function initialize(a) {
 	})();
 	$('#clickToExit').bind('click', toggleDevTools);
 	window.settings;
+	// 回溯功能设置
+	window.backtrackEnabled = true; // 回溯功能开关，默认开启
+	window.backtrackMaxUses = 3;    // 每局游戏最多使用3次回溯
+	window.backtrackCooldown = 10;  // 冷却时间10秒
+	window.backtrackHistory = [];   // 回溯历史记录（最多保存30秒，每1秒记录一次）
+	window.backtrackHistorySize = 30; // 历史记录最大条数
+	window.backtrackTargetSeconds = 5; // 回溯到5秒前
+	window.backtrackUses = 0;       // 当前已使用次数
+	window.backtrackLastUseTime = 0;// 上次使用时间
+	window.backtrackRecording = false; // 是否正在记录回溯数据
+	window.backtrackRewinding = false; // 是否正在回放回溯动画
+	window.backtrackRewindStartTime = 0; // 回溯动画开始时间
+	window.backtrackRewindDuration = 1000; // 回溯动画持续时间（1秒）
+	
 	if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
         $('.rrssb-email').remove();
 		settings = {
@@ -208,6 +222,235 @@ function initialize(a) {
 			}
 		}, 1);
 	}
+	
+	// 创建回溯按钮
+	createBacktrackButton();
+}
+
+// 创建回溯按钮元素
+function createBacktrackButton() {
+	// 只在按钮不存在时创建
+	if ($('#backtrackBtn').length === 0) {
+		$('body').append(
+			'<div id="backtrackBtn" style="position:fixed;top:10px;right:10px;width:72px;height:72px;z-index:3002;cursor:pointer;background-color:rgba(52,152,219,0.8);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-family:Exo;font-size:18px;font-weight:bold;box-shadow:0 4px 8px rgba(0,0,0,0.2);transition:all 0.3s ease;" onclick="handleBacktrack()"></div>' +
+			'<style>#backtrackBtn:hover{background-color:rgba(52,152,219,1);transform:scale(1.1);}#backtrackBtn.disabled{background-color:#ccc !important;cursor:not-allowed !important;transform:none !important;}</style>'
+		);
+	}
+	
+	// 初始化按钮显示状态
+	updateBacktrackButton();
+}
+
+// 更新回溯按钮状态
+function updateBacktrackButton() {
+	var btn = $('#backtrackBtn');
+	var now = Date.now();
+	var timeSinceLastUse = (now - backtrackLastUseTime) / 1000;
+	var isCooldown = timeSinceLastUse < backtrackCooldown;
+	var hasMaxUses = backtrackUses >= backtrackMaxUses;
+	var isDisabled = !backtrackEnabled || isCooldown || hasMaxUses;
+	
+	if (backtrackEnabled) {
+		btn.show();
+		if (isDisabled) {
+			btn.addClass('disabled');
+			if (isCooldown) {
+				var cooldownLeft = Math.ceil(backtrackCooldown - timeSinceLastUse);
+				btn.html('' + cooldownLeft);
+			} else if (hasMaxUses) {
+				btn.html('0/3');
+			} else {
+				btn.html('回溯');
+			}
+		} else {
+			btn.removeClass('disabled');
+			btn.html('' + (backtrackMaxUses - backtrackUses));
+		}
+	} else {
+		btn.hide();
+	}
+}
+
+// 开始记录回溯数据
+function startBacktrackRecording() {
+	if (!backtrackRecording && backtrackEnabled) {
+		backtrackRecording = true;
+		backtrackHistory = [];
+		// 每秒记录一次状态
+		backtrackInterval = setInterval( recordBacktrackState, 1000 );
+	}
+}
+
+// 停止记录回溯数据
+function stopBacktrackRecording() {
+	if (backtrackRecording) {
+		backtrackRecording = false;
+		clearInterval(backtrackInterval);
+	}
+}
+
+// 记录当前游戏状态到回溯历史
+function recordBacktrackState() {
+	// 保存游戏状态
+	var state = {
+		timestamp: Date.now(),
+		MainHex: $.extend(true, {}, MainHex),
+		blocks: $.extend(true, [], blocks),
+		score: score,
+		wavegen: waveone,
+		gdx: gdx,
+		gdy: gdy,
+		gameState: gameState,
+		startTime: startTime,
+		mainHexCt: MainHex.ct,
+		waveoneLastGen: waveone ? waveone.lastGen : 0,
+		waveoneDt: waveone ? waveone.dt : 0,
+		waveoneDifficulty: waveone ? waveone.difficulty : 1,
+		waveoneNextGen: waveone ? waveone.nextGen : 2700,
+		waveoneLast: waveone ? waveone.last : 0,
+		waveoneCt: waveone ? waveone.ct : 0,
+		waveonePrevTimeScored: waveone ? waveone.prevTimeScored : 0
+	};
+	
+	// 深拷贝MainHex的blocks（包含Block对象）
+	state.MainHex.blocks = [];
+	for (var i = 0; i < MainHex.blocks.length; i++) {
+		state.MainHex.blocks[i] = [];
+		for (var j = 0; j < MainHex.blocks[i].length; j++) {
+			state.MainHex.blocks[i][j] = $.extend(true, {}, MainHex.blocks[i][j]);
+		}
+	}
+	
+	// 深拷贝falling blocks
+	state.blocks = [];
+	for (var i = 0; i < blocks.length; i++) {
+		state.blocks[i] = $.extend(true, {}, blocks[i]);
+	}
+	
+	// 添加到历史记录
+	backtrackHistory.push(state);
+	
+	// 确保历史记录不超过最大限制
+	if (backtrackHistory.length > backtrackHistorySize) {
+		backtrackHistory.shift();
+	}
+}
+
+// 执行回溯
+function handleBacktrack() {
+	var now = Date.now();
+	var timeSinceLastUse = (now - backtrackLastUseTime) / 1000;
+	
+	// 检查回溯是否可用
+	if (!backtrackEnabled || 
+		backtrackUses >= backtrackMaxUses || 
+		timeSinceLastUse < backtrackCooldown ||
+		backtrackRewinding ||
+		backtrackHistory.length < backtrackTargetSeconds) {
+		return;
+	}
+	
+	// 找到5秒前的状态
+	var targetTime = now - backtrackTargetSeconds * 1000;
+	var targetState = null;
+	
+	for (var i = backtrackHistory.length - 1; i >= 0; i--) {
+		if (backtrackHistory[i].timestamp <= targetTime) {
+			targetState = backtrackHistory[i];
+			break;
+		}
+	}
+	
+	if (!targetState) {
+		return;
+	}
+	
+	// 开始回溯
+	backtrackUses++;
+	backtrackLastUseTime = now;
+	backtrackRewinding = true;
+	backtrackRewindStartTime = now;
+	
+	// 保存当前状态用于过渡动画
+	var currentState = {
+		MainHex: $.extend(true, {}, MainHex),
+		blocks: $.extend(true, [], blocks)
+	};
+	
+	// 计算状态差异（当前状态到目标状态的变化）
+	// 在这个简单版本中，我们直接设置游戏状态，并使用倒放动画效果
+	setTimeout(function() {
+		// 1秒后恢复到目标状态
+		restoreGameState(targetState);
+		backtrackRewinding = false;
+		updateBacktrackButton();
+	}, backtrackRewindDuration);
+	
+	// 更新按钮状态
+	updateBacktrackButton();
+}
+
+// 恢复游戏状态
+function restoreGameState(state) {
+	// 恢复所有游戏状态
+	MainHex = $.extend(true, {}, state.MainHex);
+	blocks = [];
+	
+	// 恢复falling blocks
+	for (var i = 0; i < state.blocks.length; i++) {
+		var blockData = state.blocks[i];
+		var block = new Block(blockData.fallingLane, blockData.color, blockData.iter, blockData.distFromHex);
+		block.settled = blockData.settled;
+		block.attachedLane = blockData.attachedLane;
+		block.angle = blockData.angle;
+		block.targetAngle = blockData.targetAngle;
+		block.opacity = blockData.opacity;
+		block.deleted = blockData.deleted;
+		block.tint = blockData.tint;
+		block.removed = blockData.removed;
+		block.initializing = blockData.initializing;
+		block.ict = blockData.ict;
+		blocks.push(block);
+	}
+	
+	// 恢复MainHex上的blocks
+	MainHex.blocks = [];
+	for (var i = 0; i < state.MainHex.blocks.length; i++) {
+		MainHex.blocks[i] = [];
+		for (var j = 0; j < state.MainHex.blocks[i].length; j++) {
+			var blockData = state.MainHex.blocks[i][j];
+			var block = new Block(blockData.fallingLane, blockData.color, blockData.iter, blockData.distFromHex);
+			block.settled = 1;
+			block.attachedLane = blockData.attachedLane;
+			block.angle = blockData.angle;
+			block.targetAngle = blockData.targetAngle;
+			block.opacity = blockData.opacity;
+			block.deleted = blockData.deleted;
+			block.tint = blockData.tint;
+			block.removed = blockData.removed;
+			MainHex.blocks[i][j] = block;
+		}
+	}
+	
+	// 恢复其他状态
+	score = state.score;
+	waveone = state.wavegen;
+	gdx = state.gdx;
+	gdy = state.gdy;
+	gameState = state.gameState;
+	startTime = state.startTime;
+	
+	// 恢复MainHex.ct和waveone的时间相关属性
+		MainHex.ct = state.mainHexCt;
+		if (waveone) {
+			waveone.lastGen = state.waveoneLastGen;
+			waveone.dt = state.waveoneDt;
+			waveone.difficulty = state.waveoneDifficulty;
+			waveone.nextGen = state.waveoneNextGen;
+			waveone.last = state.waveoneLast;
+			waveone.ct = state.waveoneCt;
+			waveone.prevTimeScored = state.waveonePrevTimeScored;
+		}
 }
 
 function startBtnHandler() {
