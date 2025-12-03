@@ -158,7 +158,12 @@ function gameOverDisplay() {
 	$("#container").fadeIn();
 	$("#socialShare").fadeIn();
 	$("#restart").fadeIn();
-    set_score_pos();
+	$("#leaderboardBtn").fadeIn();
+
+	// 提交分数到服务器
+	submitScore(score);
+
+     set_score_pos();
 }
 
 function updateHighScores (){
