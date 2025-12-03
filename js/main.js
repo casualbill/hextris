@@ -129,6 +129,9 @@ function init(b) {
 	$("#restartBtn").hide();
 	$("#pauseBtn").show();
 	if (saveState.hex !== undefined) gameState = 1;
+	
+	// 初始化随机事件系统
+	randomEvents.init();
 
 	settings.blockHeight = settings.baseBlockHeight * settings.scale;
 	settings.hexWidth = settings.baseHexWidth * settings.scale;
@@ -242,11 +245,13 @@ function animLoop() {
 
 		if(gameState == 1 ){
 			if(!MainHex.delay) {
-				update(dt);
-			}
+					update(dt);
+					// 更新随机事件系统
+					randomEvents.update();
+				}
 			else{
-				MainHex.delay--;
-			}
+					MainHex.delay--;
+				}
 		}
 
 		lastTime = now;
@@ -284,12 +289,14 @@ function animLoop() {
 		break;
 
 	case 2:
-		var now = Date.now();
-		var dt = (now - lastTime)/16.666 * rush;
-		requestAnimFrame(animLoop);
-		update(dt);
-		render();
-		lastTime = now;
+			var now = Date.now();
+			var dt = (now - lastTime)/16.666 * rush;
+			requestAnimFrame(animLoop);
+			update(dt);
+			// 更新随机事件系统
+			randomEvents.update();
+			render();
+			lastTime = now;
 		break;
 
 	case 3:
