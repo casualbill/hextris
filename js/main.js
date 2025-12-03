@@ -62,6 +62,10 @@ function resumeGame() {
 	hideUIElements();
 	$('#pauseBtn').show();
 	$('#restartBtn').hide();
+	// 显示回溯按钮
+	if (settings.backtrackEnabled) {
+		$('#backtrackBtn').show();
+	}
 	importing = 0;
 	startTime = Date.now();
 	setTimeout(function() {
@@ -97,7 +101,7 @@ function init(b) {
 
 		setTimeout(function() {
             if (gameState == 1) {
-			    $('#openSideBar').fadeOut(150, "linear");
+				$('#openSideBar').fadeOut(150, "linear");
             }
 			infobuttonfading = false;
 		}, 7000);
@@ -125,6 +129,34 @@ function init(b) {
 	op = 0;
 	tweetblock=false;
 	scoreOpacity = 0;
+	// 初始化回溯相关变量
+	window.backtrackStates = [];
+	window.backtrackTimer = null;
+	window.backtrackUses = 0;
+	window.backtrackMaxUses = 3;
+	window.backtrackCooldown = 0;
+	window.backtrackCooldownTime = 10;
+	window.isBacktracking = false;
+	
+	// 更新回溯按钮显示
+	updateBacktrackButton();
+	
+	// 绑定回溯按钮点击事件
+	$('#backtrackBtn').off('touchstart mousedown').on('touchstart mousedown', function(e) {
+		e.preventDefault();
+		e.stopPropagation(); // 阻止事件冒泡，避免触发六边形旋转
+		if (!settings.backtrackEnabled || gameState !== 1 || isBacktracking) return;
+		
+		// 检查是否还有使用次数
+		if (backtrackUses >= backtrackMaxUses) return;
+		
+		// 检查是否在冷却中
+		if (backtrackCooldown > 0) return;
+		
+		// 执行回溯
+		performBacktrack();
+	});
+	
 	gameState = 1;
 	$("#restartBtn").hide();
 	$("#pauseBtn").show();
@@ -210,6 +242,194 @@ function exportHistory() {
 	toggleDevTools();
 }
 
+// 保存游戏状态用于回溯
+function saveBacktrackState() {
+	if (!settings.backtrackEnabled || gameState !== 1 || isBacktracking) return;
+	
+	var state = {
+		timestamp: Date.now(),
+		hex: $.extend(true, {}, MainHex),
+		blocks: $.extend(true, [], blocks),
+		score: score,
+		wavegen: waveone,
+		gdx: gdx,
+		gdy: gdy,
+		comboTime: settings.comboTime,
+		rush: rush,
+		spawnLane: spawnLane
+	};
+
+	// 对对象进行深拷贝并缩放处理
+	state.hex.blocks.map(function(a) {
+		for (var i = 0; i < a.length; i++) {
+			a[i] = $.extend(true, {}, a[i]);
+		}
+		a.map(descaleBlock);
+	});
+
+	for (var i = 0; i < state.blocks.length; i++) {
+		state.blocks[i] = $.extend(true, {}, state.blocks[i]);
+	}
+
+	state.blocks.map(descaleBlock);
+	
+	// 添加到状态列表
+	backtrackStates.push(state);
+	
+	// 只保留最近30秒的状态
+	while (backtrackStates.length > 30) {
+		backtrackStates.shift();
+	}
+}
+
+// 开始记录回溯状态
+function startBacktrackingRecording() {
+	if (!settings.backtrackEnabled) return;
+	
+	// 先立即保存一次状态
+	saveBacktrackState();
+	
+	// 每1秒保存一次状态
+	if (backtrackTimer) clearInterval(backtrackTimer);
+	backtrackTimer = setInterval(saveBacktrackState, 1000);
+}
+
+
+
+// 执行回溯功能
+function performBacktrack() {
+	// 增加使用次数
+	backtrackUses++;
+	updateBacktrackButton();
+	
+	// 开始冷却
+	backtrackCooldown = backtrackCooldownTime;
+	startBacktrackCooldown();
+	
+	// 查找5秒前的状态
+	var targetTime = Date.now() - 5000;
+	var targetState = null;
+	
+	for (var i = backtrackStates.length - 1; i >= 0; i--) {
+		if (backtrackStates[i].timestamp <= targetTime) {
+			targetState = backtrackStates[i];
+			break;
+		}
+	}
+	
+	if (!targetState) {
+		// 没有找到足够旧的状态
+		return;
+	}
+	
+	// 开始回溯动画
+	startBacktrackAnimation(targetState);
+}
+
+// 更新回溯按钮显示
+function updateBacktrackButton() {
+	$('#backtrackCount').text(backtrackMaxUses - backtrackUses);
+	
+	if (backtrackUses >= backtrackMaxUses || backtrackCooldown > 0) {
+		$('#backtrackBtn').addClass('backtrack-disabled');
+	} else {
+		$('#backtrackBtn').removeClass('backtrack-disabled');
+	}
+}
+
+// 回溯冷却计时器
+function startBacktrackCooldown() {
+	var cooldownInterval = setInterval(function() {
+		backtrackCooldown--;
+		
+		if (backtrackCooldown > 0) {
+			$('#backtrackIcon').text(backtrackCooldown);
+			$('#backtrackBtn').addClass('backtrack-disabled');
+		} else {
+			$('#backtrackIcon').text('↶');
+			clearInterval(cooldownInterval);
+			if (backtrackUses < backtrackMaxUses) {
+				$('#backtrackBtn').removeClass('backtrack-disabled');
+			}
+		}
+	}, 1000);
+}
+
+// 开始回溯动画
+function startBacktrackAnimation(targetState) {
+	isBacktracking = true;
+	
+	// 暂停游戏逻辑
+	var originalGameState = gameState;
+	gameState = -2; // 自定义回溯状态
+	
+	// 播放1秒倒放动画
+	setTimeout(function() {
+		// 恢复到目标状态
+		restoreGameState(targetState);
+		
+		// 恢复游戏
+		gameState = originalGameState;
+		isBacktracking = false;
+	}, 1000);
+}
+
+// 恢复游戏状态
+function restoreGameState(state) {
+	// 恢复分数
+	score = state.score;
+	prevScore = score;
+	
+	// 恢复六边形状态
+	MainHex = $.extend(true, {}, state.hex);
+	
+	// 恢复方块状态
+	blocks = [];
+	for (var i = 0; i < state.blocks.length; i++) {
+		var block = $.extend(true, {}, state.blocks[i]);
+		block.distFromHex *= settings.scale;
+		block.height = settings.blockHeight;
+		blocks.push(block);
+	}
+	
+	// 恢复其他游戏状态
+	gdx = state.gdx;
+	gdy = state.gdy;
+	settings.comboTime = state.comboTime;
+	rush = state.rush;
+	spawnLane = state.spawnLane;
+	waveone = state.wavegen;
+	
+	// 恢复六边形上的方块
+	for (var i = 0; i < MainHex.blocks.length; i++) {
+		for (var j = 0; j < MainHex.blocks[i].length; j++) {
+			MainHex.blocks[i][j].height = settings.blockHeight;
+			MainHex.blocks[i][j].settled = 0;
+		}
+	}
+	
+	// 更新颜色映射
+	MainHex.blocks.map(function(i) {
+		i.map(function(o) {
+			if (rgbToHex[o.color]) {
+				o.color = rgbToHex[o.color];
+			}
+		});
+	});
+}
+
+// 清除回溯数据
+function clearBacktrackData() {
+	if (backtrackTimer) {
+		clearInterval(backtrackTimer);
+		backtrackTimer = null;
+	}
+	backtrackStates = [];
+	backtrackUses = 0;
+	backtrackCooldown = 0;
+	isBacktracking = false;
+}
+
 function setStartScreen() {
 	$('#startBtn').show();
 	init();
@@ -252,25 +472,28 @@ function animLoop() {
 		lastTime = now;
 
 		if (checkGameOver() && !importing) {
-			var saveState = localStorage.getItem("saveState") || "{}";
-			saveState = JSONfn.parse(saveState);
-			gameState = 2;
+		var saveState = localStorage.getItem("saveState") || "{}";
+		saveState = JSONfn.parse(saveState);
+		gameState = 2;
 
-			setTimeout(function() {
-				enableRestart();
-			}, 150);
+		setTimeout(function() {
+			enableRestart();
+		}, 150);
 
-			if ($('#helpScreen').is(':visible')) {
-				$('#helpScreen').fadeOut(150, "linear");
-			}
-
-			if ($('#pauseBtn').is(':visible')) $('#pauseBtn').fadeOut(150, "linear");
-			if ($('#restartBtn').is(':visible')) $('#restartBtn').fadeOut(150, "linear");
-			if ($('#openSideBar').is(':visible')) $('.openSideBar').fadeOut(150, "linear");
-
-			canRestart = 0;
-			clearSaveState();
+		if ($('#helpScreen').is(':visible')) {
+			$('#helpScreen').fadeOut(150, "linear");
 		}
+
+		if ($('#pauseBtn').is(':visible')) $('#pauseBtn').fadeOut(150, "linear");
+		if ($('#restartBtn').is(':visible')) $('#restartBtn').fadeOut(150, "linear");
+		if ($('#backtrackBtn').is(':visible')) $('#backtrackBtn').fadeOut(150, "linear");
+		if ($('#openSideBar').is(':visible')) $('.openSideBar').fadeOut(150, "linear");
+
+		canRestart = 0;
+		clearSaveState();
+		// 清除回溯数据
+		clearBacktrackData();
+	}
 		break;
 
 	case 0:
@@ -279,6 +502,12 @@ function animLoop() {
 		break;
 
 	case -1:
+		requestAnimFrame(animLoop);
+		render();
+		break;
+		
+	case -2:
+		// 回溯动画状态，只渲染不更新游戏逻辑
 		requestAnimFrame(animLoop);
 		render();
 		break;
