@@ -153,6 +153,22 @@ function gameOverDisplay() {
 	else {
 		$("#currentHighScore").text(highscores[0])
 	}
+
+	// 更新游戏结束时的任务进度
+	if (window.dailyTaskManager) {
+		// 更新得分任务进度
+		window.dailyTaskManager.updateTaskProgress('score', score);
+		
+		// 更新游戏局数任务进度
+		window.dailyTaskManager.updateTaskProgress('games', 1);
+		
+		// 更新游戏时长任务进度
+		if (window.startTime) {
+			var gameDuration = Math.floor((Date.now() - window.startTime) / 1000);
+			window.dailyTaskManager.updateTaskProgress('time', gameDuration);
+		}
+	}
+
 	$("#gameoverscreen").fadeIn();
 	$("#buttonCont").fadeIn();
 	$("#container").fadeIn();

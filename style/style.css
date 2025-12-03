@@ -138,6 +138,16 @@ button:focus {
 	cursor:pointer;
 }
 
+#dailyTasksBtn {
+	position:absolute;
+	left:10%;
+	top:38%;
+	height:25%;
+	width:25%;
+	z-index:99999999;
+	cursor:pointer;
+}
+
 #helpScreen {
 	height:100%;
 	width:100%;
