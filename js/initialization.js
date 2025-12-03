@@ -13,6 +13,15 @@ function initialize(a) {
 		"#2ecc71": "rgb(150,227,183)"
 	};
 
+	// Special block definitions
+	window.specialBlocksEnabled = localStorage.getItem('specialBlocksEnabled') !== 'false';
+	window.specialBlockTypes = {
+		OBSTACLE: { type: 'obstacle', color: '#7f8c8d', tintColor: 'rgb(170,175,176)', spawnRate: 1/20, name: '障碍方块', description: '无法消除，只能通过爆炸方块清除' },
+		WILD: { type: 'wild', color: 'linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff)', tintColor: 'rgb(200,200,200)', spawnRate: 1/15, name: '百搭方块', description: '可匹配任何颜色的方块' },
+		EXPLOSIVE: { type: 'explosive', color: 'linear-gradient(45deg, #e74c3c, #f1c40f)', tintColor: 'rgb(241,180,155)', spawnRate: 1/25, name: '爆炸方块', description: '消除时会清除周围所有方块，包括障碍方块' }
+	};
+	window.normalBlocksSpawned = 0;
+
 	window.rgbToHex = {
 		"rgb(231,76,60)": "#e74c3c",
 		"rgb(241,196,15)": "#f1c40f",
@@ -256,6 +265,16 @@ function startBtnHandler() {
 		resumeGame();
 	}
 }
+
+window.specialBlocksHelpHandler = function() {
+	var helpScreen = document.getElementById('specialBlocksHelpScreen');
+	helpScreen.style.display = 'block';
+};
+
+window.closeSpecialBlocksHelpHandler = function() {
+	var helpScreen = document.getElementById('specialBlocksHelpScreen');
+	helpScreen.style.display = 'none';
+};
 
 function handlePause() {
 	if (gameState == 1 || gameState == 2) {

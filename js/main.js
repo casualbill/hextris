@@ -182,9 +182,13 @@ function init(b) {
 	MainHex.texts = []; //clear texts
 	MainHex.delay = 15;
 	hideText();
+	
+	// 绑定特殊方块说明按钮事件
+	document.getElementById('specialBlocksHelpBtn').addEventListener('click', window.specialBlocksHelpHandler);
+	document.getElementById('closeSpecialBlocksHelp').addEventListener('click', window.closeSpecialBlocksHelpHandler);
 }
 
-function addNewBlock(blocklane, color, iter, distFromHex, settled) { //last two are optional parameters
+function addNewBlock(blocklane, color, iter, distFromHex, settled, specialType) { //last three are optional parameters
 	iter *= settings.speedModifier;
 	if (!history[MainHex.ct]) {
 		history[MainHex.ct] = {};
@@ -193,7 +197,8 @@ function addNewBlock(blocklane, color, iter, distFromHex, settled) { //last two 
 	history[MainHex.ct].block = {
 		blocklane: blocklane,
 		color: color,
-		iter: iter
+		iter: iter,
+		specialType: specialType
 	};
 
 	if (distFromHex) {
@@ -202,7 +207,10 @@ function addNewBlock(blocklane, color, iter, distFromHex, settled) { //last two 
 	if (settled) {
 		blockHist[MainHex.ct].settled = settled;
 	}
-	blocks.push(new Block(blocklane, color, iter, distFromHex, settled));
+	if (specialType) {
+		history[MainHex.ct].specialType = specialType;
+	}
+	blocks.push(new Block(blocklane, color, iter, distFromHex, settled, specialType));
 }
 
 function exportHistory() {
@@ -362,7 +370,30 @@ function showHelp() {
 		}
 	}
 
-	$("#inst_main_body").html("<div id = 'instructions_head'>HOW TO PLAY</div><p>The goal of Hextris is to stop blocks from leaving the inside of the outer gray hexagon.</p><p>" + (settings.platform != 'mobile' ? 'Press the right and left arrow keys' : 'Tap the left and right sides of the screen') + " to rotate the Hexagon." + (settings.platform != 'mobile' ? ' Press the down arrow to speed up the block falling': '') + " </p><p>Clear blocks and get points by making 3 or more blocks of the same color touch.</p><p>Time left before your combo streak disappears is indicated by <span style='color:#f1c40f;'>the</span> <span style='color:#e74c3c'>colored</span> <span style='color:#3498db'>lines</span> <span style='color:#2ecc71'>on</span> the outer hexagon</p> <hr> <p id = 'afterhr'></p> By <a href='http://loganengstrom.com' target='_blank'>Logan Engstrom</a> & <a href='http://github.com/garrettdreyfus' target='_blank'>Garrett Finucane</a><br>Find Hextris on <a href = 'https://itunes.apple.com/us/app/id903769553?mt=8' target='_blank'>iOS</a> & <a href ='https://play.google.com/store/apps/details?id=com.hextris.hextris' target='_blank'>Android</a><br>More @ the <a href ='http://hextris.github.io/' target='_blank'>Hextris Website</a>");
+	var specialBlocksChecked = window.specialBlocksEnabled ? 'checked' : '';
+	var helpHtml = `
+		<div id = 'instructions_head'>HOW TO PLAY</div>
+		<p>The goal of Hextris is to stop blocks from leaving the inside of the outer gray hexagon.</p>
+		<p>${settings.platform != 'mobile' ? 'Press the right and left arrow keys' : 'Tap the left and right sides of the screen'} to rotate the Hexagon.${settings.platform != 'mobile' ? ' Press the down arrow to speed up the block falling': ''} </p>
+		<p>Clear blocks and get points by making 3 or more blocks of the same color touch.</p>
+		<p>Time left before your combo streak disappears is indicated by <span style='color:#f1c40f;'>the</span> <span style='color:#e74c3c'>colored</span> <span style='color:#3498db'>lines</span> <span style='color:#2ecc71'>on</span> the outer hexagon</p>
+		<hr>
+		<div style='margin: 15px 0; padding: 10px; background: #2c3e50; border-radius: 5px;'>
+			<label style='font-size: 18px; font-weight: bold; display: flex; align-items: center; gap: 10px; color: #3498db;'>
+				<input type='checkbox' id='specialBlocksToggle' ${specialBlocksChecked} style='width: 20px; height: 20px;'/> 
+				启用特殊方块系统
+			</label>
+			<p style='font-size: 14px; color: #bdc3c7; margin: 10px 0 0 30px;'>包含障碍方块、百搭方块和爆炸方块</p>
+		</div>
+		<p id = 'afterhr'></p> By <a href='http://loganengstrom.com' target='_blank'>Logan Engstrom</a> & <a href='http://github.com/garrettdreyfus' target='_blank'>Garrett Finucane</a><br>Find Hextris on <a href = 'https://itunes.apple.com/us/app/id903769553?mt=8' target='_blank'>iOS</a> & <a href ='https://play.google.com/store/apps/details?id=com.hextris.hextris' target='_blank'>Android</a><br>More @ the <a href ='http://hextris.github.io/' target='_blank'>Hextris Website</a>
+	`;
+	$("#inst_main_body").html(helpHtml);
+	
+	// 绑定开关事件
+	$('#specialBlocksToggle').off('change').on('change', function() {
+		window.specialBlocksEnabled = this.checked;
+		localStorage.setItem('specialBlocksEnabled', window.specialBlocksEnabled);
+	});
 	if (gameState == 1) {
 		pause();
 	}
