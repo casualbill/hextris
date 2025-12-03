@@ -158,8 +158,31 @@ function gameOverDisplay() {
 	$("#container").fadeIn();
 	$("#socialShare").fadeIn();
 	$("#restart").fadeIn();
+	
+	// 检查是否有精彩瞬间
+	var hasHighlight = checkHighlights();
+	if (hasHighlight) {
+		$("#generateHighlight").prop("disabled", false).fadeIn();
+	} else {
+		$("#generateHighlight").prop("disabled", true).fadeIn();
+	}
+	
     set_score_pos();
 }
+
+// 检查是否有精彩瞬间
+function checkHighlights() {
+	// 这里需要实现精彩瞬间的识别逻辑
+	// 目前先返回true，以便测试按钮功能
+	return true;
+}
+
+// 生成精彩瞬间按钮点击事件 - 使用事件委托确保按钮存在时绑定
+$(document).on("click", "#generateHighlight", function() {
+	// 这里需要实现精彩瞬间的生成逻辑
+	// 目前先显示一个提示框
+	swal("功能开发中", "精彩瞬间功能正在开发中，敬请期待！", "info");
+});
 
 function updateHighScores (){
     $("#cScore").text(score);
