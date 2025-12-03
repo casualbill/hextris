@@ -40,7 +40,35 @@ function waveGen(hex) {
 			this.ct++;
 			this.lastGen = this.dt;
 			var fv = randInt(0, MainHex.sides);
-			addNewBlock(fv, colors[randInt(0, colors.length)], 1.6 + (this.difficulty / 15) * 3);
+			var specialType = null;
+			
+			// Check if special blocks are enabled and generate them based on probability
+			if (specialBlocksEnabled) {
+				normalBlocksSpawned++;
+				
+				// Check for obstacle block (1/20)
+				if (Math.random() < specialBlockTypes.OBSTACLE.spawnRate) {
+					specialType = 'OBSTACLE';
+					normalBlocksSpawned = 0;
+				} 
+				// Check for wild block (1/15)
+				else if (Math.random() < specialBlockTypes.WILD.spawnRate) {
+					specialType = 'WILD';
+					normalBlocksSpawned = 0;
+				} 
+				// Check for explosive block (1/25)
+				else if (Math.random() < specialBlockTypes.EXPLOSIVE.spawnRate) {
+					specialType = 'EXPLOSIVE';
+					normalBlocksSpawned = 0;
+				}
+			}
+			
+			var blockColor = colors[randInt(0, colors.length)];
+			if (specialType) {
+				blockColor = specialBlockTypes[specialType].color;
+			}
+			
+			addNewBlock(fv, blockColor, 1.6 + (this.difficulty / 15) * 3, undefined, undefined, specialType);
 			var lim = 5;
 			if (this.ct > lim) {
 				var nextPattern = randInt(0, 3 + 21);

@@ -1,17 +1,18 @@
-function Block(fallingLane, color, iter, distFromHex, settled) {
+function Block(fallingLane, color, iter, distFromHex, settled, specialType) {
 	// whether or not a block is rested on the center hex or another block
 	this.settled = (settled === undefined) ? 0 : 1;
 	this.height = settings.blockHeight;
 	//the lane which the block was shot from
 	this.fallingLane = fallingLane;
 
-		this.checked=0;
+	this.checked=0;
 	//the angle at which the block falls
 	this.angle = 90 - (30 + 60 * fallingLane);
 	//for calculating the rotation of blocks attached to the center hex
 	this.angularVelocity = 0;
 	this.targetAngle = this.angle;
 	this.color = color;
+	this.specialType = specialType || null;
 	//blocks that are slated to be deleted after a valid score has happened
 	this.deleted = 0;
 	//blocks slated to be removed from falling and added to the hex
@@ -122,7 +123,9 @@ function Block(fallingLane, color, iter, distFromHex, settled) {
 		if (this.deleted) {
 			ctx.fillStyle = "#FFF";
 		} else if (gameState === 0) {
-			if (this.color.charAt(0) == 'r') {
+			if (this.specialType) {
+				ctx.fillStyle = specialBlockTypes[this.specialType].tintColor;
+			} else if (this.color.charAt(0) == 'r') {
 				ctx.fillStyle = rgbColorsToTintedColors[this.color];
 			}
 			else {
@@ -130,7 +133,30 @@ function Block(fallingLane, color, iter, distFromHex, settled) {
 			}
 		}
 		else {
-			ctx.fillStyle = this.color;
+			if (this.specialType) {
+				if (this.specialType === 'WILD' || this.specialType === 'EXPLOSIVE') {
+					// Create gradient for wild and explosive blocks
+					var gradient = ctx.createLinearGradient(baseX + p1.x, baseY + p1.y, baseX + p3.x, baseY + p3.y);
+					if (this.specialType === 'WILD') {
+						gradient.addColorStop(0, '#ff0000');
+						gradient.addColorStop(0.14, '#ff7f00');
+						gradient.addColorStop(0.28, '#ffff00');
+						gradient.addColorStop(0.42, '#00ff00');
+						gradient.addColorStop(0.56, '#0000ff');
+						gradient.addColorStop(0.70, '#4b0082');
+						gradient.addColorStop(0.84, '#8b00ff');
+						gradient.addColorStop(1, '#ff0000');
+					} else {
+						gradient.addColorStop(0, '#e74c3c');
+						gradient.addColorStop(1, '#f1c40f');
+					}
+					ctx.fillStyle = gradient;
+				} else {
+					ctx.fillStyle = specialBlockTypes[this.specialType].color;
+				}
+			} else {
+				ctx.fillStyle = this.color;
+			}
 		}
 
 		ctx.globalAlpha = this.opacity;
@@ -168,6 +194,85 @@ function Block(fallingLane, color, iter, distFromHex, settled) {
 			this.tint -= 0.02 * MainHex.dt;
 			if (this.tint < 0) {
 				this.tint = 0;
+			}
+		}
+
+		// Draw special block icons
+		if (this.specialType && !this.deleted) {
+			ctx.globalAlpha = this.opacity;
+			var centerX = baseX;
+			var centerY = baseY;
+			var iconSize = this.height * 0.6;
+			
+			ctx.fillStyle = '#ffffff';
+			ctx.strokeStyle = '#000000';
+			ctx.lineWidth = 1 * settings.scale;
+			
+			if (this.specialType === 'OBSTACLE') {
+				// Draw chain icon
+				ctx.beginPath();
+				ctx.arc(centerX, centerY, iconSize/2, 0, Math.PI*2);
+				ctx.fill();
+				ctx.stroke();
+				
+				ctx.beginPath();
+				ctx.moveTo(centerX - iconSize/3, centerY);
+				ctx.lineTo(centerX + iconSize/3, centerY);
+				ctx.moveTo(centerX, centerY - iconSize/3);
+				ctx.lineTo(centerX, centerY + iconSize/3);
+				ctx.stroke();
+			} else if (this.specialType === 'WILD') {
+				// Draw star icon
+				ctx.beginPath();
+				var spikes = 5;
+				var outerRadius = iconSize/2;
+				var innerRadius = iconSize/4;
+				var rot = Math.PI / 2 * 3;
+				var x = centerX;
+				var y = centerY;
+				var step = Math.PI / spikes;
+				
+				ctx.moveTo(centerX, centerY - outerRadius);
+				for(i = 0; i < spikes; i++){
+					x = centerX + Math.cos(rot) * outerRadius;
+					y = centerY + Math.sin(rot) * outerRadius;
+					ctx.lineTo(x, y);
+					rot += step;
+					
+					x = centerX + Math.cos(rot) * innerRadius;
+					y = centerY + Math.sin(rot) * innerRadius;
+					ctx.lineTo(x, y);
+					rot += step;
+				}
+				ctx.lineTo(centerX, centerY - outerRadius);
+				ctx.closePath();
+				ctx.fill();
+				ctx.stroke();
+			} else if (this.specialType === 'EXPLOSIVE') {
+				// Draw explosion icon
+				ctx.beginPath();
+				ctx.arc(centerX, centerY, iconSize/3, 0, Math.PI*2);
+				ctx.fill();
+				ctx.stroke();
+				
+				ctx.beginPath();
+				ctx.moveTo(centerX, centerY - iconSize/2);
+				ctx.lineTo(centerX, centerY - iconSize/1.5);
+				ctx.moveTo(centerX, centerY + iconSize/2);
+				ctx.lineTo(centerX, centerY + iconSize/1.5);
+				ctx.moveTo(centerX - iconSize/2, centerY);
+				ctx.lineTo(centerX - iconSize/1.5, centerY);
+				ctx.moveTo(centerX + iconSize/2, centerY);
+				ctx.lineTo(centerX + iconSize/1.5, centerY);
+				ctx.moveTo(centerX - iconSize/3, centerY - iconSize/3);
+				ctx.lineTo(centerX - iconSize/2, centerY - iconSize/2);
+				ctx.moveTo(centerX + iconSize/3, centerY - iconSize/3);
+				ctx.lineTo(centerX + iconSize/2, centerY - iconSize/2);
+				ctx.moveTo(centerX - iconSize/3, centerY + iconSize/3);
+				ctx.lineTo(centerX - iconSize/2, centerY + iconSize/2);
+				ctx.moveTo(centerX + iconSize/3, centerY + iconSize/3);
+				ctx.lineTo(centerX + iconSize/2, centerY + iconSize/2);
+				ctx.stroke();
 			}
 		}
 

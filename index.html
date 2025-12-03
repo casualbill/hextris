@@ -35,6 +35,89 @@
 		<link href='http://fonts.googleapis.com/css?family=Exo+2' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" href="style/fa/css/font-awesome.min.css">
 		<link rel="stylesheet" type="text/css" href="style/style.css">
+		<style type="text/css">
+			#score { 
+				top: 5px;
+				right: 120px;
+			}
+			#specialBlocksHelpScreen {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				background: rgba(0,0,0,0.9);
+				padding: 30px;
+				border-radius: 10px;
+				color: white;
+				font-family: 'Exo 2', sans-serif;
+				z-index: 1000;
+				max-width: 500px;
+				width: 90%;
+			}
+			#specialBlocksHelpTitle {
+				font-size: 24px;
+				font-weight: bold;
+				text-align: center;
+				margin-bottom: 30px;
+				color: #3498db;
+			}
+			.specialBlockInfo {
+				display: flex;
+				align-items: center;
+				margin-bottom: 20px;
+				gap: 20px;
+			}
+			.blockPreview {
+				width: 60px;
+				height: 60px;
+				border-radius: 5px;
+			}
+			.obstacleBlock {
+				background: #7f8c8d;
+				position: relative;
+			}
+			.obstacleBlock::after {
+				content: '🔒';
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				font-size: 24px;
+			}
+			.wildBlock {
+				background: linear-gradient(45deg, #ff0000, #ffa500, #ffff00, #008000, #0000ff, #4b0082, #ee82ee);
+				position: relative;
+			}
+			.wildBlock::after {
+				content: '⭐';
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				font-size: 24px;
+			}
+			.explosiveBlock {
+				background: linear-gradient(45deg, #ff0000, #ffff00);
+				position: relative;
+			}
+			.explosiveBlock::after {
+				content: '💥';
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				font-size: 24px;
+			}
+			.blockDescription h3 {
+				margin: 0 0 5px 0;
+				color: #3498db;
+			}
+			.blockDescription p {
+				margin: 0;
+				font-size: 14px;
+				line-height: 1.4;
+			}
+		</style>
 		<script type='text/javascript' src="vendor/hammer.min.js"></script>
 		<script type='text/javascript' src="vendor/js.cookie.js"></script>
 		<script type='text/javascript' src="vendor/jsonfn.min.js"></script>
@@ -66,8 +149,35 @@
 			<div id='inst_main_body'></div>
 		</div>
 		<img id="openSideBar" class='helpText' src="./images/btn_help.svg"/>
+		<img id="specialBlocksHelpBtn" class='helpText' src="./images/btn_help.svg" style="right: 80px;" title="特殊方块说明"/>
 		<div class="faded overlay"></div>
 		<img id="pauseBtn" src="./images/btn_pause.svg"/>
+		
+		<div id="specialBlocksHelpScreen" class='unselectable' style="display: none;">
+			<div id='specialBlocksHelpTitle'>特殊方块说明</div>
+			<div class='specialBlockInfo'>
+				<div class='blockPreview obstacleBlock'></div>
+				<div class='blockDescription'>
+					<h3>障碍方块</h3>
+					<p>无法消除，只能通过爆炸方块清除</p>
+				</div>
+			</div>
+			<div class='specialBlockInfo'>
+				<div class='blockPreview wildBlock'></div>
+				<div class='blockDescription'>
+					<h3>百搭方块</h3>
+					<p>可匹配任何颜色的方块，与任意颜色相邻都能形成消除组合</p>
+				</div>
+			</div>
+			<div class='specialBlockInfo'>
+				<div class='blockPreview explosiveBlock'></div>
+				<div class='blockDescription'>
+					<h3>爆炸方块</h3>
+					<p>消除时先消除同色方块，0.5秒后清除周围所有方块，包括障碍方块</p>
+				</div>
+			</div>
+			<div id='closeSpecialBlocksHelp' style='margin-top: 20px; padding: 10px; background: #3498db; color: white; text-align: center; cursor: pointer;'>关闭</div>
+		</div>
 		<img id='restartBtn' src="./images/btn_restart.svg"/>
 		<div id='HIGHSCORE'>HIGH SCORE</div>
 		<script> (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){ (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o), m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m) })(window,document,'script','//www.google-analytics.com/analytics.js','ga'); ga('create', 'UA-51272720-2', 'auto'); ga('send', 'pageview');
