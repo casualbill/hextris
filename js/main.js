@@ -343,6 +343,10 @@ function checkGameOver() {
 			}
 			writeHighScores();
 			gameOverDisplay();
+			// 上传分数到排行榜
+			if (typeof Leaderboard !== 'undefined') {
+				Leaderboard.submitScore(score);
+			}
 			return true;
 		}
 	}

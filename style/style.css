@@ -525,3 +525,228 @@ body {
 	-moz-transform:translate(-50%, 0%);
 	-ms-transform:translate(-50%, 0%);
 }
+
+/* 排行榜样式 */
+#leaderboardScreen {
+	position:fixed;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	background-color:rgba(0,0,0,0.8);
+	z-index:10000;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+}
+
+#leaderboardScreen.hidden {
+	display:none;
+}
+
+#leaderboardContainer {
+	background-color:#ecf0f1;
+	border-radius:10px;
+	padding:20px;
+	width:90%;
+	max-width:600px;
+	max-height:90%;
+	overflow:auto;
+}
+
+#leaderboardHeader {
+	display:flex;
+	justify-content:space-between;
+	align-items:center;
+	margin-bottom:20px;
+}
+
+#leaderboardHeader h1 {
+	margin:0;
+	color:#2c3e50;
+	font-size:24px;
+}
+
+#closeLeaderboardBtn {
+	background-color:#e74c3c;
+	color:white;
+	padding:5px 10px;
+	border-radius:5px;
+	cursor:pointer;
+}
+
+#leaderboardTabs {
+	display:flex;
+	margin-bottom:20px;
+}
+
+#leaderboardTabs button {
+	background-color:#bdc3c7;
+	color:#2c3e50;
+	padding:10px 20px;
+	border:none;
+	cursor:pointer;
+	border-radius:5px 5px 0 0;
+	margin-right:5px;
+}
+
+#leaderboardTabs button.active {
+	background-color:#3498db;
+	color:white;
+}
+
+#leaderboardSearch {
+	display:flex;
+	margin-bottom:20px;
+}
+
+#searchInput {
+	flex:1;
+	padding:10px;
+	border:1px solid #bdc3c7;
+	border-radius:5px 0 0 5px;
+}
+
+#searchBtn {
+	background-color:#3498db;
+	color:white;
+	padding:10px 20px;
+	border:none;
+	cursor:pointer;
+	border-radius:0 5px 5px 0;
+}
+
+#leaderboardPlayerInfo {
+	background-color:#bdc3c7;
+	padding:10px;
+	border-radius:5px;
+	margin-bottom:20px;
+}
+
+#leaderboardPlayerInfo div {
+	margin-bottom:5px;
+	color:#2c3e50;
+}
+
+#leaderboardContent {
+	margin-bottom:20px;
+}
+
+.leaderboardList {
+	max-height:300px;
+	overflow:auto;
+}
+
+.leaderboardList.hidden {
+	display:none;
+}
+
+.leaderboardItem {
+	display:flex;
+	justify-content:space-between;
+	align-items:center;
+	padding:10px;
+	border-bottom:1px solid #bdc3c7;
+}
+
+.leaderboardItem:last-child {
+	border-bottom:none;
+}
+
+.leaderboardItem.rank1 {
+	background-color:#f1c40f;
+}
+
+.leaderboardItem.rank2 {
+	background-color:#bdc3c7;
+}
+
+.leaderboardItem.rank3 {
+	background-color:#e67e22;
+}
+
+.leaderboardItem.currentPlayer {
+	background-color:#3498db;
+	color:white;
+}
+
+.leaderboardRank {
+	font-weight:bold;
+	width:50px;
+}
+
+.leaderboardNickname {
+	flex:1;
+	margin-left:10px;
+}
+
+.leaderboardScore {
+	font-weight:bold;
+	width:100px;
+	text-align:right;
+}
+
+.leaderboardRegion {
+	width:100px;
+	text-align:right;
+	margin-left:10px;
+}
+
+#leaderboardFooter {
+	display:flex;
+	justify-content:space-between;
+	align-items:center;
+}
+
+#lastUpdateTime {
+	color:#7f8c8d;
+	font-size:12px;
+}
+
+#refreshLeaderboardBtn {
+	background-color:#3498db;
+	color:white;
+	padding:5px 10px;
+	border-radius:5px;
+	cursor:pointer;
+}
+
+.loading {
+	text-align:center;
+	padding:20px;
+	color:#7f8c8d;
+}
+
+.searchResult {
+	background-color:#3498db;
+	color:white;
+	padding:10px;
+	border-radius:5px;
+	margin-bottom:10px;
+}
+
+.searchResult div {
+	margin-bottom:5px;
+}
+
+/* 排行榜按钮样式 */
+#leaderboardBtn {
+	position:absolute;
+	width:100px;
+	height:100px;
+	background-image:url('../images/btn_leaderboard.svg');
+	background-size:contain;
+	background-repeat:no-repeat;
+	background-position:center;
+	cursor:pointer;
+	z-index:1000;
+	left:calc(50% + 150px);
+	top:calc(50% - 50px);
+}
+
+@media only screen and (max-width: 768px) {
+	#leaderboardBtn {
+		left:calc(50% + 100px);
+		top:calc(50% - 50px);
+	}
+}
