@@ -97,7 +97,7 @@ function init(b) {
 
 		setTimeout(function() {
             if (gameState == 1) {
-			    $('#openSideBar').fadeOut(150, "linear");
+			$('#openSideBar').fadeOut(150, "linear");
             }
 			infobuttonfading = false;
 		}, 7000);
@@ -129,6 +129,11 @@ function init(b) {
 	$("#restartBtn").hide();
 	$("#pauseBtn").show();
 	if (saveState.hex !== undefined) gameState = 1;
+	
+	// 游戏开始时更新直播UI
+	if (typeof broadcastModule !== 'undefined') {
+		broadcastModule.onGameStateChange(1);
+	}
 
 	settings.blockHeight = settings.baseBlockHeight * settings.scale;
 	settings.hexWidth = settings.baseHexWidth * settings.scale;
