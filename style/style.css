@@ -494,6 +494,241 @@ body {
 	bottom:0px;
 }
 
+/* 排行榜界面样式 */
+#leaderboardScreen {
+	position:fixed;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	background-color:rgba(236,240,241,0.95);
+	z-index:3002;
+	overflow-y:auto;
+}
+
+#leaderboardContainer {
+	max-width:800px;
+	margin:0 auto;
+	padding:20px;
+	color:#2c3e50;
+}
+
+#leaderboardHeader {
+	display:flex;
+	justify-content:space-between;
+	align-items:center;
+	margin-bottom:30px;
+}
+
+#leaderboardHeader h1 {
+	font-size:3rem;
+	font-weight:bold;
+}
+
+.leaderboardBtn {
+	background-color:#3498db;
+	color:white;
+	padding:10px 20px;
+	border-radius:5px;
+	cursor:pointer;
+	font-size:1rem;
+	transition:background-color 0.3s ease;
+}
+
+.leaderboardBtn:hover {
+	background-color:#2980b9;
+}
+
+#leaderboardTabs {
+	display:flex;
+	margin-bottom:30px;
+	border-bottom:1px solid #bdc3c7;
+}
+
+.tabBtn {
+	background-color:transparent;
+	color:#bdc3c7;
+	padding:15px 25px;
+	cursor:pointer;
+	font-size:1.1rem;
+	transition:all 0.3s ease;
+	border-bottom:2px solid transparent;
+}
+
+.tabBtn:hover {
+	color:#3498db;
+}
+
+.tabBtn.active {
+	color:#3498db;
+	border-bottom:2px solid #3498db;
+}
+
+.leaderboard {
+	padding:20px;
+	background-color:white;
+	border-radius:10px;
+	box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+#globalLeaderboardHeader,
+#regionLeaderboardHeader,
+#searchResultsHeader {
+	display:flex;
+	justify-content:space-between;
+	align-items:center;
+	margin-bottom:20px;
+}
+
+#globalLeaderboardHeader h2,
+#regionLeaderboardHeader h2,
+#searchResultsHeader h2 {
+	font-size:2rem;
+	font-weight:bold;
+}
+
+.lastUpdate {
+	font-size:0.9rem;
+	color:#bdc3c7;
+}
+
+#searchContainer {
+	display:flex;
+	margin-bottom:20px;
+}
+
+#searchInput {
+	flex:1;
+	padding:10px 15px;
+	border:1px solid #bdc3c7;
+	border-radius:5px 0 0 5px;
+	font-size:1rem;
+	color:#2c3e50;
+}
+
+#searchInput:focus {
+	outline:none;
+	border-color:#3498db;
+}
+
+.searchBtn {
+	background-color:#3498db;
+	color:white;
+	padding:10px 20px;
+	border-radius:0 5px 5px 0;
+	cursor:pointer;
+	font-size:1rem;
+	transition:background-color 0.3s ease;
+}
+
+.searchBtn:hover {
+	background-color:#2980b9;
+}
+
+.leaderboardList {
+	margin-bottom:20px;
+}
+
+.leaderboardItem {
+	display:flex;
+	justify-content:space-between;
+	align-items:center;
+	padding:15px 20px;
+	border-bottom:1px solid #ecf0f1;
+	transition:background-color 0.3s ease;
+}
+
+.leaderboardItem:hover {
+	background-color:#ecf0f1;
+}
+
+.leaderboardItem:last-child {
+	border-bottom:none;
+}
+
+.rank {
+	font-size:1.2rem;
+	font-weight:bold;
+	width:50px;
+	text-align:center;
+}
+
+.rank.top3 {
+	color:#f39c12;
+}
+
+.nickname {
+	font-size:1.1rem;
+	flex:1;
+	margin-left:20px;
+}
+
+.score {
+	font-size:1.2rem;
+	font-weight:bold;
+	text-align:right;
+	width:100px;
+}
+
+.playerRank {
+	padding:15px 20px;
+	background-color:#3498db;
+	color:white;
+	border-radius:5px;
+	text-align:center;
+	margin-bottom:20px;
+	font-size:1.1rem;
+}
+
+.refreshBtn {
+	background-color:#2ecc71;
+	color:white;
+	padding:10px 20px;
+	border-radius:5px;
+	cursor:pointer;
+	font-size:1rem;
+	transition:background-color 0.3s ease;
+	display:block;
+	margin:0 auto;
+}
+
+.refreshBtn:hover {
+	background-color:#27ae60;
+}
+
+.error {
+	padding:20px;
+	background-color:#e74c3c;
+	color:white;
+	border-radius:10px;
+	text-align:center;
+}
+
+.error h2 {
+	font-size:2rem;
+	margin-bottom:10px;
+}
+
+.error p {
+	font-size:1.1rem;
+	margin-bottom:20px;
+}
+
+#leaderboardBtn {
+	display:none;
+	cursor:pointer !important;
+	margin:0;
+	padding:0;
+	bottom:15px;
+	position:absolute;
+	left:calc(50% + 30px);
+	transform:translate(-50%, 0%);
+	-webkit-transform:translate(-50%, 0%);
+	-moz-transform:translate(-50%, 0%);
+	-ms-transform:translate(-50%, 0%);
+	margin-bottom:-3.5px;
+}
+
 #androidBadge {
 	position:absolute;
 	height:41px;
