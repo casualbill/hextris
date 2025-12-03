@@ -199,6 +199,10 @@ function pause(o) {
 		setTimeout(function() {
 			gameState = prevGameState;
 			pausable =true;
+			// 恢复游戏时更新直播UI
+			if (typeof broadcastModule !== 'undefined') {
+				broadcastModule.onGameStateChange(gameState);
+			}
 		}, 400);
 	} else if (gameState != -2 && gameState !== 0 && gameState !== 2) {
 		$('#restartBtn').fadeIn(300, "linear");
