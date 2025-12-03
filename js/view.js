@@ -199,6 +199,10 @@ function pause(o) {
 		setTimeout(function() {
 			gameState = prevGameState;
 			pausable =true;
+			// 恢复游戏时继续记录回溯数据
+			if (backtrackEnabled) {
+				startBacktrackRecording();
+			}
 		}, 400);
 	} else if (gameState != -2 && gameState !== 0 && gameState !== 2) {
 		$('#restartBtn').fadeIn(300, "linear");
@@ -214,6 +218,10 @@ function pause(o) {
 		setTimeout(function() {
 		    pausable = true;
 		}, 400);
+		// 暂停游戏时停止记录回溯数据
+		if (backtrackEnabled) {
+			stopBacktrackRecording();
+		}
 		gameState = -1;
 	}
 }

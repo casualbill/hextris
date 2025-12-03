@@ -97,7 +97,7 @@ function init(b) {
 
 		setTimeout(function() {
             if (gameState == 1) {
-			    $('#openSideBar').fadeOut(150, "linear");
+				$('#openSideBar').fadeOut(150, "linear");
             }
 			infobuttonfading = false;
 		}, 7000);
@@ -182,6 +182,18 @@ function init(b) {
 	MainHex.texts = []; //clear texts
 	MainHex.delay = 15;
 	hideText();
+	
+	// 初始化回溯功能状态
+	backtrackUses = 0;
+	backtrackLastUseTime = 0;
+	backtrackHistory = [];
+	backtrackRewinding = false;
+	
+	// 更新回溯按钮
+	updateBacktrackButton();
+	
+	// 开始记录回溯数据
+	startBacktrackRecording();
 }
 
 function addNewBlock(blocklane, color, iter, distFromHex, settled) { //last two are optional parameters
@@ -250,6 +262,24 @@ function animLoop() {
 		}
 
 		lastTime = now;
+
+		// 更新回溯按钮状态
+		if (backtrackEnabled) {
+			updateBacktrackButton();
+		}
+
+		// 处理回溯动画
+		if (backtrackRewinding) {
+			var progress = (Date.now() - backtrackRewindStartTime) / backtrackRewindDuration;
+			if (progress <= 1) {
+				// 在回溯动画期间，使方块向上移动以产生倒放效果
+				for (var i = 0; i < blocks.length; i++) {
+					if (!blocks[i].settled) {
+						blocks[i].distFromHex += blocks[i].iter * dt * settings.scale * 2; // 向上移动
+					}
+				}
+			}
+		}
 
 		if (checkGameOver() && !importing) {
 			var saveState = localStorage.getItem("saveState") || "{}";
@@ -343,6 +373,11 @@ function checkGameOver() {
 			}
 			writeHighScores();
 			gameOverDisplay();
+			
+			// 游戏结束时停止记录回溯数据并清除历史
+			stopBacktrackRecording();
+			backtrackHistory = [];
+			
 			return true;
 		}
 	}
