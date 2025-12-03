@@ -41,6 +41,7 @@
 		<script type='text/javascript' src="vendor/keypress.min.js"></script>
 		<script type='text/javascript' src="vendor/jquery.js"></script>
 		<script type='text/javascript' src="js/save-state.js"></script>
+		<script type='text/javascript' src="js/achievements.js"></script>
 		<script type='text/javascript' src="js/view.js"></script>
 		<script type='text/javascript' src="js/wavegen.js"></script>
 		<script type='text/javascript' src="js/math.js"></script>
@@ -69,16 +70,31 @@
 		<div class="faded overlay"></div>
 		<img id="pauseBtn" src="./images/btn_pause.svg"/>
 		<img id='restartBtn' src="./images/btn_restart.svg"/>
+		<div id="achievementsBtn" class="menu-btn">🏆 成就</div>
 		<div id='HIGHSCORE'>HIGH SCORE</div>
 		<script> (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){ (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o), m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m) })(window,document,'script','//www.google-analytics.com/analytics.js','ga'); ga('create', 'UA-51272720-2', 'auto'); ga('send', 'pageview');
 		</script>
 		<div id='highScoreInGameText'>
 			<div id='highScoreInGameTextHeader'>HIGH SCORE</div><div id='currentHighScore'>10292</div>
 		</div>
-		<div id="gameoverscreen">
+		<div id='achievementsScreen' class='hidden unselectable'>
+			<div id='achievementsHeader'>
+				<h1>成就系统</h1>
+				<div id='achievementsFilter'>
+					<button class="filter-btn active" data-filter="all">全部</button>
+					<button class="filter-btn" data-filter="unlocked">已解锁</button>
+					<button class="filter-btn" data-filter="locked">未解锁</button>
+				</div>
+				<div id='achievementsBackBtn' class='back-btn'>← 返回</div>
+			</div>
+			<div id='achievementsList'></div>
+		</div>
+
+		<div id='gameoverscreen'>
 			<div id='container'>
 				<div id='gameOverBox' class='GOTitle'>GAME OVER</div>
 				<div id='cScore'>1843</div>
+				<div id='newAchievements' class='new-achievements'></div>
 				<div id='highScoresTitle' class='GOTitle'>HIGH SCORES</div>
 				<div class='score'><span class='scoreNum'>1.</span> <div id="1place" style="display:inline;">0</div></div>
 				<div class='score'><span class='scoreNum'>2.</span> <div id="2place" style="display:inline;">0</div></div>

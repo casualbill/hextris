@@ -119,6 +119,106 @@ function initialize(a) {
 		} catch (e) {
 			highscores = [];
 		}
+
+		// 初始化成就系统
+		initAchievements();
+		
+		// 成就按钮点击事件
+		$('#achievementsBtn').click(function() {
+			showAchievementsScreen('all');
+		});
+		
+		// 成就界面返回按钮
+		$('#achievementsBackBtn').click(function() {
+			hideAchievementsScreen();
+		});
+		
+		// 成就筛选按钮
+		$('.filter-btn').click(function() {
+			$('.filter-btn').removeClass('active');
+			$(this).addClass('active');
+			const filter = $(this).data('filter');
+			renderAchievements(filter);
+		});
+	}
+
+	// 显示成就界面
+	function showAchievementsScreen(filter = 'all') {
+		$('#achievementsScreen').removeClass('hidden');
+		renderAchievements(filter);
+	}
+	
+	// 隐藏成就界面
+	function hideAchievementsScreen() {
+		$('#achievementsScreen').addClass('hidden');
+	}
+	
+	// 筛选成就
+	function filterAchievements(filter = 'all') {
+		if (filter === 'all') {
+			return achievements;
+		} else if (filter === 'unlocked') {
+			return achievements.filter(ach => ach.unlocked);
+		} else if (filter === 'locked') {
+			return achievements.filter(ach => !ach.unlocked);
+		}
+		return achievements;
+	}
+	
+	// 渲染成就列表
+	function renderAchievements(filter = 'all') {
+		const filteredAchievements = filterAchievements(filter);
+		const list = $('#achievementsList');
+		list.empty();
+		
+		filteredAchievements.forEach(achievement => {
+			const progressPercent = Math.min((achievement.progress / achievement.maxProgress) * 100, 100);
+			const item = $(`
+				<div class="achievement-item ${achievement.unlocked ? 'unlocked' : 'locked'}">
+					<div class="achievement-icon">${achievement.icon}</div>
+					<div class="achievement-content">
+						<div class="achievement-name">${achievement.name}</div>
+						<div class="achievement-description">${achievement.description}</div>
+						<div class="achievement-progress">
+							<div class="achievement-progress-bar" style="width: ${progressPercent}%"></div>
+						</div>
+						<div class="achievement-progress-text">${achievement.progress}/${achievement.maxProgress}</div>
+						<div class="achievement-status ${achievement.unlocked ? 'unlocked' : 'locked'}">
+							${achievement.unlocked ? '已解锁' : '未解锁'}
+						</div>
+					</div>
+				</div>
+			`);
+			list.append(item);
+		});
+	}
+	
+	// 显示本局新解锁的成就
+	function showNewAchievements() {
+		const newAchievements = getUnlockedThisSession();
+		if (newAchievements.length === 0) {
+			$('#newAchievements').hide();
+			return;
+		}
+		
+		const container = $('#newAchievements');
+		container.html(`
+			<h3>新解锁成就：${newAchievements.length}个</h3>
+			<div class="new-achievements-list"></div>
+		`);
+		
+		const list = container.find('.new-achievements-list');
+		newAchievements.forEach(achievement => {
+			const item = $(`
+				<div class="new-achievement-item">
+					<div class="achievement-icon">${achievement.icon}</div>
+					<div>${achievement.name}</div>
+				</div>
+			`);
+			list.append(item);
+		});
+		
+		container.show();
 	}
 	window.blocks = [];
 	window.MainHex;
