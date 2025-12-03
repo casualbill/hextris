@@ -161,7 +161,8 @@ function Hex(sideLength) {
 			this.angle += this.angularVelocity;
 		}
  
-		drawPolygon(this.x + gdx, this.y + gdy + this.dy, this.sides, this.sideLength, this.angle,arrayToColor(this.fillColor) , 0, 'rgba(0,0,0,0)');
+		var centerHexColor = window.colors ? window.colors.centerHexColor : arrayToColor(this.fillColor);
+		drawPolygon(this.x + gdx, this.y + gdy + this.dy, this.sides, this.sideLength, this.angle, centerHexColor, 0, 'rgba(0,0,0,0)');
 	};
 }
 
