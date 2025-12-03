@@ -142,24 +142,196 @@ function hideText() {
 }
 
 function gameOverDisplay() {
-	settings.ending_block=false;
-	Cookies.set("visited",true);
-	var c = document.getElementById("canvas");
-	c.className = "blur";
+	// 显示游戏结束屏幕
+	$('#gameoverscreen').show();
+	
+	// 更新分数显示
+	$('#cScore').text(score);
+	
+	// 更新高分榜
 	updateHighScores();
-	if (highscores.length === 0 ){
-		$("#currentHighScore").text(0);
+	
+	// 处理"生成精彩瞬间"按钮
+	var highlightBtn = $('#generateHighlightBtn');
+	
+	// 显示按钮
+	highlightBtn.show();
+	
+	if (hasHighlights()) {
+		highlightBtn.prop('disabled', false);
+		highlightBtn.removeClass('disabled');
+		highlightBtn.attr('title', '生成精彩瞬间GIF');
+		highlightBtn.click(generateHighlightGIF);
+	} else {
+		highlightBtn.prop('disabled', true);
+		highlightBtn.addClass('disabled');
+		highlightBtn.attr('title', '本局游戏没有精彩瞬间');
 	}
-	else {
-		$("#currentHighScore").text(highscores[0])
-	}
-	$("#gameoverscreen").fadeIn();
-	$("#buttonCont").fadeIn();
-	$("#container").fadeIn();
-	$("#socialShare").fadeIn();
-	$("#restart").fadeIn();
-    set_score_pos();
 }
+
+// 生成精彩瞬间GIF
+function generateHighlightGIF() {
+	// 识别精彩瞬间
+	var highlights = identifyHighlights();
+	
+	if (highlights.length === 0) {
+		alert('本局游戏没有精彩瞬间');
+		return;
+	}
+	
+	// 显示选择界面（如果有多个精彩瞬间）
+	if (highlights.length > 1) {
+		displayHighlightSelection(highlights);
+	} else {
+		// 只有一个精彩瞬间，直接生成
+		createGIF(highlights[0]);
+	}
+}
+
+// 显示精彩瞬间选择界面
+function displayHighlightSelection(highlights) {
+	// 创建选择容器
+	var selectionContainer = document.createElement('div');
+	selectionContainer.id = 'highlightSelectionContainer';
+	selectionContainer.className = 'highlight-selection-container';
+	
+	// 创建选择内容
+	var selectionContent = document.createElement('div');
+	selectionContent.className = 'highlight-selection-content';
+	
+	// 创建标题
+	var title = document.createElement('h2');
+	title.textContent = '选择精彩瞬间';
+	
+	// 创建列表
+	var list = document.createElement('ul');
+	list.className = 'highlight-list';
+	
+	// 添加每个精彩瞬间选项
+	highlights.forEach(function(highlight, index) {
+		var item = document.createElement('li');
+		item.className = 'highlight-item';
+		
+		var btn = document.createElement('button');
+		btn.className = 'highlight-select-btn';
+		btn.textContent = highlight.type + ' - ' + formatDuration(highlight.duration);
+		btn.onclick = function() {
+			closeSelection();
+			createGIF(highlight);
+		};
+		
+		item.appendChild(btn);
+		list.appendChild(item);
+	});
+	
+	// 创建关闭按钮
+	var closeBtn = document.createElement('button');
+	closeBtn.className = 'highlight-selection-close';
+	closeBtn.textContent = '取消';
+	closeBtn.onclick = closeSelection;
+	
+	// 组装界面
+	selectionContent.appendChild(title);
+	selectionContent.appendChild(list);
+	selectionContent.appendChild(closeBtn);
+	
+	selectionContainer.appendChild(selectionContent);
+	document.body.appendChild(selectionContainer);
+	
+	// 显示选择界面
+	setTimeout(function() {
+		selectionContainer.classList.add('show');
+	}, 10);
+	
+	// 关闭选择界面的函数
+	function closeSelection() {
+		selectionContainer.classList.remove('show');
+		setTimeout(function() {
+			document.body.removeChild(selectionContainer);
+		}, 300);
+	}
+}
+
+// 创建GIF
+function createGIF(highlight) {
+	// 显示生成进度
+	displayGenerationProgress();
+	
+	// 初始化GIF录制器
+	var recorder = new GIFRecorder();
+	recorder.init();
+	
+	// 开始录制10秒
+	recorder.startRecording(10000);
+}
+
+// 显示生成进度
+function displayGenerationProgress() {
+	// 创建进度容器
+	var progressContainer = document.createElement('div');
+	progressContainer.id = 'generationProgressContainer';
+	progressContainer.className = 'generation-progress-container';
+	
+	// 创建进度内容
+	var progressContent = document.createElement('div');
+	progressContent.className = 'generation-progress-content';
+	
+	// 创建标题
+	var title = document.createElement('h2');
+	title.textContent = '正在生成GIF...';
+	
+	// 创建进度条
+	var progressBar = document.createElement('div');
+	progressBar.className = 'progress-bar';
+	
+	var progressFill = document.createElement('div');
+	progressFill.className = 'progress-fill';
+	progressFill.style.width = '0%';
+	
+	progressBar.appendChild(progressFill);
+	
+	// 组装界面
+	progressContent.appendChild(title);
+	progressContent.appendChild(progressBar);
+	
+	progressContainer.appendChild(progressContent);
+	document.body.appendChild(progressContainer);
+	
+	// 显示进度界面
+	setTimeout(function() {
+		progressContainer.classList.add('show');
+	}, 10);
+	
+	// 模拟进度更新
+	var progress = 0;
+	var interval = setInterval(function() {
+		progress += Math.random() * 10;
+		if (progress > 100) progress = 100;
+		progressFill.style.width = progress + '%';
+		
+		if (progress >= 100) {
+			clearInterval(interval);
+			setTimeout(function() {
+				closeProgress();
+			}, 500);
+		}
+	}, 200);
+	
+	// 关闭进度界面的函数
+	function closeProgress() {
+		progressContainer.classList.remove('show');
+		setTimeout(function() {
+			document.body.removeChild(progressContainer);
+		}, 300);
+	}
+}
+
+// 格式化持续时间
+	function formatDuration(duration) {
+		var seconds = Math.floor(duration / 1000);
+		var milliseconds = duration % 1000;
+		return seconds + '.' + milliseconds.toString().padStart(3, '0') + 's';
+	}
 
 function updateHighScores (){
     $("#cScore").text(score);

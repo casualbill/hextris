@@ -63,8 +63,24 @@ function consolidateBlocks(hex,side,index){
 		}
 	}
 
+	// 记录消除事件用于精彩瞬间分析
+	var now = Date.now();
+	var eliminationEvent = {
+		time: now,
+		blocksCount: deleting.length,
+		difficulty: waveone.difficulty,
+		comboMultiplier: hex.comboMultiplier,
+		scoreGain: deleting.length * deleting.length * hex.comboMultiplier,
+		ct: MainHex.ct
+	};
+	
+	// 确保全局事件数组存在
+	if (!window.eliminationEvents) {
+		window.eliminationEvents = [];
+	}
+	window.eliminationEvents.push(eliminationEvent);
+
 	// add scores
-	var now = MainHex.ct;
 	if(now - hex.lastCombo < settings.comboTime ){
 		settings.comboTime = (1/settings.creationSpeedModifier) * (waveone.nextGen/16.666667) * 3;
 		hex.comboMultiplier += 1;
