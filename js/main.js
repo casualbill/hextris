@@ -85,6 +85,8 @@ function hideUIElements() {
 	$('#pauseBtn').hide();
 	$('#restartBtn').hide();
 	$('#startBtn').hide();
+	// 游戏开始时隐藏成就按钮
+	$('#achievementsBtn').hide();
 }
 
 function init(b) {
@@ -95,9 +97,12 @@ function init(b) {
 			$('#helpScreen').fadeOut(150, "linear");
 		}
 
+		// 重置单局游戏统计数据
+		resetGameStats();
+
 		setTimeout(function() {
             if (gameState == 1) {
-			    $('#openSideBar').fadeOut(150, "linear");
+				$('#openSideBar').fadeOut(150, "linear");
             }
 			infobuttonfading = false;
 		}, 7000);
@@ -222,6 +227,8 @@ function setStartScreen() {
 	$('#pauseBtn').hide();
 	$('#restartBtn').hide();
 	$('#startBtn').show();
+	// 显示成就按钮
+	$('#achievementsBtn').show();
 
 	gameState = 0;
 	requestAnimFrame(animLoop);
