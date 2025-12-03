@@ -153,6 +153,13 @@ function gameOverDisplay() {
 	else {
 		$("#currentHighScore").text(highscores[0])
 	}
+	
+	// 更新全局统计数据
+	updateGlobalStatsAfterGame();
+	
+	// 显示新解锁的成就
+	showNewAchievementsOnGameOver();
+	
 	$("#gameoverscreen").fadeIn();
 	$("#buttonCont").fadeIn();
 	$("#container").fadeIn();

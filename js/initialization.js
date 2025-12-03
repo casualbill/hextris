@@ -98,6 +98,8 @@ function initialize(a) {
 	}
 
 	window.canvas = document.getElementById('canvas');
+	// 初始化成就系统
+	initAchievements();
 	window.ctx = canvas.getContext('2d');
 	window.trueCanvas = {
 		width: canvas.width,

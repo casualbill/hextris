@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成就系统测试</title>
+    <link rel="stylesheet" href="style/fa/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="style/style.css">
+    <link rel="stylesheet" type="text/css" href="style/achievements.css">
+    <script src="vendor/jquery.js"></script>
+    <script src="js/achievements.js"></script>
+    <style>
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        .test-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-header h1 {
+            margin: 0;
+            font-size: 36px;
+            color: #3498db;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        .test-section h2 {
+            margin-top: 0;
+            color: #3498db;
+        }
+        .test-button {
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 20px;
+            font-family: 'Exo 2', sans-serif;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #2980b9;
+            transform: scale(1.05);
+        }
+        .test-button:active {
+            transform: scale(0.95);
+        }
+        .info-box {
+            background: rgba(52, 152, 219, 0.2);
+            border-left: 5px solid #3498db;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .info-box h3 {
+            margin: 0 0 10px 0;
+            color: #3498db;
+        }
+        .info-box p {
+            margin: 0;
+        }
+        .stats-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px 20px;
+            text-align: center;
+            min-width: 120px;
+        }
+        .stat-item .value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #3498db;
+        }
+        .stat-item .label {
+            font-size: 12px;
+            color: #bdc3c7;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>成就系统测试</h1>
+            <p>点击下方按钮测试各种成就解锁场景</p>
+        </div>
+
+        <div class="test-section">
+            <h2>1. 分数相关成就</h2>
+            <button class="test-button" onclick="testScoreAchievements()">测试分数成就</button>
+            <p>测试：初出茅庐(100分)、百发百中(500分)、千分达人(1000分)、极限挑战(5000分)、万分传奇(10000分)、终极挑战(20000分)</p>
+        </div>
+
+        <div class="test-section">
+            <h2>2. 连击相关成就</h2>
+            <button class="test-button" onclick="testComboAchievements()">测试连击成就</button>
+            <p>测试：连击新手(3次)、连击大师(10次)、连击之王(20次)、完美连击(连续3次5+消除)</p>
+        </div>
+
+        <div class="test-section">
+            <h2>3. 时间相关成就</h2>
+            <button class="test-button" onclick="testTimeAchievements()">测试时间成就</button>
+            <p>测试：持久战(5分钟)、马拉松(15分钟)、完美开局(1分钟)、零失误(1分钟)</p>
+        </div>
+
+        <div class="test-section">
+            <h2>4. 消除相关成就</h2>
+            <button class="test-button" onclick="testBlocksClearedAchievements()">测试消除成就</button>
+            <p>测试：消除专家(100个)、消除狂人(500个)</p>
+        </div>
+
+        <div class="test-section">
+            <h2>5. 颜色相关成就</h2>
+            <button class="test-button" onclick="testColorMasterAchievement()">测试颜色大师成就</button>
+            <p>测试：颜色大师(各颜色消除10个)</p>
+        </div>
+
+        <div class="test-section">
+            <h2>6. 累计游戏局数成就</h2>
+            <button class="test-button" onclick="testTotalGamesAchievements()">测试累计局数成就</button>
+            <p>测试：永不放弃(50局)、百局玩家(100局)</p>
+        </div>
+
+        <div class="test-section">
+            <h2>7. 难度相关成就</h2>
+            <button class="test-button" onclick="testDifficultyAchievement()">测试速度之王成就</button>
+            <p>测试：速度之王(难度30+存活1分钟)</p>
+        </div>
+
+        <div class="test-section">
+            <h2>8. 重置测试状态</h2>
+            <button class="test-button" onclick="resetTestState()">重置所有测试数据</button>
+            <p>重置成就系统到初始状态</p>
+        </div>
+
+        <div class="test-section">
+            <h2>9. 手动测试成就列表</h2>
+            <button class="test-button" onclick="manualAchievementsList()">打开成就列表</button>
+            <p>手动测试成就列表界面</p>
+        </div>
+
+        <div class="info-box">
+            <h3>测试说明</h3>
+            <p>每个测试按钮会模拟游戏中达到相应成就条件的情况。点击后会在屏幕中央显示成就解锁通知（如果有）。</p>
+            <p>测试完成后，可以点击"打开成就列表"按钮查看所有成就的解锁状态。</p>
+            <p>点击"重置所有测试数据"可以重新开始测试。</p>
+        </div>
+
+        <div class="test-section">
+            <h2>当前统计数据</h2>
+            <div id="currentStats" class="stats-display">
+                <!-- 统计数据将在这里动态显示 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化成就系统
+        initAchievements();
+
+        // 测试分数成就
+        function testScoreAchievements() {
+            // 模拟不同分数
+            const scoreTests = [100, 500, 1000, 5000, 10000, 20000];
+            
+            scoreTests.forEach((score, index) => {
+                setTimeout(() => {
+                    resetGameStats();
+                    updateGameStats({ score: score });
+                }, index * 500);
+            });
+        }
+
+        // 测试连击成就
+        function testComboAchievements() {
+            // 模拟连击
+            resetGameStats();
+            updateGameStats({ maxCombo: 20, streak: 3 });
+        }
+
+        // 测试时间成就
+        function testTimeAchievements() {
+            // 模拟游戏时间
+            const oneMinute = 60 * 1000;
+            const fiveMinutes = 5 * oneMinute;
+            const fifteenMinutes = 15 * oneMinute;
+            
+            setTimeout(() => {
+                resetGameStats();
+                updateGameStats({ gameTime: oneMinute });
+            }, 100);
+            
+            setTimeout(() => {
+                resetGameStats();
+                updateGameStats({ gameTime: fiveMinutes });
+            }, 600);
+            
+            setTimeout(() => {
+                resetGameStats();
+                updateGameStats({ gameTime: fifteenMinutes });
+            }, 1100);
+        }
+
+        // 测试消除成就
+        function testBlocksClearedAchievements() {
+            // 模拟消除方块数量
+            resetGameStats();
+            updateGameStats({ totalBlocksCleared: 500 });
+        }
+
+        // 测试颜色大师成就
+        function testColorMasterAchievement() {
+            // 模拟各种颜色消除10个
+            resetGameStats();
+            updateGameStats({
+                colorCounts: {
+                    '#f1c40f': 10,
+                    '#e74c3c': 10,
+                    '#3498db': 10,
+                    '#2ecc71': 10
+                }
+            });
+        }
+
+        // 测试累计游戏局数成就
+        function testTotalGamesAchievements() {
+            // 模拟累计游戏局数
+            updateGlobalStatsAfterGame(); // 1局
+            
+            // 模拟直接达到100局
+            setTimeout(() => {
+                globalStats.totalGames = 100;
+                saveGlobalStats();
+                checkAchievements();
+            }, 1000);
+        }
+
+        // 测试速度之王成就
+        function testDifficultyAchievement() {
+            // 模拟难度30+存活1分钟
+            resetGameStats();
+            updateGameStats({
+                difficulty: 30,
+                gameTime: 60 * 1000
+            });
+        }
+
+        // 重置测试状态
+        function resetTestState() {
+            // 重置成就
+            achievements.forEach(achievement => {
+                achievement.unlocked = false;
+                achievement.progress = 0;
+            });
+            saveAchievements();
+            
+            // 重置全局统计
+            globalStats = {
+                totalGames: 0,
+                allTimeHighScore: 0,
+                maxCombo: 0,
+                longestGameTime: 0
+            };
+            saveGlobalStats();
+            
+            // 重置单局统计
+            resetGameStats();
+            
+            alert('测试数据已重置！');
+        }
+
+        // 手动打开成就列表
+        function manualAchievementsList() {
+            showAchievements();
+        }
+
+        // 更新当前统计数据显示
+        function updateStatsDisplay() {
+            const statsDiv = document.getElementById('currentStats');
+            statsDiv.innerHTML = `
+                <div class="stat-item">
+                    <div class="value">${globalStats.totalGames}</div>
+                    <div class="label">累计游戏局数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="value">${globalStats.allTimeHighScore}</div>
+                    <div class="label">历史最高分</div>
+                </div>
+                <div class="stat-item">
+                    <div class="value">${globalStats.maxCombo}</div>
+                    <div class="label">最高连击</div>
+                </div>
+                <div class="stat-item">
+                    <div class="value">${Math.floor(globalStats.longestGameTime / 1000 / 60)}m</div>
+                    <div class="label">最长游戏时间</div>
+                </div>
+                <div class="stat-item">
+                    <div class="value">${achievements.filter(a => a.unlocked).length}</div>
+                    <div class="label">已解锁成就</div>
+                </div>
+                <div class="stat-item">
+                    <div class="value">${achievements.length}</div>
+                    <div class="label">总成就数</div>
+                </div>
+            `;
+        }
+
+        // 定期更新统计显示
+        setInterval(updateStatsDisplay, 500);
+        
+        // 初始化统计显示
+        updateStatsDisplay();
+    </script>
+</body>
+</html>

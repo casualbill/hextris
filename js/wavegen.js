@@ -12,6 +12,11 @@ function blockDestroyed() {
 	} else {
 		waveone.difficulty = 35;
 	}
+	
+	// 实时更新方块消除统计
+	if (typeof window.updateGameStats === 'function') {
+		window.updateGameStats({ totalBlocksCleared: 1 }); // 每次消除一个方块
+	}
 }
 
 function waveGen(hex) {

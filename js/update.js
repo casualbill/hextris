@@ -7,6 +7,12 @@ function update(dt) {
 		if (MainHex.ct - waveone.prevTimeScored > 1000) {
 			waveone.prevTimeScored = MainHex.ct;
 		}
+		
+		// 实时更新游戏时间（每100ms更新一次）
+		if (typeof window.updateGameStats === 'function') {
+			const currentTime = Math.floor(MainHex.ct / 1000); // 转换为秒
+			window.updateGameStats({ gameTime: currentTime });
+		}
 	}
 	var lowestDeletedIndex = 99;
 	var i;

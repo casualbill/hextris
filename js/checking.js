@@ -81,4 +81,14 @@ function consolidateBlocks(hex,side,index){
 	hex.texts.push(new Text(hex.x,hex.y,"+ "+adder.toString(),"bold Q ",deletedBlocks[0].color,fadeUpAndOut));
 		hex.lastColorScored = deletedBlocks[0].color;
 	score += adder;
+	
+	// 实时更新分数统计
+	if (typeof window.updateGameStats === 'function') {
+		window.updateGameStats({ 
+			score: adder,
+			streak: 1,
+			maxCombo: hex.comboMultiplier,
+			blocksClearedByColor: { [deletedBlocks[0].color]: deleting.length }
+		});
+	}
 }
