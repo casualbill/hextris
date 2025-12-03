@@ -205,6 +205,13 @@ function inside (point, vs) {
 };
 
 function handleClickTap(x,y) {
+	// 检查是否点击了AI相关的UI元素
+	if (typeof checkAIDemoClick === 'function') {
+		if (checkAIDemoClick(x, y)) {
+			return;
+		}
+	}
+	
 	if (x < 120 && y < 83 && $('.helpText').is(':visible')) {
 		showHelp();
 		return;
@@ -221,6 +228,11 @@ function handleClickTap(x,y) {
 		[halfRadius,triHeight]];
 	Vertexes = Vertexes.map(function(coord){ 
 		return [coord[0] + trueCanvas.width/2, coord[1] + trueCanvas.height/2]});
+
+	// AI游戏中禁止玩家操作
+	if (aiDemoState == 3) {
+		return;
+	}
 
 	if (!MainHex || gameState === 0 || gameState==-1) {
 		return;

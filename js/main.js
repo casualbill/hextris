@@ -211,7 +211,7 @@ function exportHistory() {
 }
 
 function setStartScreen() {
-	$('#startBtn').show();
+	$('#startBtn').hide();
 	init();
 	if (isStateSaved()) {
 		importing = 0;
@@ -221,7 +221,7 @@ function setStartScreen() {
 
 	$('#pauseBtn').hide();
 	$('#restartBtn').hide();
-	$('#startBtn').show();
+	$('#startBtn').hide();
 
 	gameState = 0;
 	requestAnimFrame(animLoop);
@@ -246,6 +246,18 @@ function animLoop() {
 			}
 			else{
 				MainHex.delay--;
+			}
+		}
+
+		// 集成AI演示功能
+		if (typeof updateAIDemoUI === 'function') {
+			updateAIDemoUI();
+		}
+		
+		// AI定期做出决策
+		if (aiDemoState == 3 && MainHex.ct % 60 == 0) { // 每秒一次决策
+			if (typeof makeAIDecision === 'function') {
+				makeAIDecision();
 			}
 		}
 
