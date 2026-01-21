@@ -97,7 +97,7 @@ function init(b) {
 
 		setTimeout(function() {
             if (gameState == 1) {
-			    $('#openSideBar').fadeOut(150, "linear");
+				$('#openSideBar').fadeOut(150, "linear");
             }
 			infobuttonfading = false;
 		}, 7000);
@@ -106,8 +106,7 @@ function init(b) {
 	}
 	if (highscores.length === 0 ){
 		$("#currentHighScore").text(0);
-	}
-	else {
+	} else {
 		$("#currentHighScore").text(highscores[0])
 	}
 	infobuttonfading = true;
@@ -119,68 +118,117 @@ function init(b) {
 	history = {};
 	importedHistory = undefined;
 	importing = 0;
-	score = saveState.score || 0;
-	prevScore = 0;
-	spawnLane = 0;
 	op = 0;
 	tweetblock=false;
 	scoreOpacity = 0;
-	gameState = 1;
+	// 不要在这里将gameState设置为1，因为setStartScreen()函数会将它设置为0
 	$("#restartBtn").hide();
 	$("#pauseBtn").show();
-	if (saveState.hex !== undefined) gameState = 1;
-
+	
 	settings.blockHeight = settings.baseBlockHeight * settings.scale;
 	settings.hexWidth = settings.baseHexWidth * settings.scale;
-	MainHex = saveState.hex || new Hex(settings.hexWidth);
-	if (saveState.hex) {
-		MainHex.playThrough += 1;
-	}
-	MainHex.sideLength = settings.hexWidth;
+	
+	if (gameMode === 0) {
+		// 单人游戏初始化
+		score = saveState.score || 0;
+		prevScore = 0;
+		spawnLane = 0;
+		// 只有在明确选择游戏模式并开始游戏时才设置gameState为1，而不是自动从保存状态加载
+		// if (saveState.hex !== undefined) gameState = 1;
+		
+		MainHex = new Hex(settings.hexWidth);
+		if (saveState.hex) {
+			MainHex.playThrough += 1;
+		}
+		MainHex.sideLength = settings.hexWidth;
 
-	var i;
-	var block;
-	if (saveState.blocks) {
-		saveState.blocks.map(function(o) {
-			if (rgbToHex[o.color]) {
-				o.color = rgbToHex[o.color];
+		var i;
+		var block;
+		if (saveState.blocks) {
+			saveState.blocks.map(function(o) {
+				if (rgbToHex[o.color]) {
+					o.color = rgbToHex[o.color];
+				}
+			});
+
+			for (i = 0; i < saveState.blocks.length; i++) {
+				block = saveState.blocks[i];
+				blocks.push(block);
 			}
+		} else {
+			blocks = [];
+		}
+
+		gdx = saveState.gdx || 0;
+		gdy = saveState.gdy || 0;
+		comboTime = saveState.comboTime || 0;
+
+		for (i = 0; i < MainHex.blocks.length; i++) {
+			for (var j = 0; j < MainHex.blocks[i].length; j++) {
+				MainHex.blocks[i][j].height = settings.blockHeight;
+				MainHex.blocks[i][j].settled = 0;
+			}
+		}
+
+		MainHex.blocks.map(function(i) {
+			i.map(function(o) {
+				if (rgbToHex[o.color]) {
+					o.color = rgbToHex[o.color];
+				}
+			});
 		});
 
-		for (i = 0; i < saveState.blocks.length; i++) {
-			block = saveState.blocks[i];
-			blocks.push(block);
-		}
+		MainHex.y = -100;
+		
+		waveone = saveState.wavegen || new waveGen(MainHex);
+		
 	} else {
+		// 双人游戏初始化
+		score = 0;
+		score2 = 0;
+		prevScore = 0;
+		spawnLane1 = 0;
+		spawnLane2 = 0;
+		
+		// 初始化玩家1
+		MainHex1 = new Hex(settings.hexWidth);
+		MainHex1.sideLength = settings.hexWidth;
+		MainHex1.y = -100;
 		blocks = [];
+		gdx1 = 0;
+		gdy1 = 0;
+		
+		// 初始化玩家2
+		MainHex2 = new Hex(settings.hexWidth);
+		MainHex2.sideLength = settings.hexWidth;
+		MainHex2.y = -100;
+		blocks2 = [];
+		gdx2 = 0;
+		gdy2 = 0;
+		
+		// 创建两个独立的波生成器
+		waveone1 = new waveGen(MainHex1);
+		waveone2 = new waveGen(MainHex2);
 	}
-
-	gdx = saveState.gdx || 0;
-	gdy = saveState.gdy || 0;
-	comboTime = saveState.comboTime || 0;
-
-	for (i = 0; i < MainHex.blocks.length; i++) {
-		for (var j = 0; j < MainHex.blocks[i].length; j++) {
-			MainHex.blocks[i][j].height = settings.blockHeight;
-			MainHex.blocks[i][j].settled = 0;
-		}
-	}
-
-	MainHex.blocks.map(function(i) {
-		i.map(function(o) {
-			if (rgbToHex[o.color]) {
-				o.color = rgbToHex[o.color];
-			}
-		});
-	});
-
-	MainHex.y = -100;
 
 	startTime = Date.now();
-	waveone = saveState.wavegen || new waveGen(MainHex);
-
-	MainHex.texts = []; //clear texts
-	MainHex.delay = 15;
+	
+	// 清除文本并设置延迟
+	if (gameMode === 0) {
+		MainHex.texts = [];
+		MainHex.delay = 15;
+	} else {
+		MainHex1.texts = [];
+		MainHex1.delay = 15;
+		MainHex2.texts = [];
+		MainHex2.delay = 15;
+	}
+	
+	// 开始游戏，设置游戏状态为1
+	if (b) {
+		gameState = 1;
+	}
+	
 	hideText();
 }
 
@@ -212,19 +260,43 @@ function exportHistory() {
 
 function setStartScreen() {
 	$('#startBtn').show();
-	init();
-	if (isStateSaved()) {
-		importing = 0;
-	} else {
-		importing = 1;
-	}
+	// 调用init(false)确保不立即开始游戏
+	init(false);
+	
+	// 清除保存状态，确保主菜单正确显示
+	clearSaveState();
+	importing = 1;
 
 	$('#pauseBtn').hide();
 	$('#restartBtn').hide();
 	$('#startBtn').show();
 
+	// 明确设置游戏状态为主菜单
 	gameState = 0;
 	requestAnimFrame(animLoop);
+	
+	// 添加游戏模式选择的点击事件
+	$('#canvas').off('click').on('click', function(e) {
+		if (gameState === 0) {
+			var rect = canvas.getBoundingClientRect();
+			var clickY = (e.clientY - rect.top) / settings.scale;
+			var upperheight = (trueCanvas.height/2) - ((settings.rows * settings.blockHeight) * (2/Math.sqrt(3))) * (5/6);
+			var fontSize = settings.platform == 'mobile' ? 45 : 37;
+			
+			// 检测点击的是单人游戏还是双人游戏
+			if (clickY > upperheight - 60*settings.scale - fontSize && 
+			    clickY < upperheight - 60*settings.scale + fontSize) {
+			    // 选择单人游戏
+			    gameMode = 0;
+			    init(1);
+			} else if (clickY > upperheight - 20*settings.scale - fontSize && 
+			           clickY < upperheight - 20*settings.scale + fontSize) {
+			    // 选择双人游戏
+			    gameMode = 1;
+			    init(1);
+			}
+		}
+	});
 }
 
 var spd = 1;
@@ -241,11 +313,23 @@ function animLoop() {
 		}
 
 		if(gameState == 1 ){
-			if(!MainHex.delay) {
-				update(dt);
-			}
-			else{
-				MainHex.delay--;
+			if (gameMode === 0) {
+				// 单人模式延迟检查
+				if(!MainHex.delay) {
+					update(dt);
+				}
+				else{
+					MainHex.delay--;
+				}
+			} else {
+				// 双人模式延迟检查
+				if(!MainHex1.delay && !MainHex2.delay) {
+					update(dt);
+				}
+				else{
+					if(MainHex1.delay) MainHex1.delay--;
+					if(MainHex2.delay) MainHex2.delay--;
+				}
 			}
 		}
 
@@ -335,18 +419,41 @@ function isInfringing(hex) {
 }
 
 function checkGameOver() {
-	for (var i = 0; i < MainHex.sides; i++) {
-		if (isInfringing(MainHex)) {
-			$.get('http://54.183.184.126/' + String(score))
+	if (gameMode === 0) {
+		// 单人模式游戏结束检查
+		for (var i = 0; i < MainHex.sides; i++) {
+			if (isInfringing(MainHex)) {
+				$.get('http://54.183.184.126/' + String(score))
+				if (highscores.indexOf(score) == -1) {
+					highscores.push(score);
+				}
+				writeHighScores();
+				gameOverDisplay();
+				return true;
+			}
+		}
+		return false;
+	} else {
+		// 双人对战模式游戏结束检查
+		var player1Lost = isInfringing(MainHex1);
+		var player2Lost = isInfringing(MainHex2);
+		
+		if (player1Lost || player2Lost) {
+			// 记录分数
 			if (highscores.indexOf(score) == -1) {
 				highscores.push(score);
 			}
+			if (highscores.indexOf(score2) == -1) {
+				highscores.push(score2);
+			}
 			writeHighScores();
+			
+			// 显示游戏结束界面
 			gameOverDisplay();
 			return true;
 		}
+		return false;
 	}
-	return false;
 }
 
 function showHelp() {
