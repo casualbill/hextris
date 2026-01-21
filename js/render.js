@@ -6,51 +6,157 @@ function render() {
 	
 	ctx.clearRect(0, 0, trueCanvas.width, trueCanvas.height);
 	clearGameBoard();
-	if (gameState === 1 || gameState === 2 || gameState === -1 || gameState === 0) {
-		if (op < 1) {
-			op += 0.01;
+	
+	if (is2PlayerMode) {
+		// 2-player mode rendering
+		var halfWidth = trueCanvas.width / 2;
+		
+		// Player 1 (left side)
+		if (gameState === 1 || gameState === 2 || gameState === -1 || gameState === 0) {
+			if (op < 1) {
+				op += 0.01;
+			}
+			ctx.globalAlpha = op;
+			drawPolygon(halfWidth / 2, trueCanvas.height / 2, 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false, 6);
+			ctx.globalAlpha = 1;
 		}
-		ctx.globalAlpha = op;
-		drawPolygon(trueCanvas.width / 2 , trueCanvas.height / 2 , 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false,6);
-		drawTimer();
-		ctx.globalAlpha = 1;
-	}
-
-	var i;
-	for (i = 0; i < MainHex.blocks.length; i++) {
-		for (var j = 0; j < MainHex.blocks[i].length; j++) {
-			var block = MainHex.blocks[i][j];
-			block.draw(true, j);
+		
+		// Draw Player 1's blocks
+		var i;
+		for (i = 0; i < MainHex1.blocks.length; i++) {
+			for (var j = 0; j < MainHex1.blocks[i].length; j++) {
+				var block = MainHex1.blocks[i][j];
+				block.draw(true, j, trueCanvas.width / 4);
+			}
 		}
-	}
-	for (i = 0; i < blocks.length; i++) {
-		blocks[i].draw();
-	}
-
-	MainHex.draw();
-	if (gameState ==1 || gameState ==-1 || gameState === 0) {
-		drawScoreboard();
-	}
-
-	for (i = 0; i < MainHex.texts.length; i++) {
-		var alive = MainHex.texts[i].draw();
-		if(!alive){
-			MainHex.texts.splice(i,1);
-			i--;
+		for (i = 0; i < blocks1.length; i++) {
+			blocks1[i].draw(trueCanvas.width / 4);
 		}
-	}
-
-	if ((MainHex.ct < 650 && (gameState !== 0) && !MainHex.playThrough)) {
-		if (MainHex.ct > (650 - 50)) {
-			ctx.globalAlpha = (50 - (MainHex.ct - (650 - 50)))/50;
+		
+		MainHex1.x = trueCanvas.width / 4;
+		MainHex1.draw();
+		
+		// Draw Player 1's score and combo
+		drawPlayerScore(1, halfWidth / 2, trueCanvas.height / 2 - (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) * 0.8);
+		
+		// Player 2 (right side)
+		if (gameState === 1 || gameState === 2 || gameState === -1 || gameState === 0) {
+			ctx.globalAlpha = op;
+			drawPolygon(halfWidth + halfWidth / 2, trueCanvas.height / 2, 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false, 6);
+			drawTimer();
+			ctx.globalAlpha = 1;
 		}
-
-		if (MainHex.ct < 50) {
-			ctx.globalAlpha = (MainHex.ct)/50;
+		
+		// Draw Player 2's blocks
+		for (i = 0; i < MainHex2.blocks.length; i++) {
+			for (var j = 0; j < MainHex2.blocks[i].length; j++) {
+				var block = MainHex2.blocks[i][j];
+				block.draw(true, j, trueCanvas.width * 3 / 4);
+			}
 		}
-
+		for (i = 0; i < blocks2.length; i++) {
+			blocks2[i].draw(trueCanvas.width * 3 / 4);
+		}
+		
+		MainHex2.x = trueCanvas.width * 3 / 4;
+		MainHex2.draw();
+		
+		// Draw Player 2's score and combo
+		drawPlayerScore(2, halfWidth + halfWidth / 2, trueCanvas.height / 2 - (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) * 0.8);
+		
+		// Draw dividing line
+		ctx.beginPath();
+		ctx.moveTo(halfWidth, 0);
+		ctx.lineTo(halfWidth, trueCanvas.height);
+		ctx.lineWidth = 2;
+		ctx.strokeStyle = '#bdc3c7';
+		ctx.stroke();
+		
+		// Draw player labels
+		ctx.fillStyle = '#2c3e50';
+		ctx.font = '24px Arial';
+		ctx.textAlign = 'center';
+		ctx.fillText('Player 1', halfWidth / 2, 30);
+		ctx.fillText('Player 2', halfWidth + halfWidth / 2, 30);
+		
+		// Draw texts for both players
+		for (i = 0; i < MainHex1.texts.length; i++) {
+			var alive = MainHex1.texts[i].draw();
+			if(!alive){
+				MainHex1.texts.splice(i,1);
+				i--;
+			}
+		}
+		
+		for (i = 0; i < MainHex2.texts.length; i++) {
+			var alive = MainHex2.texts[i].draw();
+			if(!alive){
+				MainHex2.texts.splice(i,1);
+				i--;
+			}
+		}
+		
+		// Draw beginning text if needed
+		if ((MainHex1.ct < 650 && (gameState !== 0) && !MainHex1.playThrough) || (MainHex2.ct < 650 && (gameState !== 0) && !MainHex2.playThrough)) {
+			if (MainHex1.ct > (650 - 50)) {
+				ctx.globalAlpha = (50 - (MainHex1.ct - (650 - 50)))/50;
+			}
+			
+			if (MainHex1.ct < 50) {
+				ctx.globalAlpha = (MainHex1.ct)/50;
+			}
+			
 		renderBeginningText();
 		ctx.globalAlpha = 1;
+	}
+	} else {
+		// Single player mode rendering (original code)
+		if (gameState === 1 || gameState === 2 || gameState === -1 || gameState === 0) {
+			if (op < 1) {
+				op += 0.01;
+			}
+			ctx.globalAlpha = op;
+			drawPolygon(trueCanvas.width / 2, trueCanvas.height / 2, 6, (settings.rows * settings.blockHeight) * (2/Math.sqrt(3)) + settings.hexWidth, 30, grey, false, 6);
+			drawTimer();
+			ctx.globalAlpha = 1;
+		}
+		
+		var i;
+		for (i = 0; i < MainHex.blocks.length; i++) {
+			for (var j = 0; j < MainHex.blocks[i].length; j++) {
+				var block = MainHex.blocks[i][j];
+				block.draw(true, j);
+			}
+		}
+		for (i = 0; i < blocks.length; i++) {
+			blocks[i].draw();
+		}
+		
+		MainHex.draw();
+		if (gameState == 1 || gameState == -1 || gameState === 0) {
+			drawScoreboard();
+		}
+		
+		for (i = 0; i < MainHex.texts.length; i++) {
+			var alive = MainHex.texts[i].draw();
+			if(!alive){
+				MainHex.texts.splice(i,1);
+				i--;
+			}
+		}
+		
+		if ((MainHex.ct < 650 && (gameState !== 0) && !MainHex.playThrough)) {
+			if (MainHex.ct > (650 - 50)) {
+				ctx.globalAlpha = (50 - (MainHex.ct - (650 - 50)))/50;
+			}
+			
+			if (MainHex.ct < 50) {
+				ctx.globalAlpha = (MainHex.ct)/50;
+			}
+			
+			renderBeginningText();
+			ctx.globalAlpha = 1;
+		}
 	}
 
 	if (gameState == -1) {
@@ -113,5 +219,24 @@ function drawKey(key, x, y) {
 			drawKey("left", x - 5, y);
 			drawKey("right", x + 5, y);
 	}
+	ctx.restore();
+}
+
+function drawPlayerScore(playerNum, x, y) {
+	ctx.save();
+	ctx.font = 'bold 36px Arial';
+	ctx.textAlign = 'center';
+	ctx.fillStyle = '#2c3e50';
+	
+	var score = playerNum === 1 ? score1 : score2;
+	ctx.fillText(score, x, y);
+	
+	// Draw combo if any
+	if (scoreAdditionCoeff > 1) {
+		ctx.font = '24px Arial';
+		ctx.fillStyle = '#e74c3c';
+		ctx.fillText('x' + scoreAdditionCoeff, x, y + 30);
+	}
+	
 	ctx.restore();
 }

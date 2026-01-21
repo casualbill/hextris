@@ -68,7 +68,7 @@ function Block(fallingLane, color, iter, distFromHex, settled) {
 		}
 	};
 
-	this.draw = function(attached, index) {
+	this.draw = function(attached, index, customX) {
 		this.height = settings.blockHeight;
 		if (Math.abs(settings.scale - settings.prevScale) > 0.000000001) {
 			this.distFromHex *= (settings.scale/settings.prevScale);
@@ -77,12 +77,18 @@ function Block(fallingLane, color, iter, distFromHex, settled) {
 		this.incrementOpacity();
 		if(attached === undefined)
 			attached = false;
+		
+		// Determine which hex to use based on customX (for 2-player mode)
+		var hex = MainHex;
+		if (is2PlayerMode) {
+			hex = customX < trueCanvas.width / 2 ? MainHex1 : MainHex2;
+		}
 
 		if(this.angle > this.targetAngle) {
-			this.angularVelocity -= angularVelocityConst * MainHex.dt;
+			this.angularVelocity -= angularVelocityConst * hex.dt;
 		}
 		else if(this.angle < this.targetAngle) {
-			this.angularVelocity += angularVelocityConst * MainHex.dt;
+			this.angularVelocity += angularVelocityConst * hex.dt;
 		}
 
 		if (Math.abs(this.angle - this.targetAngle + this.angularVelocity) <= Math.abs(this.angularVelocity)) { //do better soon
@@ -101,7 +107,7 @@ function Block(fallingLane, color, iter, distFromHex, settled) {
 		var p3;
 		var p4;
 		if (this.initializing) {
-			var rat = ((MainHex.ct - this.ict)/this.initLen);
+			var rat = ((hex.ct - this.ict)/this.initLen);
 			if (rat > 1) {
 				rat = 1;
 			}
@@ -109,7 +115,7 @@ function Block(fallingLane, color, iter, distFromHex, settled) {
 			p2 = rotatePoint((this.width / 2) * rat, this.height / 2, this.angle);
 			p3 = rotatePoint((this.widthWide / 2) * rat, -this.height / 2, this.angle);
 			p4 = rotatePoint((-this.widthWide / 2) * rat, -this.height / 2, this.angle);
-			if ((MainHex.ct - this.ict) >= this.initLen) {
+			if ((hex.ct - this.ict) >= this.initLen) {
 				this.initializing = 0;
 			}
 		} else {
@@ -134,7 +140,8 @@ function Block(fallingLane, color, iter, distFromHex, settled) {
 		}
 
 		ctx.globalAlpha = this.opacity;
-		var baseX = trueCanvas.width / 2 + Math.sin((this.angle) * (Math.PI / 180)) * (this.distFromHex + this.height / 2) + gdx;
+		// Use customX if provided, otherwise use center of canvas
+		var baseX = (customX || trueCanvas.width / 2) + Math.sin((this.angle) * (Math.PI / 180)) * (this.distFromHex + this.height / 2) + gdx;
 		var baseY = trueCanvas.height / 2 - Math.cos((this.angle) * (Math.PI / 180)) * (this.distFromHex + this.height / 2) + gdy;
 		ctx.beginPath();
 		ctx.moveTo(baseX + p1.x, baseY + p1.y);
@@ -165,7 +172,7 @@ function Block(fallingLane, color, iter, distFromHex, settled) {
 			ctx.lineTo(baseX + p1.x, baseY + p1.y);
 			ctx.closePath();
 			ctx.fill();
-			this.tint -= 0.02 * MainHex.dt;
+			this.tint -= 0.02 * hex.dt;
 			if (this.tint < 0) {
 				this.tint = 0;
 			}
