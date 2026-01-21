@@ -70,7 +70,7 @@ function Hex(sideLength) {
 					block.checked = 1;
 				} else {
 					block.settled = 0;
-					block.iter = 1.5 + (waveone.difficulty/15) * 3;
+					block.iter = 1.5 + ((waveone && waveone.difficulty) || 1)/15 * 3;
 				}
 			} else {
 				if (arr[position - 1].settled && block.distFromHex - block.iter * this.dt * settings.scale - arr[position - 1].distFromHex - arr[position - 1].height <= 0) {
@@ -80,7 +80,7 @@ function Hex(sideLength) {
 				}
 				else {
 					block.settled = 0;
-					block.iter = 1.5 + (waveone.difficulty/15) * 3;
+					block.iter = 1.5 + ((waveone && waveone.difficulty) || 1)/15 * 3;
 				}
 			}
 		} else {

@@ -96,9 +96,9 @@ function init(b) {
 		}
 
 		setTimeout(function() {
-            if (gameState == 1) {
-			    $('#openSideBar').fadeOut(150, "linear");
-            }
+		    if (gameState == 1) {
+			$('#openSideBar').fadeOut(150, "linear");
+		    }
 			infobuttonfading = false;
 		}, 7000);
 		clearSaveState();
@@ -120,6 +120,8 @@ function init(b) {
 	importedHistory = undefined;
 	importing = 0;
 	score = saveState.score || 0;
+	score1 = 0;
+	score2 = 0;
 	prevScore = 0;
 	spawnLane = 0;
 	op = 0;
@@ -132,55 +134,76 @@ function init(b) {
 
 	settings.blockHeight = settings.baseBlockHeight * settings.scale;
 	settings.hexWidth = settings.baseHexWidth * settings.scale;
-	MainHex = saveState.hex || new Hex(settings.hexWidth);
-	if (saveState.hex) {
-		MainHex.playThrough += 1;
-	}
-	MainHex.sideLength = settings.hexWidth;
 
-	var i;
-	var block;
-	if (saveState.blocks) {
-		saveState.blocks.map(function(o) {
-			if (rgbToHex[o.color]) {
-				o.color = rgbToHex[o.color];
-			}
-		});
-
-		for (i = 0; i < saveState.blocks.length; i++) {
-			block = saveState.blocks[i];
-			blocks.push(block);
-		}
+	if (is2PlayerMode) {
+		// Initialize two separate hexagons for 2-player mode
+		MainHex1 = new Hex(settings.hexWidth);
+		MainHex2 = new Hex(settings.hexWidth);
+		MainHex1.sideLength = settings.hexWidth;
+		MainHex2.sideLength = settings.hexWidth;
+		MainHex1.y = -100;
+		MainHex2.y = -100;
+		MainHex1.texts = [];
+		MainHex2.texts = [];
+		MainHex1.delay = 15;
+		MainHex2.delay = 15;
+		blocks1 = [];
+		blocks2 = [];
+		wavegen1 = new waveGen(MainHex1);
+		wavegen2 = new waveGen(MainHex2);
 	} else {
-		blocks = [];
-	}
-
-	gdx = saveState.gdx || 0;
-	gdy = saveState.gdy || 0;
-	comboTime = saveState.comboTime || 0;
-
-	for (i = 0; i < MainHex.blocks.length; i++) {
-		for (var j = 0; j < MainHex.blocks[i].length; j++) {
-			MainHex.blocks[i][j].height = settings.blockHeight;
-			MainHex.blocks[i][j].settled = 0;
+		// Original single player initialization
+		MainHex = saveState.hex || new Hex(settings.hexWidth);
+		if (saveState.hex) {
+			MainHex.playThrough += 1;
 		}
-	}
+		MainHex.sideLength = settings.hexWidth;
 
-	MainHex.blocks.map(function(i) {
-		i.map(function(o) {
-			if (rgbToHex[o.color]) {
-				o.color = rgbToHex[o.color];
+		var i;
+		var block;
+		if (saveState.blocks) {
+			saveState.blocks.map(function(o) {
+				if (rgbToHex[o.color]) {
+					o.color = rgbToHex[o.color];
+				}
+			});
+
+			for (i = 0; i < saveState.blocks.length; i++) {
+				block = saveState.blocks[i];
+				blocks.push(block);
 			}
-		});
-	});
+		} else {
+			blocks = [];
+		}
 
-	MainHex.y = -100;
+		gdx = saveState.gdx || 0;
+		gdy = saveState.gdy || 0;
+		comboTime = saveState.comboTime || 0;
+
+		for (i = 0; i < MainHex.blocks.length; i++) {
+			for (var j = 0; j < MainHex.blocks[i].length; j++) {
+				MainHex.blocks[i][j].height = settings.blockHeight;
+				MainHex.blocks[i][j].settled = 0;
+			}
+		}
+
+		MainHex.blocks.map(function(i) {
+			i.map(function(o) {
+				if (rgbToHex[o.color]) {
+					o.color = rgbToHex[o.color];
+				}
+			});
+		});
+
+		MainHex.y = -100;
+
+		waveone = saveState.wavegen || new waveGen(MainHex);
+
+		MainHex.texts = []; //clear texts
+		MainHex.delay = 15;
+	}
 
 	startTime = Date.now();
-	waveone = saveState.wavegen || new waveGen(MainHex);
-
-	MainHex.texts = []; //clear texts
-	MainHex.delay = 15;
 	hideText();
 }
 
@@ -335,7 +358,22 @@ function isInfringing(hex) {
 }
 
 function checkGameOver() {
-	for (var i = 0; i < MainHex.sides; i++) {
+	if (is2PlayerMode) {
+		// Check both players
+		var player1Lost = isInfringing(MainHex1);
+		var player2Lost = isInfringing(MainHex2);
+		
+		if (player1Lost || player2Lost) {
+			// Game over in 2-player mode
+			if (highscores.indexOf(Math.max(score1, score2)) == -1) {
+				highscores.push(Math.max(score1, score2));
+			}
+			writeHighScores();
+			gameOverDisplay();
+			return true;
+		}
+	} else {
+		// Single player mode
 		if (isInfringing(MainHex)) {
 			$.get('http://54.183.184.126/' + String(score))
 			if (highscores.indexOf(score) == -1) {

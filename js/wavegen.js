@@ -1,16 +1,54 @@
-function blockDestroyed() {
-	if (waveone.nextGen > 1350) {
-		waveone.nextGen -= 30 * settings.creationSpeedModifier;
-	} else if (waveone.nextGen > 600) {
-		waveone.nextGen -= 8 * settings.creationSpeedModifier;
-	} else {
-		waveone.nextGen = 600;
-	}
+function blockDestroyed(playerNum) {
+	if (is2PlayerMode) {
+		// Update the correct wave generator and score for the player
+		var wave = playerNum === 1 ? wavegen1 : wavegen2;
+		var scoreToUpdate = playerNum === 1 ? 'score1' : 'score2';
+		
+		// Update wave generation speed
+		if (wave.nextGen > 1350) {
+			wave.nextGen -= 30 * settings.creationSpeedModifier;
+		} else if (wave.nextGen > 600) {
+			wave.nextGen -= 8 * settings.creationSpeedModifier;
+		} else {
+			wave.nextGen = 600;
+		}
 
-	if (waveone.difficulty < 35) {
-		waveone.difficulty += 0.085 * settings.speedModifier;
+		// Update difficulty
+		if (wave.difficulty < 35) {
+			wave.difficulty += 0.085 * settings.speedModifier;
+		} else {
+			wave.difficulty = 35;
+		}
+		
+		// Update score
+		window[scoreToUpdate] += scoreAdditionCoeff;
+		
+		// Reset combo if needed
+		if (playerNum === 1) {
+			MainHex1.lastCombo = MainHex1.ct;
+		} else {
+			MainHex2.lastCombo = MainHex2.ct;
+		}
 	} else {
-		waveone.difficulty = 35;
+		// Single player mode
+		if (waveone) {
+			if (waveone.nextGen > 1350) {
+				waveone.nextGen -= 30 * settings.creationSpeedModifier;
+			} else if (waveone.nextGen > 600) {
+				waveone.nextGen -= 8 * settings.creationSpeedModifier;
+			} else {
+				waveone.nextGen = 600;
+			}
+
+			if (waveone.difficulty < 35) {
+				waveone.difficulty += 0.085 * settings.speedModifier;
+			} else {
+				waveone.difficulty = 35;
+			}
+		}
+		
+		score += scoreAdditionCoeff;
+		MainHex.lastCombo = MainHex.ct;
 	}
 }
 

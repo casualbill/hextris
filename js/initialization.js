@@ -108,9 +108,18 @@ function initialize(a) {
 	window.framerate = 60;
 	window.history = {};
 	window.score = 0;
+	window.score1 = 0;
+	window.score2 = 0;
 	window.scoreAdditionCoeff = 1;
 	window.prevScore = 0;
 	window.numHighScores = 3;
+	window.is2PlayerMode = false;
+	window.MainHex1;
+	window.MainHex2;
+	window.wavegen1;
+	window.wavegen2;
+	window.blocks1 = [];
+	window.blocks2 = [];
 
 	highscores = [];
 	if (localStorage.getItem('highscores')) {
