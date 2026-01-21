@@ -17,14 +17,36 @@ function renderText(x, y, fontSize, color, text, font) {
 	ctx.restore();
 }
 
-function drawScoreboard() {
+function drawScoreboard(playerId) {
+	var currentScore = score;
+	var currentGdx = gdx;
+	var currentGdy = gdy;
+	var centerX = trueCanvas.width / 2;
+	
+	if (gameMode === 1) {
+		// 双人模式下根据玩家ID调整位置和分数
+		if (playerId === 1) {
+			// 玩家1在左侧
+			currentScore = score;
+			currentGdx = gdx1;
+			currentGdy = gdy1;
+			centerX = trueCanvas.width / 4;
+		} else if (playerId === 2) {
+			// 玩家2在右侧
+			currentScore = score2;
+			currentGdx = gdx2;
+			currentGdy = gdy2;
+			centerX = 3 * trueCanvas.width / 4;
+		}
+	}
+	
 	if (scoreOpacity < 1) {
 		scoreOpacity += 0.01;
 		textOpacity += 0.01;
 	}
 	ctx.globalAlpha = textOpacity;
 	var scoreSize = 50;
-	var scoreString = String(score);
+	var scoreString = String(currentScore);
 	if (scoreString.length == 6) {
 		scoreSize = 43;
 	} else if (scoreString.length == 7) {
@@ -34,25 +56,33 @@ function drawScoreboard() {
 	} else if (scoreString.length == 9) {
 		scoreSize = 27;
 	}
-	//if (rush ==1){
-		var color = "rgb(236, 240, 241)";
-	//}
+	
+	var color = "rgb(236, 240, 241)";
     var fontSize = settings.platform == 'mobile' ? 35 : 30;
-    var h = trueCanvas.height / 2 + gdy + 100 * settings.scale;
-	if (gameState === 0) {
-		renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2 + gdy, 60, "rgb(236, 240, 241)", String.fromCharCode("0xf04b"), 'px FontAwesome');
-		renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2.1 + gdy - 155 * settings.scale, 150, "#2c3e50", "Hextris");
-		renderText(trueCanvas.width / 2 + gdx + 5 * settings.scale, h + 10, fontSize, "rgb(44,62,80)", 'Play!');
+    var h = trueCanvas.height / 2 + currentGdy + 100 * settings.scale;
+	
+	if (gameMode === 0 || (gameMode === 1 && gameState === 0)) {
+		renderText(centerX + currentGdx + 6 * settings.scale, trueCanvas.height / 2 + currentGdy, 60, "rgb(236, 240, 241)", String.fromCharCode("0xf04b"), 'px FontAwesome');
+		if (gameMode === 0) {
+			renderText(centerX + currentGdx + 6 * settings.scale, trueCanvas.height / 2.1 + currentGdy - 155 * settings.scale, 150, "#2c3e50", "Hextris");
+		} else {
+			renderText(centerX + currentGdx + 6 * settings.scale, trueCanvas.height / 2.1 + currentGdy - 155 * settings.scale, 150, "#2c3e50", playerId === 1 ? "玩家1" : "玩家2");
+		}
+		renderText(centerX + currentGdx + 5 * settings.scale, h + 10, fontSize, "rgb(44,62,80)", 'Play!');
 	} else if (gameState != 0 && textOpacity > 0) {
 		textOpacity -= 0.05;
-		renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2 + gdy, 60, "rgb(236, 240, 241)", String.fromCharCode("0xf04b"), 'px FontAwesome');
-		renderText(trueCanvas.width / 2 + gdx + 6 * settings.scale, trueCanvas.height / 2 + gdy - 155 * settings.scale, 150, "#2c3e50", "Hextris");
-		renderText(trueCanvas.width / 2 + gdx + 5 * settings.scale, h, fontSize, "rgb(44,62,80)", 'Play!');
+		renderText(centerX + currentGdx + 6 * settings.scale, trueCanvas.height / 2 + currentGdy, 60, "rgb(236, 240, 241)", String.fromCharCode("0xf04b"), 'px FontAwesome');
+		if (gameMode === 0) {
+			renderText(centerX + currentGdx + 6 * settings.scale, trueCanvas.height / 2 + currentGdy - 155 * settings.scale, 150, "#2c3e50", "Hextris");
+		} else {
+			renderText(centerX + currentGdx + 6 * settings.scale, trueCanvas.height / 2 + currentGdy - 155 * settings.scale, 150, "#2c3e50", playerId === 1 ? "玩家1" : "玩家2");
+		}
+		renderText(centerX + currentGdx + 5 * settings.scale, h, fontSize, "rgb(44,62,80)", 'Play!');
 		ctx.globalAlpha = scoreOpacity;
-		renderText(trueCanvas.width / 2 + gdx, trueCanvas.height / 2 + gdy, scoreSize, color, score);
+		renderText(centerX + currentGdx, trueCanvas.height / 2 + currentGdy, scoreSize, color, currentScore);
 	} else {
 		ctx.globalAlpha = scoreOpacity;
-		renderText(trueCanvas.width / 2 + gdx, trueCanvas.height / 2 + gdy, scoreSize, color, score);
+		renderText(centerX + currentGdx, trueCanvas.height / 2 + currentGdy, scoreSize, color, currentScore);
 	}
 
 	ctx.globalAlpha = 1;
@@ -60,6 +90,16 @@ function drawScoreboard() {
 
 function clearGameBoard() {
 	drawPolygon(trueCanvas.width / 2, trueCanvas.height / 2, 6, trueCanvas.width / 2, 30, hexagonBackgroundColor, 0, 'rgba(0,0,0,0)');
+}
+
+function clearGameBoard1() {
+	var halfWidth = trueCanvas.width / 2;
+	drawPolygon(halfWidth / 2, trueCanvas.height / 2, 6, halfWidth / 2, 30, hexagonBackgroundColor, 0, 'rgba(0,0,0,0)');
+}
+
+function clearGameBoard2() {
+	var halfWidth = trueCanvas.width / 2;
+	drawPolygon(halfWidth / 2, trueCanvas.height / 2, 6, halfWidth / 2, 30, hexagonBackgroundColor, 0, 'rgba(0,0,0,0)');
 }
 
 function drawPolygon(x, y, sides, radius, theta, fillColor, lineWidth, lineColor) {
@@ -162,7 +202,19 @@ function gameOverDisplay() {
 }
 
 function updateHighScores (){
-    $("#cScore").text(score);
+    if (gameMode === 0) {
+        // 单人模式只显示一个分数
+        $("#cScore").text(score);
+        $("#cScore2").hide();
+        $("#playerLabel").hide();
+        $("#playerLabel2").hide();
+    } else {
+        // 双人对战模式显示两个玩家的分数
+        $("#cScore").text(score);
+        $("#cScore2").text(score2);
+        $("#playerLabel").show();
+        $("#playerLabel2").show();
+    }
     $("#1place").text(highscores[0]);
     $("#2place").text(highscores[1]);
     $("#3place").text(highscores[2]);

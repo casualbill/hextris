@@ -1,9 +1,14 @@
 function addKeyListeners() {
+	// 玩家1控制 - 方向键
 	keypress.register_combo({
 		keys: "left",
 		on_keydown: function() {
-			if (MainHex && gameState !== 0) {
-				MainHex.rotate(1);
+			if (gameState !== 0) {
+				if (gameMode === 0 && MainHex) {
+					MainHex.rotate(1);
+				} else if (gameMode === 1 && MainHex1) {
+					MainHex1.rotate(1);
+				}
 			}
 		}
 	});
@@ -11,39 +16,54 @@ function addKeyListeners() {
 	keypress.register_combo({
 		keys: "right",
 		on_keydown: function() {
-			if (MainHex && gameState !== 0){
-				MainHex.rotate(-1);
+			if (gameState !== 0){
+				if (gameMode === 0 && MainHex) {
+					MainHex.rotate(-1);
+				} else if (gameMode === 1 && MainHex1) {
+					MainHex1.rotate(-1);
+				}
 			}
 		}
 	});
-		keypress.register_combo({
+	
+	keypress.register_combo({
 		keys: "down",
 		on_keydown: function() {
-			var tempSpeed = settings.speedModifier;
-			if (MainHex && gameState !== 0){
+			if (gameState !== 0){
 				//speed up block temporarily
 				if(settings.speedUpKeyHeld == false){
 					settings.speedUpKeyHeld = true;
-					window.rush *=4;
+					if (gameMode === 0) {
+						window.rush1 *=4;
+					} else if (gameMode === 1) {
+						window.rush1 *=4;
+					}
 				}
 			}
-			//settings.speedModifier = tempSpeed;
 		},
 		on_keyup:function(){
-			if (MainHex && gameState !== 0){
+			if (gameState !== 0){
 				//speed up block temporarily
-				
-				window.rush /=4;
+				if (gameMode === 0) {
+					window.rush1 /=4;
+				} else if (gameMode === 1) {
+					window.rush1 /=4;
+				}
 				settings.speedUpKeyHeld = false;
 			}
 		}	
 	});
 	
+	// 玩家2控制 - WASD
 	keypress.register_combo({
 		keys: "a",
 		on_keydown: function() {
-			if (MainHex && gameState !== 0) {
-				MainHex.rotate(1);
+			if (gameState !== 0) {
+				if (gameMode === 0 && MainHex) {
+					MainHex.rotate(1);
+				} else if (gameMode === 1 && MainHex2) {
+					MainHex2.rotate(1);
+				}
 			}
 		}
 	});
@@ -51,8 +71,12 @@ function addKeyListeners() {
 	keypress.register_combo({
 		keys: "d",
 		on_keydown: function() {
-			if (MainHex && gameState !== 0){
-				MainHex.rotate(-1);
+			if (gameState !== 0){
+				if (gameMode === 0 && MainHex) {
+					MainHex.rotate(-1);
+				} else if (gameMode === 1 && MainHex2) {
+					MainHex2.rotate(-1);
+				}
 			}
 		}
 	});
@@ -60,22 +84,23 @@ function addKeyListeners() {
 	keypress.register_combo({
 		keys: "s",
 		on_keydown: function() {
-			var tempSpeed = settings.speedModifier;
-			if (MainHex && gameState !== 0){
+			if (gameState !== 0){
 				//speed up block temporarily
-				if(settings.speedUpKeyHeld == false){
-					settings.speedUpKeyHeld = true;
-					window.rush *=4;
+				if(settings.speedUpKeyHeld2 == false){
+					settings.speedUpKeyHeld2 = true;
+					if (gameMode === 1) {
+						window.rush2 *=4;
+					}
 				}
 			}
-			//settings.speedModifier = tempSpeed;
 		},
 		on_keyup:function(){
-			if (MainHex && gameState !== 0){
+			if (gameState !== 0){
 				//speed up block temporarily
-				
-				window.rush /=4;
-				settings.speedUpKeyHeld = false;
+				if (gameMode === 1) {
+					window.rush2 /=4;
+				}
+				settings.speedUpKeyHeld2 = false;
 			}
 		}	
 	});
@@ -209,20 +234,17 @@ function handleClickTap(x,y) {
 		showHelp();
 		return;
 	}
-	var radius = settings.hexWidth ;
-	var halfRadius = radius/2;
-	var triHeight = radius *(Math.sqrt(3)/2);
-	var Vertexes =[
-		[radius,0],
-		[halfRadius,-triHeight],
-		[-halfRadius,-triHeight],
-		[-radius,0],
-		[-halfRadius,triHeight],
-		[halfRadius,triHeight]];
-	Vertexes = Vertexes.map(function(coord){ 
-		return [coord[0] + trueCanvas.width/2, coord[1] + trueCanvas.height/2]});
+	
+	// 双人模式下不支持鼠标/触摸控制
+	if (gameMode === 1) {
+		return;
+	}
+	
+	if (gameState === 0 || gameState==-1) {
+		return;
+	}
 
-	if (!MainHex || gameState === 0 || gameState==-1) {
+	if (!MainHex) {
 		return;
 	}
 

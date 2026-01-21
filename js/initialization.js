@@ -51,23 +51,24 @@ function initialize(a) {
 	if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
         $('.rrssb-email').remove();
 		settings = {
-			os: "other",
-			platform: "mobile",
-			startDist: 227,
-			creationDt: 60,
-			baseScale: 1.4,
-			scale: 1,
-			prevScale: 1,
-			baseHexWidth: 87,
-			hexWidth: 87,
-			baseBlockHeight: 20,
-			blockHeight: 20,
-			rows: 7,
-			speedModifier: 0.73,
-			speedUpKeyHeld: false,
-			creationSpeedModifier: 0.73,
-			comboTime: 310
-		};
+		os: "other",
+		platform: "mobile",
+		startDist: 227,
+		creationDt: 60,
+		baseScale: 1.4,
+		scale: 1,
+		prevScale: 1,
+		baseHexWidth: 87,
+		hexWidth: 87,
+		baseBlockHeight: 20,
+		blockHeight: 20,
+		rows: 7,
+		speedModifier: 0.73,
+		speedUpKeyHeld: false,
+		speedUpKeyHeld2: false,
+		creationSpeedModifier: 0.73,
+		comboTime: 310
+	};
 	} else {
 		settings = {
 			os: "other",
@@ -84,10 +85,10 @@ function initialize(a) {
 			rows: 8,
 			speedModifier: 0.65,
 			speedUpKeyHeld: false,
+			speedUpKeyHeld2: false,
 			creationSpeedModifier: 0.65,
 			comboTime: 310
 		};
-
 	}
 	if(/Android/i.test(navigator.userAgent)) {
 		settings.os = "android";
@@ -108,6 +109,7 @@ function initialize(a) {
 	window.framerate = 60;
 	window.history = {};
 	window.score = 0;
+	window.score2 = 0;
 	window.scoreAdditionCoeff = 1;
 	window.prevScore = 0;
 	window.numHighScores = 3;
@@ -121,18 +123,32 @@ function initialize(a) {
 		}
 	}
 	window.blocks = [];
+	window.blocks2 = [];
 	window.MainHex;
+	window.MainHex1;
+	window.MainHex2;
 	window.gdx = 0;
 	window.gdy = 0;
+	window.gdx1 = 0;
+	window.gdy1 = 0;
+	window.gdx2 = 0;
+	window.gdy2 = 0;
 	window.devMode = 0;
 	window.lastGen = undefined;
 	window.prevTimeScored = undefined;
 	window.nextGen = undefined;
 	window.spawnLane = 0;
+	window.spawnLane1 = 0;
+	window.spawnLane2 = 0;
 	window.importing = 0;
 	window.importedHistory = undefined;
 	window.startTime = undefined;
 	window.gameState;
+	window.gameMode = 0; // 0: 单人模式, 1: 双人对战模式
+	window.rush1 = 1;
+	window.rush2 = 1;
+	window.waveone1;
+	window.waveone2;
 	setStartScreen();
 	if (a != 1) {
 		window.canRestart = 1;

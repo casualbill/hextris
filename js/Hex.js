@@ -134,15 +134,32 @@ function Hex(sideLength) {
 				this.lastRotate = Date.now();
 	};
 
-	this.draw = function() {
-		this.x = trueCanvas.width/2;
+	this.draw = function(playerId) {
+		if (gameMode === 0) {
+			// 单人模式
+			this.x = trueCanvas.width/2;
+			gdx = 0;
+			gdy = 0;
+		} else {
+			// 双人模式
+			if (playerId === 1) {
+				// 玩家1在左侧
+				this.x = trueCanvas.width/4;
+				gdx = gdx1;
+				gdy = gdy1;
+			} else if (playerId === 2) {
+				// 玩家2在右侧
+				this.x = 3 * trueCanvas.width/4;
+				gdx = gdx2;
+				gdy = gdy2;
+			}
+		}
 
 		if (gameState != -2) {
 			this.y = trueCanvas.height/2;
 		}
 		this.sideLength = settings.hexWidth;
-		gdx = 0;
-		gdy = 0;
+		
 		for (var i = 0; i < this.shakes.length; i++) {
 			this.shake(this.shakes[i]);
 		}

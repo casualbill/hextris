@@ -476,6 +476,23 @@ body {
 	margin-top:-10px;
 }
 
+#playerLabel, #playerLabel2 {
+	font-size:30px;
+	font-weight:light;
+	margin-right:10px;
+	display:inline-block;
+	vertical-align:middle;
+}
+
+#cScore2 {
+	font-size:60.5000px;
+	font-weight:light;
+	margin-bottom:5px;
+	margin-top:-10px;
+	display:inline-block;
+	vertical-align:middle;
+}
+
 #highScoresTitle {
 	margin-bottom:2px;
 }
